@@ -51,6 +51,7 @@ func run() -> void:
 	await test_new_game()
 	await test_movement()
 	await test_combat()
+	await test_defence()
 	await test_weapons()
 	await test_pickups_and_props()
 	await test_progression()
@@ -484,6 +485,92 @@ func test_combat() -> void:
 			n.queue_free()
 	await frames(2)
 
+# ---------------------------------------------------------------- defence
+## Guard and the dodge roll. Both are resource trades, so the checks cover the cost and
+## the failure case as well as the effect.
+func test_defence() -> void:
+	log_line("
+-- Guard and dodge --")
+	await clear_stage(700.0)
+	var player := p()
+
+	# --- Guard ---
+	player.energy = player.max_energy
+	Input.action_press("guard")
+	Input.action_press("sprint")
+	await frames(6)
+	check("holding guard while still enters the guard state", player.state == Actor.State.GUARD,
+		"state=%d" % player.state)
+	check("guarding reports itself to the damage path", player.is_guarding())
+
+	var e := spawn_enemy("sweater_grunt", 26.0)
+	await frames(4)
+	e.global_position.y = player.global_position.y
+	e.ai_state = EnemyBase.AI.WAIT
+	e.think_timer = 10.0
+	var hp0: int = player.hp
+	var en0: float = player.energy
+	var jab: MoveData = ContentDB.get_move("enemy_jab")
+	var d := DamageData.from_move(jab, e, -1, 1.0)
+	player.invuln_frames = 0
+	player.hurtbox.invulnerable_until_ms = 0
+	player.take_damage(d)
+	await frames(4)
+	var guarded_loss: int = hp0 - player.hp
+	check("a guarded hit costs far less health", guarded_loss < jab.damage,
+		"lost %d of %d" % [guarded_loss, jab.damage])
+	check("a guarded hit drains energy", player.energy < en0, "%.0f -> %.0f" % [en0, player.energy])
+	check("guarding survives an ordinary hit", player.state == Actor.State.GUARD, "state=%d" % player.state)
+
+	# A heavy attack breaks through the guard.
+	var heavy: MoveData = ContentDB.get_move("enemy_heavy")
+	var hp1: int = player.hp
+	player.invuln_frames = 0
+	player.hurtbox.invulnerable_until_ms = 0
+	player.take_damage(DamageData.from_move(heavy, e, -1, 1.0))
+	await frames(4)
+	check("a heavy attack breaks the guard", player.hp < hp1 - 1 and player.state != Actor.State.GUARD,
+		"hp %d -> %d state=%d" % [hp1, player.hp, player.state])
+
+	# Guard is unavailable with no energy.
+	Input.action_release("guard")
+	Input.action_release("sprint")
+	await frames(4)
+	player.set_state(Actor.State.IDLE)
+	player.energy = 0.0
+	Input.action_press("guard")
+	Input.action_press("sprint")
+	await frames(6)
+	check("cannot guard on an empty energy bar", player.state != Actor.State.GUARD, "state=%d" % player.state)
+	Input.action_release("guard")
+	Input.action_release("sprint")
+	await frames(4)
+
+	# --- Dodge roll ---
+	await clear_stage(700.0)
+	player = p()
+	player.energy = player.max_energy
+	player.set_state(Actor.State.IDLE)
+	var start_x: float = player.global_position.x
+	var en1: float = player.energy
+	# Double-tap right: press, release, press again inside the window.
+	Input.action_press("move_right")
+	await frames(2)
+	Input.action_release("move_right")
+	await frames(2)
+	Input.action_press("move_right")
+	await frames(3)
+	check("a double-tap starts a dodge roll", player.state == Actor.State.DODGE, "state=%d" % player.state)
+	check("the roll costs energy", player.energy < en1, "%.0f -> %.0f" % [en1, player.energy])
+	check("the roll grants invulnerability", player.invuln_frames > 0 or player.hurtbox.is_invulnerable())
+	await frames(14)
+	check("the roll travels", player.global_position.x > start_x + 20.0,
+		"moved %.1f" % (player.global_position.x - start_x))
+	Input.action_release("move_right")
+	await frames(30)
+	check("the roll ends and control returns", player.state != Actor.State.DODGE, "state=%d" % player.state)
+	await clear_stage(700.0)
+
 # ---------------------------------------------------------------- weapons
 func test_weapons() -> void:
 	print("\n-- Weapons --")
@@ -846,7 +933,7 @@ func test_touch_controls() -> void:
 		cluster = r if first else cluster.merge(r)
 		first = false
 	check("the action cluster is compact",
-		cluster.size.x <= vp.x * 0.5 and cluster.size.y <= vp.y * 0.62,
+		cluster.size.x <= vp.x * 0.55 and cluster.size.y <= vp.y * 0.62,
 		"%.0fx%.0f in a %.0fx%.0f viewport" % [cluster.size.x, cluster.size.y, vp.x, vp.y])
 	check("the action cluster hugs the bottom-right corner",
 		cluster.end.x >= vp.x * 0.9 and cluster.end.y >= vp.y * 0.85,
@@ -917,6 +1004,18 @@ func test_touch_controls() -> void:
 	check("attacking while moving still lands", e2.hp < hp1, "%d -> %d" % [hp1, e2.hp])
 	await touch(1, origin, false)
 	await frames(4)
+
+	# --- The guard button drives the guard state ---
+	var guard_node: TextureRect = null
+	for b in tc._buttons:
+		if b.action == "guard":
+			guard_node = b.node
+	check("a guard button exists on touch", guard_node != null)
+	if guard_node:
+		await touch(3, guard_node.get_global_rect().get_center(), true)
+		check("holding the touch guard button sets the guard flag", TouchControls.guarding)
+		await touch(3, guard_node.get_global_rect().get_center(), false)
+		check("releasing the touch guard button clears it", not TouchControls.guarding)
 
 	# --- A tap on empty screen must not be swallowed ---
 	var empty := Vector2(vp.x * 0.55, vp.y * 0.25)

@@ -13,6 +13,9 @@ const ACTIONS := {
 	"grab": [[KEY_U, KEY_C], [JOY_BUTTON_B], null],
 	"special": [[KEY_I, KEY_V], [JOY_BUTTON_RIGHT_SHOULDER], null],
 	"sprint": [[KEY_SHIFT], [JOY_BUTTON_LEFT_SHOULDER], [JOY_AXIS_TRIGGER_LEFT, 1.0]],
+	# Guard shares Shift/LB with sprint: the input means "commit", and whether you are
+	# moving decides to what. Touch gets its own button, since the stick already runs.
+	"guard": [[KEY_SHIFT], [JOY_BUTTON_LEFT_SHOULDER], [JOY_AXIS_TRIGGER_LEFT, 1.0]],
 	"pause": [[KEY_ESCAPE, KEY_P], [JOY_BUTTON_START], null],
 	"menu_confirm": [[KEY_ENTER, KEY_J, KEY_Z, KEY_SPACE], [JOY_BUTTON_A], null],
 	"menu_back": [[KEY_ESCAPE, KEY_K, KEY_X, KEY_BACKSPACE], [JOY_BUTTON_B], null],

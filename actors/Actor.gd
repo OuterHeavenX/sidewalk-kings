@@ -9,7 +9,7 @@ extends CharacterBody2D
 signal state_changed(new_state: int)
 signal defeated(actor: Node)
 
-enum State { IDLE, WALK, RUN, ATTACK, HURT, KNOCKDOWN, GETUP, GRABBING, GRABBED, JUMP, DEFEATED, SPAWNING, STUNNED, DIALOGUE }
+enum State { IDLE, WALK, RUN, ATTACK, HURT, KNOCKDOWN, GETUP, GRABBING, GRABBED, JUMP, DEFEATED, SPAWNING, STUNNED, DIALOGUE, GUARD, DODGE }
 
 const GRAVITY := 620.0
 const LANE_SORT_SCALE := 1.0
@@ -113,7 +113,12 @@ func get_current_speed() -> float:
 	return move_speed
 
 func can_move() -> bool:
-	return state in [State.IDLE, State.WALK, State.RUN, State.JUMP] and not dead
+	# DODGE is included: a roll is committed movement, driven by roll_dir rather than input.
+	return state in [State.IDLE, State.WALK, State.RUN, State.JUMP, State.DODGE] and not dead
+
+## True while holding a guard. Overridden by Player; enemies do not guard yet.
+func is_guarding() -> bool:
+	return false
 
 func can_act() -> bool:
 	return state in [State.IDLE, State.WALK, State.RUN] and not dead
@@ -160,6 +165,9 @@ func anim_done() -> bool:
 func take_damage(d: DamageData) -> bool:
 	if dead or invuln_frames > 0:
 		return false
+	if is_guarding() and _guard_absorbs(d):
+		on_guarded(d)
+		return true
 	var amount := compute_damage(d)
 	hp = maxi(0, hp - amount)
 	_spawn_hit_fx(d, amount)
@@ -172,6 +180,13 @@ func take_damage(d: DamageData) -> bool:
 		return true
 	apply_hit_reaction(d)
 	return true
+
+## A guard holds against ordinary attacks. Heavy and armored blows break through it.
+func _guard_absorbs(d: DamageData) -> bool:
+	return not (d.heavy or d.knockdown)
+
+func on_guarded(d: DamageData) -> void:
+	pass
 
 func compute_damage(d: DamageData) -> int:
 	return maxi(1, d.amount)

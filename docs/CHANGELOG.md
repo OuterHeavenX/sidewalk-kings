@@ -140,6 +140,27 @@ See the [README](../README.md#known-issues).
 
 ---
 
-## Unreleased
+## Unreleased — Phase 2, Stage 1
 
-Nothing yet. See [ROADMAP.md](ROADMAP.md) for what Phase 2 opens with.
+See [PHASE_2.md](PHASE_2.md) for the full plan.
+
+### Added
+
+- **Guard.** Hold the sprint input while standing still. Absorbs ordinary attacks for chip
+  damage, breaks against heavy blows, drains energy while held, and is unavailable on an
+  empty bar. The player could previously only answer an attack by outspacing it, jumping,
+  or trading, which flattened every fight into the same exchange.
+- **Dodge roll** on a double-tap, with invulnerability through most of it and an energy
+  cost. **Dash Strike** is now its follow-up, which gives that dojo purchase an identity
+  beyond being a standalone lunge.
+- A sixth touch button for guard, since the stick already means run. Special and guard now
+  flank the action diamond.
+- Thirteen automated checks covering guard damage reduction, energy drain, guard break,
+  the empty-energy case, roll cost, roll invulnerability, roll travel, and the touch guard
+  button. The suite is now 140 checks.
+
+### Decided
+
+- Night lighting will use Godot's built-in 2D lights rather than the `lit` addon. Lit
+  requires the Forward+ renderer and does not support Compatibility or Mobile; this game
+  runs on Compatibility, which is what makes the browser and mobile builds work at all.

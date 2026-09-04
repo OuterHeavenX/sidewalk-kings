@@ -25,9 +25,12 @@ The browser build is meant to be playable on a phone, not merely to load on one.
 - **Virtual stick, lower left.** Anywhere on the left half of the screen starts it, so
   there is no need to find a fixed pad. Pushing to the edge is running. It recentres under
   the thumb while held and returns to its home position on release.
-- **Five action buttons in a diamond, lower right**, laid out the way a gamepad arranges
-  its face buttons: light nearest the thumb, heavy above, jump inboard, grab below, and
-  special on the diagonal. Spacing is at least one button width, so no two hit areas touch.
+- **Six action buttons, lower right.** A diamond laid out the way a gamepad arranges its
+  face buttons: light nearest the thumb, heavy above, jump inboard, grab below. Special and
+  guard flank the diamond on its left, where the thumb sweeps in. Spacing is at least one
+  button width, so no two hit areas touch.
+- **Guard needs its own button on touch**, because the stick already means run. On keyboard
+  and gamepad the two share an input and direction decides which you get.
 - **Pause at top centre**, clear of the vitals on the left and the money on the right.
 
 The whole cluster scales with viewport height and every button is clamped inside the

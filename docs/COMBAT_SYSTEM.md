@@ -195,6 +195,42 @@ The special and the boss defeat also use `EventBus.slow_motion`, which scales
 
 ---
 
+## Defence
+
+Two answers to an incoming attack, both paid for in energy.
+
+### Guard
+
+Hold the sprint input while standing still. The same input runs when you are moving, so it
+reads as "commit" and your direction decides to what.
+
+| | |
+|---|---|
+| Absorbs | Ordinary attacks, for chip damage of about a quarter |
+| Breaks against | Heavy attacks and anything that knocks down |
+| Costs | Energy while held, plus a chunk per hit absorbed |
+| Blocks you from | Moving, attacking, grabbing |
+| Unavailable | At empty energy, or in the air |
+
+`Actor.take_damage` checks `is_guarding()` before anything else, and `_guard_absorbs()`
+decides whether the hit gets through. Enemies inherit the same hooks but do not guard yet,
+which is where a shielder archetype would slot in.
+
+### Dodge roll
+
+Double-tap a direction. Reuses the double-tap detection that was scaffolded in `Player.gd`
+from the start.
+
+| | |
+|---|---|
+| Invulnerable | Most of the roll, not all of it |
+| Travels | A fixed distance at roll speed, driven by `roll_dir` rather than live input |
+| Costs | Energy |
+| Follow-up | **Dash Strike** is available in a short window after the roll |
+
+The follow-up is the point. Dash Strike stops being a standalone lunge and becomes the
+aggressive answer to a well-read roll, which gives the dojo purchase a real identity.
+
 ## Energy and the special meter
 
 - **Energy** gates heavy and technique moves and refills continuously, faster with

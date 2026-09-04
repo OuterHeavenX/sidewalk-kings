@@ -6,6 +6,16 @@ const RUN_DOUBLE_TAP_WINDOW := 0.26
 const JUMP_VELOCITY := 240.0
 const DASH_SPEED := 260.0
 const DASH_TIME := 0.18
+const DOUBLE_TAP_WINDOW := 0.28      # seconds between taps that count as a dodge input
+const ROLL_SPEED := 250.0
+const ROLL_TIME := 0.34
+const ROLL_INVULN := 0.22            # invulnerable for most, but not all, of the roll
+const ROLL_COST := 12.0
+const ROLL_CANCEL_WINDOW := 0.30     # after a roll, Dash Strike is available
+const GUARD_DRAIN := 9.0             # energy per second while held
+const GUARD_MIN_ENERGY := 4.0
+const GUARD_DAMAGE_SCALE := 0.25
+const GUARD_CHIP_MIN := 1
 const GRAB_RANGE := 22.0
 const GRAB_LANE := 16.0
 const RESPAWN_INVULN := 1.4
@@ -27,6 +37,12 @@ var _grab_hold_frames: int = 0
 var _step_timer: float = 0.0
 var _energy_lock: float = 0.0
 var nearby_interactable: Node = null
+var roll_time: float = 0.0
+var roll_dir: Vector2 = Vector2.RIGHT
+var _roll_cancel_time: float = 0.0
+var _guard_held: bool = false
+var _tap_dir: int = 0
+var _tap_time: float = 0.0
 
 func _ready() -> void:
 	super._ready()
@@ -105,28 +121,37 @@ func _read_input(delta: float) -> void:
 	if dir.length() > 1.0:
 		dir = dir.normalized()
 
-	# Double-tap to run
-	if absf(dir.x) > 0.6:
-		var d := signi(int(round(dir.x)))
-		if d != 0 and _last_dir_tap.dir != d:
-			var now := Time.get_ticks_msec() / 1000.0
-			if _last_dir_tap.dir == 0:
-				_last_dir_tap = {"dir": d, "time": now}
-			else:
-				_last_dir_tap = {"dir": d, "time": now}
-	else:
-		if _last_dir_tap.dir != 0:
-			var now := Time.get_ticks_msec() / 1000.0
-			if now - float(_last_dir_tap.time) > RUN_DOUBLE_TAP_WINDOW:
-				_last_dir_tap.dir = 0
+	_update_dodge_tap(dir, delta)
 
-	running = Input.is_action_pressed("sprint") or TouchControls.sprinting
+	# Shift means "commit": moving, that is a run; standing still, that is a guard.
+	var commit := Input.is_action_pressed("sprint") or TouchControls.sprinting
+	var guard_pressed := Input.is_action_pressed("guard") or TouchControls.guarding
+	running = commit and dir.length() > 0.2
+	_update_guard(guard_pressed, dir, delta)
 	if dash_time > 0.0:
 		dash_time -= delta
+	if _roll_cancel_time > 0.0:
+		_roll_cancel_time -= delta
 
 	if state == State.GRABBED:
 		move_input = Vector2.ZERO
 		_struggle()
+		return
+
+	if state == State.DODGE:
+		roll_time -= delta
+		move_input = roll_dir
+		if roll_time <= ROLL_TIME - ROLL_INVULN:
+			invuln_frames = maxi(invuln_frames, 0)
+		if roll_time <= 0.0:
+			_end_roll()
+		return
+
+	if state == State.GUARD:
+		move_input = Vector2.ZERO
+		play_anim("block")
+		if Input.is_action_just_pressed("jump"):
+			_press_jump()
 		return
 
 	if can_move():
@@ -163,7 +188,84 @@ func _read_input(delta: float) -> void:
 			set_state(State.IDLE)
 			play_anim("idle" if held_weapon == null else "weapon_idle")
 
+## Track double-taps on a horizontal direction. A second tap inside the window rolls.
+func _update_dodge_tap(dir: Vector2, delta: float) -> void:
+	_tap_time += delta
+	var d := 0
+	if absf(dir.x) > 0.6:
+		d = signi(int(round(dir.x)))
+	if d != 0 and _tap_dir == 0:
+		# Direction pressed from neutral.
+		if d == int(_last_dir_tap.dir) and _tap_time < DOUBLE_TAP_WINDOW:
+			_start_roll(Vector2(d, clampf(dir.y, -0.6, 0.6)))
+			_last_dir_tap = {"dir": 0, "time": 0.0}
+		else:
+			_last_dir_tap = {"dir": d, "time": 0.0}
+			_tap_time = 0.0
+	_tap_dir = d
+
+## Guard is held, costs energy, and cannot be entered while committed to anything else.
+func _update_guard(pressed: bool, dir: Vector2, delta: float) -> void:
+	_guard_held = pressed
+	if state == State.GUARD:
+		energy = maxf(0.0, energy - GUARD_DRAIN * delta)
+		EventBus.player_energy_changed.emit(energy, max_energy)
+		if not pressed or dir.length() > 0.2 or energy <= 0.0:
+			set_state(State.IDLE)
+		return
+	if pressed and dir.length() <= 0.2 and can_act() and z_height <= 0.0 and energy > GUARD_MIN_ENERGY:
+		set_state(State.GUARD)
+		play_anim("block", false, true)
+		_energy_lock = 0.35
+
+func is_guarding() -> bool:
+	return state == State.GUARD and not dead
+
+## A guarded hit costs a sliver of health and a chunk of energy, and pushes you back.
+func on_guarded(d: DamageData) -> void:
+	var chip := maxi(GUARD_CHIP_MIN, int(round(d.amount * GUARD_DAMAGE_SCALE)))
+	hp = maxi(1, hp - chip)
+	GameManager.player_data.hp = hp
+	EventBus.player_hp_changed.emit(hp, max_hp)
+	energy = maxf(0.0, energy - float(d.amount) * 0.8)
+	EventBus.player_energy_changed.emit(energy, max_energy)
+	knockback_velocity = Vector2(d.knockback.x * d.direction * 0.35, 0.0)
+	invuln_frames = maxi(invuln_frames, 6)
+	AudioManager.play_sfx("block", -3.0)
+	FX.spark_guard(global_position + Vector2(d.direction * 10.0, -z_height - 22.0), get_parent())
+	EventBus.screen_shake.emit(1.2, 0.1)
+	if energy <= 0.0:
+		set_state(State.IDLE)
+		GameManager.notify("Guard broken!", "warn")
+
+func _start_roll(dir: Vector2) -> void:
+	if not can_act() or z_height > 0.0 or dead:
+		return
+	if energy < ROLL_COST:
+		AudioManager.play_ui("menu_deny")
+		return
+	energy -= ROLL_COST
+	_energy_lock = 0.5
+	EventBus.player_energy_changed.emit(energy, max_energy)
+	roll_dir = dir.normalized()
+	roll_time = ROLL_TIME
+	facing = 1 if roll_dir.x > 0 else -1
+	set_state(State.DODGE)
+	play_anim("dash", true, true)
+	invuln_frames = int(ROLL_INVULN * 60.0)
+	hurtbox.set_invulnerable(ROLL_INVULN)
+	AudioManager.play_sfx("dash", -6.0)
+	FX.dust(global_position, get_parent())
+
+func _end_roll() -> void:
+	roll_time = 0.0
+	_roll_cancel_time = ROLL_CANCEL_WINDOW
+	if state == State.DODGE:
+		set_state(State.IDLE)
+
 func get_current_speed() -> float:
+	if state == State.DODGE:
+		return ROLL_SPEED
 	if dash_time > 0.0:
 		return DASH_SPEED
 	if z_height > 0.0:
@@ -205,6 +307,12 @@ func _press_attack(kind: int) -> void:
 		else:
 			_start_weapon()
 		return
+	# Dash Strike is the aggressive answer to a well-timed roll.
+	if _roll_cancel_time > 0.0:
+		var ds := _get_move("dash_strike")
+		if ds and _start(ds):
+			_roll_cancel_time = 0.0
+			return
 	# Running attack
 	if (running or dash_time > 0.0) and move_input.length() > 0.2:
 		var rm := _get_move("run_attack")

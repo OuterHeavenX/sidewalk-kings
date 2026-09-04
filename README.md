@@ -57,7 +57,9 @@ The game boots to a title screen, so F5 and F6 both work.
 | Action | Keyboard | Gamepad | Touch |
 |---|---|---|---|
 | Move | Arrows / WASD | Left stick, D-pad | Virtual stick, lower left |
-| Run | Shift | LB / L1 | Push the stick to its edge |
+| Run | Shift **while moving** | LB / L1 | Push the stick to its edge |
+| Guard | Shift **while standing still** | LB / L1 | Shield button |
+| Dodge roll | Double-tap a direction | Double-tap a direction | Double-flick the stick |
 | Light attack | J or Z | X / Square | Red button |
 | Heavy attack | K or X | Y / Triangle | Orange button |
 | Jump | L or Space | A / Cross | Blue button |
@@ -80,6 +82,11 @@ attacking at the same time works.
 - Weapons on the ground are picked up with **U**, swung with light, thrown with heavy.
   Most break after a few hits.
 - Jumping dodges grounded attacks, and a jump attack catches enemies who are standing.
+- **Guard** holds against ordinary attacks for a sliver of chip damage, but heavy blows
+  break through it. It drains energy while held, so it is a trade rather than a safe
+  default. You cannot move or attack while guarding.
+- **Dodge roll** on a double-tap. Invulnerable through most of it, costs energy, and
+  commits you. **Dash Strike**, once bought from the dojo, is its follow-up.
 - The special meter fills as you land and take hits. At full, **I** clears the space
   around you.
 

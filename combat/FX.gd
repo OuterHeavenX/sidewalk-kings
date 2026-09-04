@@ -64,6 +64,10 @@ static func number(text: String, world_pos: Vector2, color: Color, parent: Node 
 	tw.tween_property(l, "modulate:a", 0.0, 0.6).set_delay(0.25)
 	tw.chain().tween_callback(l.queue_free)
 
+## A blocked hit: a bright clang rather than an impact spark.
+static func spark_guard(world_pos: Vector2, parent: Node = null) -> void:
+	spawn("spark_weapon", world_pos, parent, 0.85)
+
 static func dust(world_pos: Vector2, parent: Node = null) -> void:
 	spawn("dust", world_pos, parent)
 

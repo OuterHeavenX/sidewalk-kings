@@ -6,6 +6,7 @@ extends Control
 static var active: bool = false
 static var move_vector: Vector2 = Vector2.ZERO
 static var sprinting: bool = false
+static var guarding: bool = false
 
 const DEADZONE := 0.18
 const STICK_RADIUS := 50.0
@@ -42,6 +43,7 @@ func _exit_tree() -> void:
 	active = false
 	move_vector = Vector2.ZERO
 	sprinting = false
+	guarding = false
 
 func _collect_buttons() -> void:
 	_buttons.clear()
@@ -73,6 +75,7 @@ func _reset() -> void:
 	_button_touch.clear()
 	move_vector = Vector2.ZERO
 	sprinting = false
+	guarding = false
 	if stick_base and stick_knob:
 		_recentre_stick()
 	for b in _buttons:
@@ -128,7 +131,7 @@ func _apply_safe_area() -> void:
 	# Action buttons form a compact diamond in the bottom-right corner, the way a gamepad
 	# lays out its face buttons. A wide arc pushed the top button almost half way up the
 	# screen, which is neither reachable nor readable over the game.
-	var centre := Vector2(vp.x - pad_r - btn * 1.6, vp.y - pad_b - btn * 1.6)
+	var centre := Vector2(vp.x - pad_r - btn * 2.2, vp.y - pad_b - btn * 2.2)
 	# Spacing >= one button width, so no two hit rectangles touch even diagonally.
 	var d := btn * 1.08
 	var offsets := {
@@ -136,7 +139,9 @@ func _apply_safe_area() -> void:
 		"attack_heavy": Vector2(0.0, -1.0),
 		"jump": Vector2(-1.0, 0.0),
 		"grab": Vector2(0.0, 1.0),
-		"special": Vector2(-1.5, -1.5),        # diagonally clear of both jump and heavy
+		# Special and guard flank the diamond on the left, where the thumb sweeps in.
+		"special": Vector2(-2.05, -0.65),
+		"guard": Vector2(-2.05, 0.65),
 	}
 	for b in _buttons:
 		var act: String = b.action
@@ -183,6 +188,8 @@ func _touch_down(index: int, p: Vector2) -> bool:
 		if node.get_global_rect().grow(8.0).has_point(p):
 			_button_touch[index] = b.action
 			node.modulate = Color(1.35, 1.35, 1.35, 1.0)
+			if b.action == "guard":
+				guarding = true
 			_press(b.action, true)
 			return true
 	# Anything on the left half drives the stick, so the thumb never has to find a target.
@@ -206,6 +213,8 @@ func _touch_up(index: int) -> bool:
 	if _button_touch.has(index):
 		var act: String = _button_touch[index]
 		_button_touch.erase(index)
+		if act == "guard":
+			guarding = false
 		for b in _buttons:
 			if b.action == act:
 				b.node.modulate = Color(1, 1, 1, IDLE_ALPHA)

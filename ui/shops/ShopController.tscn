@@ -1,7 +1,7 @@
-[gd_scene format=3 uid="uid://mpbtojtplg65"]
+[gd_scene load_steps=2 format=3]
 
-[ext_resource type="Script" uid="uid://cbjuk0tm8ua4r" path="res://ui/shops/ShopController.gd" id="1"]
+[ext_resource type="Script" path="res://ui/shops/ShopController.gd" id="1"]
 
-[node name="ShopController" type="CanvasLayer" unique_id=474971125]
+[node name="ShopController" type="CanvasLayer"]
 layer = 45
 script = ExtResource("1")

@@ -1008,6 +1008,12 @@ def ui_button(size=64, col=(230, 90, 90), label=None):
         elif label == "star":
             st = fx_star(int(size * 0.6), (255, 240, 170))
             im.alpha_composite(st, (int(c - st.width / 2), int(c - st.height / 2)))
+        elif label == "shield":
+            d.polygon([(c, c - 11), (c + 9, c - 7), (c + 9, c + 2), (c, c + 11), (c - 9, c + 2), (c - 9, c - 7)],
+                      fill=(238, 236, 228))
+            d.polygon([(c, c - 8), (c + 6, c - 5), (c + 6, c + 1), (c, c + 8), (c - 6, c + 1), (c - 6, c - 5)],
+                      fill=(150, 172, 205))
+            d.line([(c, c - 8), (c, c + 8)], fill=(238, 236, 228))
         elif label == "pause":
             d.rectangle([c - 6, c - 8, c - 2, c + 8], fill=(250, 250, 250))
             d.rectangle([c + 2, c - 8, c + 6, c + 8], fill=(250, 250, 250))
@@ -1079,7 +1085,9 @@ def build_ui():
     ui_bar(32, 8, (190, 50, 60)).save(os.path.join(out, "bar_boss.png"))
     for name, label, col in (("btn_light", "fist", (230, 90, 90)), ("btn_heavy", "boot", (230, 150, 60)),
                              ("btn_jump", "arrow_up", (90, 180, 230)), ("btn_grab", "hand", (150, 200, 100)),
-                             ("btn_special", "star", (200, 110, 230)), ("btn_pause", "pause", (120, 116, 140))):
+                             ("btn_special", "star", (200, 110, 230)),
+                             ("btn_guard", "shield", (90, 150, 205)),
+                             ("btn_pause", "pause", (120, 116, 140))):
         ui_button(72, col, label).save(os.path.join(out, f"{name}.png"))
     base, knob = ui_joystick()
     base.save(os.path.join(out, "joy_base.png"))

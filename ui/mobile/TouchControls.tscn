@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene load_steps=11 format=3]
 
 [ext_resource type="Script" path="res://ui/mobile/TouchControls.gd" id="1"]
 [ext_resource type="Texture2D" path="res://assets/art/ui/joy_base.png" id="2"]
@@ -9,6 +9,7 @@
 [ext_resource type="Texture2D" path="res://assets/art/ui/btn_grab.png" id="7"]
 [ext_resource type="Texture2D" path="res://assets/art/ui/btn_special.png" id="8"]
 [ext_resource type="Texture2D" path="res://assets/art/ui/btn_pause.png" id="9"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/btn_guard.png" id="10"]
 
 [node name="TouchControls" type="Control"]
 anchors_preset = 15
@@ -71,6 +72,13 @@ expand_mode = 1
 stretch_mode = 5
 modulate = Color(1, 1, 1, 0.78)
 metadata/action = "special"
+
+[node name="Guard" type="TextureRect" parent="Buttons"]
+texture = ExtResource("10")
+expand_mode = 1
+stretch_mode = 5
+modulate = Color(1, 1, 1, 0.78)
+metadata/action = "guard"
 
 [node name="Pause" type="TextureRect" parent="Buttons"]
 texture = ExtResource("9")

@@ -355,7 +355,7 @@ metadata/action = "{action}"
 '''
 
 SCENES["ui/mobile/TouchControls.tscn"] = '''
-[gd_scene load_steps=10 format=3]
+[gd_scene load_steps=11 format=3]
 
 [ext_resource type="Script" path="res://ui/mobile/TouchControls.gd" id="1"]
 [ext_resource type="Texture2D" path="res://assets/art/ui/joy_base.png" id="2"]
@@ -366,6 +366,7 @@ SCENES["ui/mobile/TouchControls.tscn"] = '''
 [ext_resource type="Texture2D" path="res://assets/art/ui/btn_grab.png" id="7"]
 [ext_resource type="Texture2D" path="res://assets/art/ui/btn_special.png" id="8"]
 [ext_resource type="Texture2D" path="res://assets/art/ui/btn_pause.png" id="9"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/btn_guard.png" id="10"]
 
 [node name="TouchControls" type="Control"]
 anchors_preset = 15
@@ -399,6 +400,7 @@ mouse_filter = 2
     touch_button("Jump", "jump", "6"),
     touch_button("Grab", "grab", "7"),
     touch_button("Special", "special", "8"),
+    touch_button("Guard", "guard", "10"),
     touch_button("Pause", "pause", "9"),
 ])
 
