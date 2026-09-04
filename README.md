@@ -11,13 +11,26 @@ animation, music, sound effects and level layouts. Nothing is taken from an exis
 
 **Version:** 0.1.0 · **Engine:** Godot 4.7.2 · **Language:** GDScript
 
+**▶ [Play it in your browser](https://outerheavenx.github.io/sidewalk-kings/)**
+
+![Ferry Row](docs/screenshots/ferry-row.png)
+
+| | |
+|---|---|
+| ![Combat](docs/screenshots/combat.png) | ![Boss fight](docs/screenshots/boss.png) |
+| ![Lantern Market](docs/screenshots/lantern-market.png) | ![Dialogue](docs/screenshots/dialogue.png) |
+| ![Restaurant](docs/screenshots/shop.png) | ![Touch controls](docs/screenshots/touch-controls.png) |
+
 ---
 
 ## Play it
 
 ### In a browser
 
-The finished web build is committed at [`web/`](web/). Serve that folder over HTTP and open
+It is live at **https://outerheavenx.github.io/sidewalk-kings/**, deployed from `main` by
+GitHub Actions.
+
+The same build is committed at [`web/`](web/). Serve that folder over HTTP and open
 `index.html`. It is a static site: no Node, no build step, no server code.
 
 ```bash
