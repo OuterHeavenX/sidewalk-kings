@@ -27,3 +27,43 @@ tools/_scratch/
 # Logs
 *.log
 logs/
+
+# --- Third-party content that was unpacked into this project folder ---
+# Not part of Sidewalk Kings. Left in place, but never exported and never committed.
+/addons/
+/Extensions/
+/Godot/
+/SampleProject/
+/demo/
+/Unity/
+/Unreal Engine/
+/__MACOSX/
+/tilemap/
+/tiles/
+/Unarmed/
+/Sound FX Starter Pack Vol. 1/
+/*.FBX
+/*.psd
+/*.glb
+/*.exr
+/*.url
+/*.svg
+/icon.svg.import
+/node_2d.tscn
+/NewCloudsGD.tres
+/CloudsMask.exr.import
+/Preview.png
+/Preview.png.import
+/Unity_Setup.png
+/Unity_Setup.png.import
+/UnrealEngine_Setup.png
+/UnrealEngine_Setup.png.import
+/License.txt
+/MIT License.txt
+/@icons picker.html
+/RPG Animations GLB FREE Version Changes.txt
+/explosive_anim_importer*.py
+web/libterrabrush*.wasm
+
+# Godot import metadata for documentation images (not game assets)
+docs/screenshots/*.import

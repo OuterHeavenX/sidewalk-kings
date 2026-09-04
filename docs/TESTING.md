@@ -11,7 +11,7 @@ other captures how it looks.
 godot --headless --path . -- --smoke
 ```
 
-Boots the game, starts a session and drives it through 107 checks. Exit code is 0 if
+Boots the game, starts a session and drives it through 125 checks. Exit code is 0 if
 everything passes, 1 otherwise, so it works in CI. Results print to stdout and are also
 flushed line by line to `user://smoke_test.log`, which means a hang or crash still leaves a
 record of exactly how far it got.
@@ -35,6 +35,7 @@ in the user arguments.
 | **Quests and dialogue** | A quest starts, progresses, completes and turns in at its giver; an item quest tracks a pickup; a conversation runs to its end; every dialogue resource is structurally valid. |
 | **Travel** | All five areas load and build, and the camera can frame the player at both ends of each. |
 | **Boss** | The intro plays and closes; the boss spawns with boss-scale health; phase one blocks grabs; it enters phase two below half health and becomes grabbable; invulnerability expires; it can be defeated, is recorded, and pays out. |
+| **Touch controls** | The overlay appears in touch mode and listens for input; every button is on screen, none overlap, and the cluster stays compact in the bottom-right; tapping the light button attacks; dragging the stick moves the player; the stick keeps working while a button is held; releasing returns it home; a tap on empty screen falls through to the rest of the UI. |
 | **Save and load** | Writing, reading a summary, clearing with a new game, restoring level, money, moves, flags, inventory and area, and migrating a pre-versioned save. |
 
 ### Notes on how it is written
@@ -63,6 +64,9 @@ Worth recording, because they are the reason the harness exists:
 - An attack pressed immediately after a jump fell through to a grounded move that could not
   start, so it did nothing.
 - The screen fade could stall and leave the player behind a black rectangle.
+- Touch input was mapped through the screen transform twice, so on a phone no on-screen
+  button could be hit and the stick jumped into the corner. This one shipped: the original
+  tests only checked that the controls were *visible*, never that a touch reached them.
 
 ---
 
@@ -117,6 +121,10 @@ Things the automated passes do not cover, to run before a release:
 - [ ] Portrait orientation on a phone
 
 ---
+
+Note that the engine's own touch delivery cannot be exercised in a headless run, so the
+touch checks call `TouchControls._input` directly. That covers the hit-testing and stick
+maths, which is where the bug was; delivery itself is engine code.
 
 ## Running in CI
 

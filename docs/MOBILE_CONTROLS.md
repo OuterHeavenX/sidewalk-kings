@@ -23,15 +23,30 @@ The browser build is meant to be playable on a phone, not merely to load on one.
 ```
 
 - **Virtual stick, lower left.** Anywhere on the left half of the screen starts it, so
-  there is no need to find a fixed pad. Pushing to the edge is running.
-- **Five action buttons on an arc, lower right**, positioned so a thumb sweeps between
-  them: jump, light, heavy, special, grab.
+  there is no need to find a fixed pad. Pushing to the edge is running. It recentres under
+  the thumb while held and returns to its home position on release.
+- **Five action buttons in a diamond, lower right**, laid out the way a gamepad arranges
+  its face buttons: light nearest the thumb, heavy above, jump inboard, grab below, and
+  special on the diagonal. Spacing is at least one button width, so no two hit areas touch.
 - **Pause at top centre**, clear of the vitals on the left and the money on the right.
 
 The whole cluster scales with viewport height and every button is clamped inside the
 screen, so an unusual aspect ratio cannot push a control off the edge.
 
 ---
+
+## Coordinate space
+
+Touch positions arrive from the input system **already expressed in the viewport's 2D
+coordinate space**, which is the same space `Control.position` and `get_global_rect()` use.
+
+They must not be passed through `get_screen_transform()` again. Doing so divides every tap
+by the content scale factor, which on a phone shrinks the whole input plane toward the
+top-left: the action buttons become unhittable and the stick snaps into the corner over the
+HUD. This shipped in 0.1.0 and is fixed in 0.1.1.
+
+Hit tests use `get_global_rect()` rather than `position` + `size`, so nesting the controls
+inside another container cannot silently break them.
 
 ## Multitouch
 
@@ -150,9 +165,15 @@ broken.
 
 ---
 
+## Event consumption
+
+Touch events are consumed **only when a control actually takes them**. A tap on empty
+screen falls through, so tapping anywhere still advances a conversation. Earlier the
+control layer swallowed every touch, which made dialogue impossible to advance by tapping.
+
 ## Not yet done
 
 - No haptics. `Input.vibrate_handheld()` on hit would help and is not wired up.
 - Button positions are fixed. A left-handed layout option would be worth adding.
-- Touch input has been verified through the browser's touch emulation and the mobile
-  layout path, not on a physical phone.
+- The engine's own touch delivery path cannot be exercised headlessly, so the automated
+  test drives `TouchControls._input` directly. Real-device delivery is verified by hand.

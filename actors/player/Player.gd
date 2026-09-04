@@ -98,7 +98,9 @@ func _read_input(delta: float) -> void:
 		return
 
 	var dir := InputManager.get_move_vector()
-	if TouchControls.active:
+	# Touch takes over only while the stick is actually being held, so a device with both
+	# a touchscreen and a keyboard keeps working with either.
+	if TouchControls.active and TouchControls.move_vector != Vector2.ZERO:
 		dir = TouchControls.move_vector
 	if dir.length() > 1.0:
 		dir = dir.normalized()

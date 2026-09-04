@@ -107,6 +107,39 @@ See the [README](../README.md#known-issues).
 
 ---
 
+## [0.1.1] — 2026-09-04
+
+### Fixed
+
+- **Touch controls did nothing on a phone.** Touch positions arrive already in viewport
+  coordinates, but they were being passed through the screen transform a second time. On a
+  device that shrank every tap toward the top-left by the content scale factor, so the
+  action buttons could never be hit and the stick jumped into the corner over the HUD.
+- **The stick never returned home.** It recentred under the thumb on touch, as intended,
+  but stayed wherever it was released, which read as a broken control.
+- **Touches were swallowed even when nothing was hit**, so tapping could not advance
+  dialogue. Events are now consumed only when a control takes them.
+- Holding a touch button no longer suppresses keyboard movement on devices with both.
+
+### Changed
+
+- Action buttons moved from a wide arc to a compact gamepad-style diamond in the corner.
+  The arc pushed the top button nearly half way up the screen, out of thumb reach and over
+  the game. Spacing is now at least one button width so no two hit areas touch.
+- Buttons and the stick are larger (44 px and 50 px at the base scale) and slightly more
+  transparent at rest, so the street stays readable underneath.
+- Ground now has a solid backing band behind the tiles, and sky layers cover more vertical
+  space, so tall and portrait viewports no longer show empty bands above and below.
+
+### Added
+
+- Fifteen automated touch checks: layout on screen, no overlap, a compact cluster in the
+  corner, tapping a button attacking, dragging the stick moving the player, moving and
+  attacking at once, the stick returning home, and empty taps falling through. The suite is
+  now 125 checks.
+
+---
+
 ## Unreleased
 
 Nothing yet. See [ROADMAP.md](ROADMAP.md) for what Phase 2 opens with.

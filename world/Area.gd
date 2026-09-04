@@ -108,6 +108,20 @@ func _build_ground() -> void:
 	# Ground strips: repeating 16px tiles across the area width.
 	var tileset := _tex("res://assets/art/tilesets/city_tiles.png")
 	for strip in layout.get("ground", []):
+		# A "color" strip is a flat backing band drawn behind the tiles. Portrait and other
+		# tall viewports reveal more world than the tiled rows cover, and tiling that far
+		# down would cost thousands of sprites for something nobody looks at.
+		if strip.has("color"):
+			var col: Array = strip["color"]
+			var fill := ColorRect.new()
+			fill.color = Color(col[0], col[1], col[2])
+			fill.position = Vector2(float(strip.get("x", walk_min_x - 40.0)), float(strip.get("y", 0.0)))
+			fill.size = Vector2(float(strip.get("x2", walk_max_x + 40.0)) - fill.position.x,
+				float(strip.get("height", 200)))
+			fill.z_index = int(strip.get("z", -26))
+			fill.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			ground_root.add_child(fill)
+			continue
 		var tile_name := str(strip.get("tile", "sidewalk_a"))
 		var y := float(strip.get("y", 0.0))
 		var h := int(strip.get("height", 1))

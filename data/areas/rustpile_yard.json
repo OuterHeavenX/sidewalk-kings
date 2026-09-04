@@ -2,10 +2,10 @@
  "parallax": [
   {
    "texture": "res://assets/art/backgrounds/sky_industrial.png",
-   "y": -190.0,
+   "y": -430.0,
    "scroll": 0.02,
    "repeat": 4,
-   "scale": 1.0,
+   "scale": 2.2,
    "z": -95
   },
   {
@@ -37,6 +37,18 @@
  ],
  "ground": [
   {
+   "color": [
+    0.43,
+    0.42,
+    0.45
+   ],
+   "y": 18.0,
+   "height": 460,
+   "z": -26,
+   "x": -40,
+   "x2": 1540
+  },
+  {
    "tile": "dirt",
    "y": -46.0,
    "height": 3,
@@ -55,7 +67,7 @@
   {
    "tile": "concrete",
    "y": 18.0,
-   "height": 7,
+   "height": 9,
    "z": -22,
    "x": -40,
    "x2": 1540

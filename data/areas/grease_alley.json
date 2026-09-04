@@ -2,10 +2,10 @@
  "parallax": [
   {
    "texture": "res://assets/art/backgrounds/sky_alley.png",
-   "y": -190.0,
+   "y": -430.0,
    "scroll": 0.02,
    "repeat": 4,
-   "scale": 1.0,
+   "scale": 2.2,
    "z": -95
   },
   {
@@ -23,6 +23,18 @@
   }
  ],
  "ground": [
+  {
+   "color": [
+    0.26,
+    0.25,
+    0.29
+   ],
+   "y": 18.0,
+   "height": 460,
+   "z": -26,
+   "x": -40,
+   "x2": 1440
+  },
   {
    "tile": "concrete",
    "y": -46.0,
@@ -42,7 +54,7 @@
   {
    "tile": "asphalt_a",
    "y": 18.0,
-   "height": 7,
+   "height": 9,
    "z": -22,
    "x": -40,
    "x2": 1440,

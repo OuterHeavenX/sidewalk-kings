@@ -8,8 +8,10 @@ static var move_vector: Vector2 = Vector2.ZERO
 static var sprinting: bool = false
 
 const DEADZONE := 0.18
-const STICK_RADIUS := 46.0
-const BTN := 38.0
+const STICK_RADIUS := 50.0
+const BTN := 44.0
+## Resting transparency for the on-screen buttons; they sit on top of the game.
+const IDLE_ALPHA := 0.62
 
 @onready var stick_base: TextureRect = $Stick/Base
 @onready var stick_knob: TextureRect = $Stick/Knob
@@ -19,7 +21,7 @@ var _stick_touch: int = -1
 var _stick_origin: Vector2 = Vector2.ZERO
 var _button_touch: Dictionary = {}      # touch index -> action name
 var _buttons: Array[Dictionary] = []    # {name, action, node}
-var _safe: Rect2 = Rect2()
+var _stick_home: Vector2 = Vector2.ZERO
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -71,10 +73,10 @@ func _reset() -> void:
 	_button_touch.clear()
 	move_vector = Vector2.ZERO
 	sprinting = false
-	if stick_knob:
-		stick_knob.position = _knob_home()
+	if stick_base and stick_knob:
+		_recentre_stick()
 	for b in _buttons:
-		b.node.modulate = Color(1, 1, 1, 0.78)
+		b.node.modulate = Color(1, 1, 1, IDLE_ALPHA)
 
 func _knob_home() -> Vector2:
 	return stick_base.position + stick_base.size * 0.5 - stick_knob.size * 0.5
@@ -118,20 +120,23 @@ func _apply_safe_area() -> void:
 	var sb_size := Vector2(stick_r * 2.0, stick_r * 2.0)
 	stick_base.custom_minimum_size = sb_size
 	stick_base.size = sb_size
-	stick_base.position = Vector2(pad_l + 6.0, vp.y - pad_b - sb_size.y - 6.0)
+	_stick_home = Vector2(pad_l + 6.0, vp.y - pad_b - sb_size.y - 6.0)
+	stick_base.position = _stick_home
 	stick_knob.custom_minimum_size = Vector2(stick_r, stick_r)
 	stick_knob.size = Vector2(stick_r, stick_r)
 	stick_knob.position = _knob_home()
-	# Action buttons sit on an arc around the bottom-right corner, thumb-reachable and
-	# always fully inside the viewport.
-	var centre := Vector2(vp.x - pad_r - btn * 2.3, vp.y - pad_b - btn * 1.55)
-	var radius := btn * 1.5
-	var angles := {
-		"jump": -10.0,
-		"attack_light": -70.0,
-		"attack_heavy": -130.0,
-		"special": -180.0,
-		"grab": 55.0,
+	# Action buttons form a compact diamond in the bottom-right corner, the way a gamepad
+	# lays out its face buttons. A wide arc pushed the top button almost half way up the
+	# screen, which is neither reachable nor readable over the game.
+	var centre := Vector2(vp.x - pad_r - btn * 1.6, vp.y - pad_b - btn * 1.6)
+	# Spacing >= one button width, so no two hit rectangles touch even diagonally.
+	var d := btn * 1.08
+	var offsets := {
+		"attack_light": Vector2(1.0, 0.0),     # nearest the thumb: the button used most
+		"attack_heavy": Vector2(0.0, -1.0),
+		"jump": Vector2(-1.0, 0.0),
+		"grab": Vector2(0.0, 1.0),
+		"special": Vector2(-1.5, -1.5),        # diagonally clear of both jump and heavy
 	}
 	for b in _buttons:
 		var act: String = b.action
@@ -144,66 +149,73 @@ func _apply_safe_area() -> void:
 			continue
 		node.custom_minimum_size = Vector2(btn, btn)
 		node.size = Vector2(btn, btn)
-		var ang: float = deg_to_rad(float(angles.get(act, -90.0)))
-		var pos := centre + Vector2(cos(ang), sin(ang)) * radius - Vector2(btn, btn) * 0.5
+		var off: Vector2 = offsets.get(act, Vector2(1.0, 0.0))
+		var pos := centre + off * d - Vector2(btn, btn) * 0.5
 		# Never let a button leave the screen on an unusual aspect ratio.
 		pos.x = clampf(pos.x, 4.0, vp.x - btn - 4.0)
 		pos.y = clampf(pos.y, 4.0, vp.y - btn - 4.0)
 		node.position = pos
 
+## Touch positions arrive from the input system already expressed in this viewport's
+## 2D coordinate space, which is the same space Control positions live in. They must NOT
+## be run through the screen transform again: on a phone that shrinks every tap toward the
+## top-left by the content scale factor, so nothing can ever be hit.
+##
+## Events are only consumed when a control actually takes them, so a tap on empty screen
+## still reaches the dialogue box to advance a conversation.
 func _input(event: InputEvent) -> void:
-	if event is InputEventScreenTouch:
-		if event.pressed:
-			_touch_down(event.index, event.position)
-		else:
-			_touch_up(event.index)
-		get_viewport().set_input_as_handled()
-	elif event is InputEventScreenDrag:
-		_touch_move(event.index, event.position)
-
-func _screen_to_ui(p: Vector2) -> Vector2:
-	var vp := get_viewport_rect().size
-	var win := Vector2(DisplayServer.window_get_size())
-	if win.x <= 0 or win.y <= 0:
-		return p
-	# The viewport is stretched; map window pixels into UI space.
-	return get_viewport().get_screen_transform().affine_inverse() * p
-
-func _touch_down(index: int, pos: Vector2) -> void:
 	if not visible:
 		return
-	var p := _screen_to_ui(pos)
+	if event is InputEventScreenTouch:
+		var used := _touch_down(event.index, event.position) if event.pressed else _touch_up(event.index)
+		if used:
+			get_viewport().set_input_as_handled()
+	elif event is InputEventScreenDrag:
+		if event.index == _stick_touch:
+			_update_stick(event.position)
+			get_viewport().set_input_as_handled()
+
+func _touch_down(index: int, p: Vector2) -> bool:
 	for b in _buttons:
 		var node: TextureRect = b.node
-		var r := Rect2(node.position, node.size).grow(6.0)
-		if r.has_point(p):
+		# get_global_rect() accounts for the parent Control offsets, so this stays correct
+		# no matter how the layout is nested.
+		if node.get_global_rect().grow(8.0).has_point(p):
 			_button_touch[index] = b.action
 			node.modulate = Color(1.35, 1.35, 1.35, 1.0)
 			_press(b.action, true)
-			return
-	# Anything on the left half becomes the stick
+			return true
+	# Anything on the left half drives the stick, so the thumb never has to find a target.
 	if p.x < get_viewport_rect().size.x * 0.5 and _stick_touch == -1:
 		_stick_touch = index
 		_stick_origin = p
 		_update_stick(p)
+		return true
+	return false
 
-func _touch_move(index: int, pos: Vector2) -> void:
-	if index == _stick_touch:
-		_update_stick(_screen_to_ui(pos))
-
-func _touch_up(index: int) -> void:
+func _touch_up(index: int) -> bool:
+	var used := false
 	if index == _stick_touch:
 		_stick_touch = -1
 		move_vector = Vector2.ZERO
 		sprinting = false
-		stick_knob.position = _knob_home()
+		# Put the stick back where it lives. Without this it stays wherever it was last
+		# dragged and reads as a broken control.
+		_recentre_stick()
+		used = true
 	if _button_touch.has(index):
 		var act: String = _button_touch[index]
 		_button_touch.erase(index)
 		for b in _buttons:
 			if b.action == act:
-				b.node.modulate = Color(1, 1, 1, 0.78)
+				b.node.modulate = Color(1, 1, 1, IDLE_ALPHA)
 		_press(act, false)
+		used = true
+	return used
+
+func _recentre_stick() -> void:
+	stick_base.position = _stick_home
+	stick_knob.position = _knob_home()
 
 func _update_stick(p: Vector2) -> void:
 	var delta := p - _stick_origin

@@ -29,7 +29,7 @@ PROP = "res://assets/art/props/"
 LANE_MIN = 34.0
 LANE_MAX = 74.0
 SIDEWALK_TOP = 18.0
-SIDEWALK_ROWS = 7
+SIDEWALK_ROWS = 9
 CURB_TOP = 2.0
 ROAD_TOP = -46.0
 BUILD_BASE = 2.0      # buildings rest here, behind the road
@@ -68,6 +68,16 @@ def prop(pid, x, y=None, **kw):
     return d
 
 
+def fill(color, y, height=420, x=None, x2=None, z=-26):
+    """A flat backing band behind the tiles, so tall screens never show empty space."""
+    d = {"color": list(color), "y": y, "height": height, "z": z}
+    if x is not None:
+        d["x"] = x
+    if x2 is not None:
+        d["x2"] = x2
+    return d
+
+
 def ground(tile, y, height=1, x=None, x2=None, alt=None, z=-20):
     d = {"tile": tile, "y": y, "height": height, "z": z}
     if x is not None:
@@ -94,6 +104,7 @@ def build(area_id, width, layout):
 def street_ground(width, main="sidewalk_a", alt="sidewalk_b", road="asphalt_a"):
     """Standard street: road at the back, a curb line, then the walkable sidewalk."""
     return [
+        fill((0.60, 0.59, 0.57), SIDEWALK_TOP, 460, -40, width + 40),
         ground(road, ROAD_TOP, 3, -40, width + 40, alt="asphalt_b", z=-24),
         ground("curb", CURB_TOP, 1, -40, width + 40, z=-23),
         ground(main, SIDEWALK_TOP, SIDEWALK_ROWS, -40, width + 40, alt=alt, z=-22),
@@ -121,7 +132,7 @@ def lamp_row(width, spacing=170, start=60):
 W1 = 1500
 ferry = {
     "parallax": [
-        sky("sky_dusk", -190.0, 0.02, 4, 1.0, z=-95),
+        sky("sky_dusk", -430.0, 0.02, 4, 2.2, z=-95),
         sky("river", 20.0, 0.12, 4, 1.0, [0.8, 0.85, 1.0], z=-92),
         sky("skyline_far", -110.0, 0.25, 4, 1.0, [0.62, 0.6, 0.82], z=-90),
         sky("skyline_near", -80.0, 0.5, 4, 1.0, [0.78, 0.74, 0.92], z=-85),
@@ -214,7 +225,7 @@ build("ferry_row", W1, ferry)
 W2 = 1600
 market = {
     "parallax": [
-        sky("sky_day", -190.0, 0.02, 4, 1.0, [0.9, 0.85, 0.95], z=-95),
+        sky("sky_day", -430.0, 0.02, 4, 2.2, [0.9, 0.85, 0.95], z=-95),
         sky("skyline_far", -120.0, 0.25, 4, 1.0, [0.66, 0.64, 0.84], z=-90),
         sky("skyline_near", -86.0, 0.5, 4, 1.0, [0.82, 0.78, 0.94], z=-85),
     ],
@@ -311,10 +322,11 @@ build("lantern_market", W2, market)
 W3 = 1400
 alley = {
     "parallax": [
-        sky("sky_alley", -190.0, 0.02, 4, 1.0, z=-95),
+        sky("sky_alley", -430.0, 0.02, 4, 2.2, z=-95),
         sky("skyline_near", -70.0, 0.35, 4, 1.0, [0.45, 0.42, 0.58], z=-90),
     ],
     "ground": [
+        fill((0.26, 0.25, 0.29), SIDEWALK_TOP, 460, -40, W3 + 40),
         ground("concrete", ROAD_TOP, 3, -40, W3 + 40, z=-24),
         ground("curb", CURB_TOP, 1, -40, W3 + 40, z=-23),
         ground("asphalt_a", SIDEWALK_TOP, SIDEWALK_ROWS, -40, W3 + 40, alt="asphalt_b", z=-22),
@@ -400,11 +412,12 @@ build("grease_alley", W3, alley)
 W4 = 1500
 yard = {
     "parallax": [
-        sky("sky_industrial", -190.0, 0.02, 4, 1.0, z=-95),
+        sky("sky_industrial", -430.0, 0.02, 4, 2.2, z=-95),
         sky("skyline_industrial", -96.0, 0.3, 4, 1.0, [0.6, 0.56, 0.6], z=-90),
         sky("skyline_near", -74.0, 0.55, 4, 1.0, [0.5, 0.47, 0.55], z=-85),
     ],
     "ground": [
+        fill((0.43, 0.42, 0.45), SIDEWALK_TOP, 460, -40, W4 + 40),
         ground("dirt", ROAD_TOP, 3, -40, W4 + 40, z=-24),
         ground("curb", CURB_TOP, 1, -40, W4 + 40, z=-23),
         ground("concrete", SIDEWALK_TOP, SIDEWALK_ROWS, -40, W4 + 40, z=-22),
@@ -478,9 +491,10 @@ build("rustpile_yard", W4, yard)
 W5 = 1000
 hideout = {
     "parallax": [
-        {"texture": _tex_path("laundromat_wall"), "y": -196.0, "scroll": 0.8, "repeat": 5, "scale": 1.0, "z": -90},
+        {"texture": _tex_path("laundromat_wall"), "y": -396.0, "scroll": 0.8, "repeat": 5, "scale": 2.0, "z": -90},
     ],
     "ground": [
+        fill((0.63, 0.60, 0.55), SIDEWALK_TOP - 16.0, 460, -40, W5 + 40),
         ground("tile_floor", SIDEWALK_TOP - 16.0, SIDEWALK_ROWS + 1, -40, W5 + 40, z=-22),
     ],
     "scenery": [

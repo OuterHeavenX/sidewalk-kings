@@ -2,18 +2,30 @@
  "parallax": [
   {
    "texture": "res://assets/art/backgrounds/laundromat_wall.png",
-   "y": -196.0,
+   "y": -396.0,
    "scroll": 0.8,
    "repeat": 5,
-   "scale": 1.0,
+   "scale": 2.0,
    "z": -90
   }
  ],
  "ground": [
   {
+   "color": [
+    0.63,
+    0.6,
+    0.55
+   ],
+   "y": 2.0,
+   "height": 460,
+   "z": -26,
+   "x": -40,
+   "x2": 1040
+  },
+  {
    "tile": "tile_floor",
    "y": 2.0,
-   "height": 8,
+   "height": 10,
    "z": -22,
    "x": -40,
    "x2": 1040

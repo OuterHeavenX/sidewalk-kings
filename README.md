@@ -9,7 +9,7 @@ The money is folded very neatly, which turns out to matter.
 Everything in this repository is original: characters, places, dialogue, artwork,
 animation, music, sound effects and level layouts. Nothing is taken from an existing game.
 
-**Version:** 0.1.0 · **Engine:** Godot 4.7.2 · **Language:** GDScript
+**Version:** 0.1.1 · **Engine:** Godot 4.7.2 · **Language:** GDScript
 
 **▶ [Play it in your browser](https://outerheavenx.github.io/sidewalk-kings/)**
 
@@ -168,7 +168,7 @@ Details, including deployment to GitHub Pages and Cloudflare Pages, are in
 godot --headless --path . -- --smoke
 ```
 
-Runs 107 automated checks against a real session: content integrity, movement, every
+Runs 125 automated checks against a real session: content integrity, movement, every
 attack, the combo chain, grabs and throws, enemy AI, weapons and durability, pickups,
 levelling, every shop, quests, dialogue, travel between all five areas, camera framing,
 the boss fight through both phases, and save/load with migration. Exit code is non-zero

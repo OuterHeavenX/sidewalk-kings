@@ -2,10 +2,10 @@
  "parallax": [
   {
    "texture": "res://assets/art/backgrounds/sky_day.png",
-   "y": -190.0,
+   "y": -430.0,
    "scroll": 0.02,
    "repeat": 4,
-   "scale": 1.0,
+   "scale": 2.2,
    "z": -95,
    "modulate": [
     0.9,
@@ -42,6 +42,18 @@
  ],
  "ground": [
   {
+   "color": [
+    0.6,
+    0.59,
+    0.57
+   ],
+   "y": 18.0,
+   "height": 460,
+   "z": -26,
+   "x": -40,
+   "x2": 1640
+  },
+  {
    "tile": "asphalt_a",
    "y": -46.0,
    "height": 3,
@@ -61,7 +73,7 @@
   {
    "tile": "sidewalk_a",
    "y": 18.0,
-   "height": 7,
+   "height": 9,
    "z": -22,
    "x": -40,
    "x2": 1640,

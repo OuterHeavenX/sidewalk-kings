@@ -58,6 +58,7 @@ func run() -> void:
 	await test_quests_and_dialogue()
 	await test_area_travel()
 	await test_boss()
+	await test_touch_controls()
 	await test_save_load()
 
 # ---------------------------------------------------------------- content
@@ -775,6 +776,158 @@ func test_boss() -> void:
 	check("boss recorded as defeated", "big_starch" in GameManager.player_data.bosses_defeated)
 	check("boss awards money", GameManager.player_data.money > money0, "$%d -> $%d" % [money0, GameManager.player_data.money])
 	GameManager.clear_time_effects()
+
+# ---------------------------------------------------------------- touch controls
+## Drive the on-screen controls with synthetic touch events, exactly as a phone would.
+## Checking only that they are *visible* is what let a coordinate bug ship: every tap was
+## being mapped through the screen transform a second time, so nothing could be hit.
+## Synthetic touches are handed straight to the control's own _input. A headless run has
+## no real input device, so the engine's delivery path cannot be exercised; what matters
+## here is the hit-testing and stick maths inside TouchControls, which is where the
+## coordinate bug lived. That the handler is actually wired up is asserted separately.
+var _touch_target: Node = null
+
+func touch(index: int, pos: Vector2, pressed: bool) -> void:
+	var ev := InputEventScreenTouch.new()
+	ev.index = index
+	ev.position = pos
+	ev.pressed = pressed
+	_touch_target._input(ev)
+	await frames(2)
+
+func drag(index: int, pos: Vector2) -> void:
+	var ev := InputEventScreenDrag.new()
+	ev.index = index
+	ev.position = pos
+	_touch_target._input(ev)
+	await frames(2)
+
+func test_touch_controls() -> void:
+	log_line("
+-- Touch controls --")
+	await clear_stage(700.0)
+	var game := get_tree().current_scene
+	var tc = game.get_node_or_null("UI/TouchControlsHost/TouchControls")
+	check("touch controls exist in the game scene", tc != null)
+	if tc == null:
+		return
+	_touch_target = tc
+	InputManager.set_touch_mode(true)
+	await frames(4)
+	check("touch controls become visible in touch mode", tc.visible and TouchControls.active)
+	check("touch controls are listening for input", tc.is_processing_input())
+
+	var vp := get_viewport().get_visible_rect().size
+	var inside := true
+	for b in tc._buttons:
+		var r: Rect2 = b.node.get_global_rect()
+		if r.position.x < 0.0 or r.position.y < 0.0 or r.end.x > vp.x or r.end.y > vp.y:
+			inside = false
+	check("every button sits fully on screen", inside, "viewport %s" % str(vp))
+
+	# Buttons must not overlap each other, or a thumb hits two at once.
+	var overlap := ""
+	for i in tc._buttons.size():
+		for j in range(i + 1, tc._buttons.size()):
+			var a: Rect2 = tc._buttons[i].node.get_global_rect()
+			var b2: Rect2 = tc._buttons[j].node.get_global_rect()
+			if a.intersects(b2):
+				overlap = "%s overlaps %s" % [tc._buttons[i].action, tc._buttons[j].action]
+	check("buttons do not overlap", overlap == "", overlap)
+
+	# The action cluster must stay compact and hug the bottom-right corner, rather than
+	# sprawling up and across the screen where a thumb cannot reach and the game is hidden.
+	var cluster := Rect2()
+	var first := true
+	for b in tc._buttons:
+		if b.action == "pause":
+			continue
+		var r: Rect2 = b.node.get_global_rect()
+		cluster = r if first else cluster.merge(r)
+		first = false
+	check("the action cluster is compact",
+		cluster.size.x <= vp.x * 0.5 and cluster.size.y <= vp.y * 0.62,
+		"%.0fx%.0f in a %.0fx%.0f viewport" % [cluster.size.x, cluster.size.y, vp.x, vp.y])
+	check("the action cluster hugs the bottom-right corner",
+		cluster.end.x >= vp.x * 0.9 and cluster.end.y >= vp.y * 0.85,
+		"ends at %s" % str(cluster.end))
+	check("the stick sits in the lower-left", tc._stick_home.x < vp.x * 0.3 and tc._stick_home.y > vp.y * 0.4,
+		"home %s" % str(tc._stick_home))
+
+	# --- The light attack button must actually attack ---
+	var player := p()
+	var e := spawn_enemy("rust_heavy", 20.0)
+	await frames(4)
+	e.global_position.y = player.global_position.y
+	e.ai_state = EnemyBase.AI.WAIT
+	e.think_timer = 10.0
+	player.global_position = e.global_position - Vector2(18, 0)
+	player.facing = 1
+	var hp0: int = e.hp
+	var light_node: TextureRect = null
+	for b in tc._buttons:
+		if b.action == "attack_light":
+			light_node = b.node
+	check("a light attack button exists", light_node != null)
+	if light_node:
+		await touch(0, light_node.get_global_rect().get_center(), true)
+		await frames(4)
+		await touch(0, light_node.get_global_rect().get_center(), false)
+		await frames(20)
+		check("tapping the light button attacks", e.hp < hp0, "%d -> %d" % [hp0, e.hp])
+
+	# --- The stick must move the player ---
+	await clear_stage(700.0)
+	player = p()
+	var home: Vector2 = tc._stick_home
+	var start_x: float = player.global_position.x
+	var origin: Vector2 = home + Vector2(tc.stick_base.size) * 0.5
+	await touch(1, origin, true)
+	await drag(1, origin + Vector2(tc.stick_base.size.x * 0.5, 0))
+	await frames(20)
+	check("dragging the stick reports movement", TouchControls.move_vector.x > 0.5,
+		"vector %s" % str(TouchControls.move_vector))
+	check("dragging the stick moves the player", player.global_position.x > start_x + 10.0,
+		"moved %.1f" % (player.global_position.x - start_x))
+	await touch(1, origin + Vector2(tc.stick_base.size.x * 0.5, 0), false)
+	await frames(4)
+	check("releasing the stick stops movement", TouchControls.move_vector == Vector2.ZERO)
+	check("releasing returns the stick to its home position", tc.stick_base.position.is_equal_approx(home),
+		"at %s, home %s" % [str(tc.stick_base.position), str(home)])
+
+	# --- Moving and attacking at once ---
+	var e2 := spawn_enemy("rust_heavy", 26.0)
+	await frames(4)
+	e2.global_position.y = p().global_position.y
+	e2.ai_state = EnemyBase.AI.WAIT
+	e2.think_timer = 10.0
+	p().global_position = e2.global_position - Vector2(18, 0)
+	p().facing = 1
+	var hp1: int = e2.hp
+	await touch(1, origin, true)
+	await drag(1, origin + Vector2(tc.stick_base.size.x * 0.4, 0))
+	if light_node:
+		await touch(2, light_node.get_global_rect().get_center(), true)
+	await frames(6)
+	check("stick keeps working while a button is held", TouchControls.move_vector.x > 0.3,
+		"vector %s" % str(TouchControls.move_vector))
+	if light_node:
+		await touch(2, light_node.get_global_rect().get_center(), false)
+	await frames(20)
+	check("attacking while moving still lands", e2.hp < hp1, "%d -> %d" % [hp1, e2.hp])
+	await touch(1, origin, false)
+	await frames(4)
+
+	# --- A tap on empty screen must not be swallowed ---
+	var empty := Vector2(vp.x * 0.55, vp.y * 0.25)
+	var hit_something: bool = tc._touch_down(9, empty)
+	check("a tap on empty screen is left for the rest of the UI", not hit_something,
+		"at %s" % str(empty))
+
+	InputManager.set_touch_mode(false)
+	await frames(4)
+	check("touch controls hide again when touch mode is off", not tc.visible)
+	await clear_stage(700.0)
 
 # ---------------------------------------------------------------- save / load
 func test_save_load() -> void:
