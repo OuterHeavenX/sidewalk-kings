@@ -228,6 +228,13 @@
    "scale": 1.0
   },
   {
+   "texture": "res://assets/art/props/laundry_line.png",
+   "x": 640,
+   "y": -126.0,
+   "z": -28,
+   "scale": 1.0
+  },
+  {
    "texture": "res://assets/art/props/fence.png",
    "x": 60,
    "y": -36.0,
@@ -459,6 +466,18 @@
    "label": "Pops' Gear",
    "required_flag": "met_pops",
    "locked": "Pops hasn't decided if he likes you yet."
+  },
+  {
+   "id": "to_roof",
+   "to": "rooftop_route",
+   "spawn": "from_alley",
+   "x": 620,
+   "y": 32.0,
+   "label": "Fire Escape",
+   "required_flag": "metro_open",
+   "locked": "The ladder is folded up out of reach. No reason to want it yet.",
+   "w": 24,
+   "h": 40
   }
  ],
  "spawns": [
@@ -476,6 +495,11 @@
    "id": "from_yard",
    "x": 1330,
    "y": 58
+  },
+  {
+   "id": "from_roof",
+   "x": 600,
+   "y": 60
   }
  ],
  "encounters": [

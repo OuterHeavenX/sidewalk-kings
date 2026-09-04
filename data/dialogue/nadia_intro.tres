@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DialogueData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/DialogueData.gd" id="1_nadia_intro"]
+
+[resource]
+script = ExtResource("1_nadia_intro")
+id = "nadia_intro"
+lines = Array[Dictionary]([{"name": "Nadia", "text": "Shop is open. Shop is always open. There is nobody else to open it.", "portrait": "nadia"}, {"name": "Kip", "text": "Quiet block.", "portrait": "kip"}, {"name": "Nadia", "text": "It was not. Then the Commuters started riding the line down here and stopping.", "portrait": "nadia"}, {"name": "Kip", "text": "Stopping is what trains do.", "portrait": "kip"}, {"name": "Nadia", "text": "These ones stop and never get back on. Six of them, sat on my wall, every day.", "portrait": "nadia", "set_flag": "met_nadia", "start_quest": "q_commuters", "shop": "nadia_store", "end": true}])
+pause_game = true
+once_flag = ""

@@ -4,13 +4,24 @@ Riverbend is a connected city, not a stage select. You walk off the edge of one 
 onto the next.
 
 ```
+CHAPTER ONE
 Ferry Row ──► Lantern Market ──► Grease Alley ──► Rustpile Yard ──► Starch & Sons
  (river)        (shops)           (weapons)         (heavies)          (boss)
    1500px         1600px            1400px            1500px            1000px
+                    │                  │
+CHAPTER TWO         ▼                  ▼
+             Metro Platform      Rooftop Route
+              (dojo, locker)     (the long way)
+                 1300px              1200px
+                    │                  │
+                    └──► Bellwater Block ◄─┘
+                        (shop, Commuters)
+                             1500px
 ```
 
-Every connection is two-way except the last: the laundromat door only opens once the yard
-is clear.
+Every connection is two-way. Two of them are gated: the laundromat door opens once the
+yard is clear, and both routes into chapter two open when Dez points out that the chain on
+the metro gate has never actually joined either side of it.
 
 ---
 
@@ -67,6 +78,34 @@ Interior. Always open, always empty, always immaculate.
 - **Notable:** an attendant who insists the shop is closed while the sign says open, mops
   and a chair to fight with, and the only boss in the slice.
 
+### 6. Metro Platform — *Metro Line*
+
+Interior. A station that is always open, never busy, and mopped by somebody.
+
+- **Gang:** the Commuters. Straphangers and a Sprinter first, then a mixed platform fight
+  with Buskers throwing from range.
+- **Notable:** Bex's dojo, a bank of lockers containing the only thing that advances
+  Tuesday's Bag, a guard who has written SUSPENDED on the board in a very nice hand, and
+  turnstiles that are solid, so a fight here has furniture in it.
+
+### 7. Rooftop Route — *Above Riverbend*
+
+Aerials, vents and washing lines. Reached by the fire escape out of Grease Alley.
+
+- **Gang:** the Commuters. One ambush of Sprinters, because a roof is a bad place to be
+  rushed.
+- **Notable:** no shops and no safety. The kid who sends you up here is the only person on
+  it. Vents are solid, so the walkable lane is genuinely narrow.
+
+### 8. Bellwater Block — *Metro Line*
+
+Forty flats and one shop, at the far end of the line.
+
+- **Gang:** the Commuters. A crowd on the wall outside the shop, then The Conductor with
+  support: armoured, ungrabbable, and telegraphed.
+- **Notable:** Nadia's Corner, the second general store, and the only place both chapter
+  two routes lead.
+
 ---
 
 ## How an area is built
@@ -118,7 +157,14 @@ entrances need an interact press, and show a prompt when you are near.
 
 Each door names a destination area and a **spawn id**, so arriving from the west puts you at
 the west entrance. Some doors carry a `required_flag`, which is how the laundromat stays
-shut until the yard is cleared, with an in-character message rather than a locked-door beep.
+shut until the yard is cleared, and how both chapter two routes stay shut until the story
+opens them, with an in-character message rather than a locked-door beep.
+
+A door naming a spawn the destination does not define is not an error: the player is
+dropped at that area's default spawn, which usually reads as arriving at the wrong end of
+the street. The smoke suite checks every door against the destination's spawn list, checks
+that every door has a return door, and checks that the map screen's connections match the
+doors that actually exist.
 
 Travel goes through `SceneManager.change_area()`: fade out, tear down the old area, build
 the new one, place the player at the named spawn, fade in.

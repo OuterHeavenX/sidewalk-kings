@@ -1,0 +1,463 @@
+{
+ "parallax": [
+  {
+   "texture": "res://assets/art/backgrounds/sky_day.png",
+   "y": -430.0,
+   "scroll": 0.02,
+   "repeat": 4,
+   "scale": 2.2,
+   "z": -95,
+   "modulate": [
+    0.82,
+    0.82,
+    0.94
+   ]
+  },
+  {
+   "texture": "res://assets/art/backgrounds/skyline_far.png",
+   "y": -120.0,
+   "scroll": 0.25,
+   "repeat": 4,
+   "scale": 1.0,
+   "z": -90,
+   "modulate": [
+    0.6,
+    0.6,
+    0.8
+   ]
+  },
+  {
+   "texture": "res://assets/art/backgrounds/skyline_near.png",
+   "y": -86.0,
+   "scroll": 0.5,
+   "repeat": 4,
+   "scale": 1.0,
+   "z": -85,
+   "modulate": [
+    0.76,
+    0.76,
+    0.9
+   ]
+  }
+ ],
+ "ground": [
+  {
+   "color": [
+    0.6,
+    0.59,
+    0.57
+   ],
+   "y": 18.0,
+   "height": 460,
+   "z": -26,
+   "x": -40,
+   "x2": 1540
+  },
+  {
+   "tile": "asphalt_a",
+   "y": -46.0,
+   "height": 3,
+   "z": -24,
+   "x": -40,
+   "x2": 1540,
+   "alt": "asphalt_b"
+  },
+  {
+   "tile": "curb",
+   "y": 2.0,
+   "height": 1,
+   "z": -23,
+   "x": -40,
+   "x2": 1540
+  },
+  {
+   "tile": "sidewalk_a",
+   "y": 18.0,
+   "height": 9,
+   "z": -22,
+   "x": -40,
+   "x2": 1540,
+   "alt": "sidewalk_b"
+  }
+ ],
+ "scenery": [
+  {
+   "texture": "res://assets/art/backgrounds/apartment_b.png",
+   "x": 30,
+   "y": -274.0,
+   "z": -30,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/backgrounds/apartment_a.png",
+   "x": 170,
+   "y": -254.0,
+   "z": -30,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/backgrounds/apartment_c.png",
+   "x": 300,
+   "y": -234.0,
+   "z": -30,
+   "scale": 1.0,
+   "flip": true
+  },
+  {
+   "texture": "res://assets/art/backgrounds/shop_corner.png",
+   "x": 440,
+   "y": -194.0,
+   "z": -30,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/backgrounds/apartment_b.png",
+   "x": 600,
+   "y": -274.0,
+   "z": -30,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/backgrounds/apartment_a.png",
+   "x": 740,
+   "y": -254.0,
+   "z": -30,
+   "scale": 1.0,
+   "flip": true
+  },
+  {
+   "texture": "res://assets/art/backgrounds/apartment_c.png",
+   "x": 880,
+   "y": -234.0,
+   "z": -30,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/backgrounds/apartment_b.png",
+   "x": 1010,
+   "y": -274.0,
+   "z": -30,
+   "scale": 1.0,
+   "flip": true
+  },
+  {
+   "texture": "res://assets/art/backgrounds/warehouse.png",
+   "x": 1150,
+   "y": -148.0,
+   "z": -30,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/backgrounds/apartment_a.png",
+   "x": 1360,
+   "y": -254.0,
+   "z": -30,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/props/awning_green.png",
+   "x": 444,
+   "y": -64.0,
+   "z": -28,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/props/graffiti_b.png",
+   "x": 700,
+   "y": -60.0,
+   "z": -27,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/props/laundry_line.png",
+   "x": 250,
+   "y": -118.0,
+   "z": -28,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/props/laundry_line.png",
+   "x": 950,
+   "y": -124.0,
+   "z": -28,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/props/satellite_dish.png",
+   "x": 1058,
+   "y": -132.0,
+   "z": -28,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/props/car_blue.png",
+   "x": 620,
+   "y": -36.0,
+   "z": -21,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/props/fence.png",
+   "x": 1440,
+   "y": -36.0,
+   "z": -21,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/props/streetlight.png",
+   "x": 110,
+   "y": -78.0,
+   "z": -8,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/props/streetlight.png",
+   "x": 310,
+   "y": -78.0,
+   "z": -8,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/props/streetlight.png",
+   "x": 510,
+   "y": -78.0,
+   "z": -8,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/props/streetlight.png",
+   "x": 710,
+   "y": -78.0,
+   "z": -8,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/props/streetlight.png",
+   "x": 910,
+   "y": -78.0,
+   "z": -8,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/props/streetlight.png",
+   "x": 1110,
+   "y": -78.0,
+   "z": -8,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/props/streetlight.png",
+   "x": 1310,
+   "y": -78.0,
+   "z": -8,
+   "scale": 1.0
+  }
+ ],
+ "props": [
+  {
+   "id": "planter",
+   "x": 120,
+   "y": 70.0
+  },
+  {
+   "id": "bench",
+   "x": 220,
+   "y": 32.0
+  },
+  {
+   "id": "trashcan",
+   "x": 320,
+   "y": 76.0,
+   "breakable": true,
+   "hp": 10,
+   "money": 14,
+   "contains": "bellwater_stew"
+  },
+  {
+   "id": "planter",
+   "x": 400,
+   "y": 70.0
+  },
+  {
+   "id": "bin_bags",
+   "x": 520,
+   "y": 76.0
+  },
+  {
+   "id": "crate",
+   "x": 600,
+   "y": 76.0,
+   "breakable": true,
+   "hp": 8,
+   "money": 18
+  },
+  {
+   "id": "hydrant",
+   "x": 680,
+   "y": 76.0
+  },
+  {
+   "id": "bench",
+   "x": 780,
+   "y": 32.0
+  },
+  {
+   "id": "trashcan",
+   "x": 860,
+   "y": 76.0,
+   "breakable": true,
+   "hp": 10,
+   "contains": "platform_coffee"
+  },
+  {
+   "id": "puddle",
+   "x": 940,
+   "y": 72.0
+  },
+  {
+   "id": "planter",
+   "x": 1030,
+   "y": 70.0
+  },
+  {
+   "id": "crate",
+   "x": 1120,
+   "y": 76.0,
+   "breakable": true,
+   "hp": 8,
+   "contains": "weapon:chair"
+  },
+  {
+   "id": "cone",
+   "x": 1220,
+   "y": 76.0
+  },
+  {
+   "id": "trashcan",
+   "x": 1300,
+   "y": 76.0,
+   "breakable": true,
+   "hp": 10,
+   "money": 28
+  },
+  {
+   "id": "bin_bags",
+   "x": 1400,
+   "y": 76.0
+  }
+ ],
+ "weapons": [
+  {
+   "id": "bat",
+   "x": 560
+  },
+  {
+   "id": "bottle",
+   "x": 900
+  },
+  {
+   "id": "pipe",
+   "x": 1260
+  }
+ ],
+ "npcs": [
+  {
+   "id": "nadia",
+   "name": "Nadia",
+   "character": "nadia",
+   "x": 470,
+   "y": 36.0,
+   "conditional": [
+    {
+     "dialogue": "nadia_done",
+     "if_quest": [
+      "q_commuters",
+      "ready"
+     ]
+    },
+    {
+     "dialogue": "nadia_shop",
+     "if_flag": "met_nadia"
+    }
+   ],
+   "dialogue": "nadia_intro"
+  },
+  {
+   "id": "bellwater_local",
+   "name": "Local",
+   "character": "worker",
+   "x": 1080,
+   "y": 40.0,
+   "dialogue": "bellwater_local",
+   "wander": true
+  }
+ ],
+ "doors": [
+  {
+   "id": "to_metro",
+   "to": "metro_platform",
+   "spawn": "from_bellwater",
+   "x": 16,
+   "y": 58.0,
+   "label": "Metro Platform",
+   "auto": true,
+   "w": 22,
+   "h": 46
+  },
+  {
+   "id": "to_roof",
+   "to": "rooftop_route",
+   "spawn": "from_bellwater",
+   "x": 1476,
+   "y": 58.0,
+   "label": "Fire Escape",
+   "auto": true,
+   "w": 22,
+   "h": 46
+  },
+  {
+   "id": "nadia_store_door",
+   "shop": "nadia_store",
+   "x": 500,
+   "y": 32.0,
+   "label": "Nadia's Corner",
+   "required_flag": "met_nadia",
+   "locked": "The shutter is half down. Talk to her first."
+  }
+ ],
+ "spawns": [
+  {
+   "id": "start",
+   "x": 80,
+   "y": 58
+  },
+  {
+   "id": "from_metro",
+   "x": 90,
+   "y": 58
+  },
+  {
+   "id": "from_roof",
+   "x": 1430,
+   "y": 58
+  }
+ ],
+ "encounters": [
+  {
+   "id": "bellwater_wall",
+   "x": 700,
+   "width": 70
+  },
+  {
+   "id": "bellwater_conductor",
+   "x": 1220,
+   "width": 80
+  }
+ ],
+ "lane_min": 34.0,
+ "lane_max": 74.0,
+ "walk_min_x": 20.0,
+ "walk_max_x": 1480.0,
+ "ground_y": 2.0,
+ "camera_y": -12.0
+}

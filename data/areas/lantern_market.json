@@ -210,6 +210,20 @@
    "scale": 1.0
   },
   {
+   "texture": "res://assets/art/backgrounds/metro_entrance.png",
+   "x": 1330,
+   "y": -118.0,
+   "z": -29,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/props/metro_sign.png",
+   "x": 1368,
+   "y": -140.0,
+   "z": -27,
+   "scale": 1.0
+  },
+  {
    "texture": "res://assets/art/props/streetlight.png",
    "x": 100,
    "y": -78.0,
@@ -486,6 +500,18 @@
    "h": 46
   },
   {
+   "id": "to_metro",
+   "to": "metro_platform",
+   "spawn": "from_market",
+   "x": 1352,
+   "y": 32.0,
+   "label": "Metro Line",
+   "required_flag": "metro_open",
+   "locked": "Chained shut. Somebody laminated the CLOSED sign, which suggests commitment.",
+   "w": 26,
+   "h": 40
+  },
+  {
    "id": "mae_door",
    "shop": "mae_noodles",
    "x": 250,
@@ -531,6 +557,11 @@
    "id": "from_alley",
    "x": 1530,
    "y": 56
+  },
+  {
+   "id": "from_metro",
+   "x": 1340,
+   "y": 58
   }
  ],
  "encounters": [

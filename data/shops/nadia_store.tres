@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="ShopData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://data/ShopData.gd" id="1_nadia_store"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/portraits/nadia.png" id="2_nadia_store"]
+
+[resource]
+script = ExtResource("1_nadia_store")
+id = "nadia_store"
+display_name = "Nadia's Corner"
+shop_type = 1
+owner_name = "Nadia"
+owner_portrait = ExtResource("2_nadia_store")
+greeting = "Bellwater's only shop, which makes it the best one."
+farewell = "Come back soon."
+broke_line = "I run a shop, not a charity. Barely a shop."
+purchase_lines = Array[String](["Take it while it is hot.", "Tell your friends. Both of them."])
+inventory = Array[String](["bellwater_stew", "platform_coffee", "lost_sandwich", "rice_ball", "bandage", "energy_drink"])
+music = "shop"

@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DialogueData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/DialogueData.gd" id="1_roof_kid_done"]
+
+[resource]
+script = ExtResource("1_roof_kid_done")
+id = "roof_kid_done"
+lines = Array[Dictionary]([{"name": "Kid", "text": "Told you.", "portrait": "roof_kid"}, {"name": "Kip", "text": "You did.", "portrait": "kip"}, {"name": "Kid", "text": "I am going to be insufferable about this.", "portrait": "roof_kid", "end": true}])
+pause_game = true
+once_flag = ""

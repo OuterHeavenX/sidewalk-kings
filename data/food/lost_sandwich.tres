@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="FoodData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://data/FoodData.gd" id="1_lost_sandwich"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/items/sandwich.png" id="2_lost_sandwich"]
+
+[resource]
+script = ExtResource("1_lost_sandwich")
+id = "lost_sandwich"
+display_name = "Lost Property Sandwich"
+price = 7
+heal = 16
+energy = 0
+strength_bonus = 0
+defense_bonus = 0
+speed_bonus = 0
+stamina_bonus = 0
+technique_bonus = 0
+luck_bonus = 1
+max_hp_bonus = 0
+description = "Handed in on Tuesday. Nobody has claimed it. It is still technically food."
+icon = ExtResource("2_lost_sandwich")
+takeout = true
+eat_line = "A gamble that paid off."

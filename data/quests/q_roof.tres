@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="QuestData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/QuestData.gd" id="1_q_roof"]
+
+[resource]
+script = ExtResource("1_q_roof")
+id = "q_roof"
+title = "The Long Way Round"
+description = "The kid on the roof says you can cross Bellwater without touching the street. Prove it."
+giver = "roof_kid"
+objective = 6
+target = "bellwater_block"
+required_count = 1
+turn_in_npc = "roof_kid"
+reward_money = 90
+reward_xp = 70
+reward_items = Array[String](["lost_sandwich"])
+reward_move = ""
+reward_flag = ""
+optional = true
+hint = "Take the fire escape out of Grease Alley and keep going."

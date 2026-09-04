@@ -29,7 +29,7 @@ together, or one just makes the game easier.
 
 ---
 
-## Stage 1 — Combat depth
+## Stage 1 — Combat depth — **done**
 
 ### Guard
 
@@ -85,18 +85,36 @@ Guard and dodge only matter if attacks can be read.
 
 ---
 
-## Stage 2 — The district beyond the gate
+## Stage 2 — The district beyond the gate — **done**
 
 The pipeline proof: new areas with no engine changes.
 
-- **Metro Platform** — where the Tuesday money arrives. Interior, tiled, pillars.
-- **Rooftop Route** — a traversal area over Lantern Market, reached from an alley fire escape.
-- **Bellwater Block** — residential, the new gang's home ground, with two shops.
-- One new gang, three or four enemies reusing existing archetypes with new data.
-- Two new shops, one new dojo teaching guard and roll upgrades.
+- **Metro Platform** — where the Tuesday money arrives. Interior, tiled, turnstiles and a
+  bank of lockers.
+- **Rooftop Route** — a traversal area above Grease Alley, reached from the fire escape.
+- **Bellwater Block** — residential, the Commuters' home ground, at the end of the line.
+- The Commuters: five enemies reusing existing archetypes with new data. The Conductor is
+  armoured and ungrabbable, which is what makes Stage 1's guard and roll load-bearing.
+- Bex's Metro Line School teaching four close-quarters techniques, and Nadia's Corner.
+- Three quests, three foods, five encounters, nine characters, eight props, one music track.
 
-If any of this needs an engine change, that is a finding worth recording: it means the
-data model has a gap.
+### What it proved
+
+**No engine change was needed for content.** Three areas, a gang, two shops, three quests
+and a music track went in through the generators and the JSON layouts alone. The data model
+has no gap here.
+
+**Two engine-side findings, both recorded and fixed:**
+
+- The boss health bar was only ever cleared by the boss being defeated. Leaving an area
+  mid-fight left it on the HUD indefinitely. Found by a screenshot, not a test, which is
+  why the world-graph and chapter-two test sections now exist.
+- The smoke suite's area travel list was hand-written, so three new areas were silently
+  uncovered until the list was changed. It now iterates `ContentDB`.
+
+**One art-side finding.** Rooftop scenery placed at building height floats in open sky,
+because a roof has no building behind it. Street placement conventions do not transfer to
+an area with no street. Recorded in [ART_DIRECTION.md](ART_DIRECTION.md).
 
 ## Stage 3 — Connective tissue
 

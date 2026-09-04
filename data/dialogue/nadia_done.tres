@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DialogueData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/DialogueData.gd" id="1_nadia_done"]
+
+[resource]
+script = ExtResource("1_nadia_done")
+id = "nadia_done"
+lines = Array[Dictionary]([{"name": "Nadia", "text": "My wall is empty. I could cry.", "portrait": "nadia"}, {"name": "Kip", "text": "They will come back.", "portrait": "kip"}, {"name": "Nadia", "text": "Then I will feed them. That is how it worked before.", "portrait": "nadia", "end": true}])
+pause_game = true
+once_flag = ""

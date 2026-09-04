@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DialogueData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/DialogueData.gd" id="1_metro_arrival"]
+
+[resource]
+script = ExtResource("1_metro_arrival")
+id = "metro_arrival"
+lines = Array[Dictionary]([{"name": "", "text": "Warm air, tile, and the particular quiet of a platform between trains."}, {"name": "Kip", "text": "For a station nobody uses, somebody mops this floor.", "portrait": "kip", "end": true}])
+pause_game = true
+once_flag = "seen_metro"

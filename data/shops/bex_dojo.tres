@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="ShopData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://data/ShopData.gd" id="1_bex_dojo"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/portraits/bex.png" id="2_bex_dojo"]
+
+[resource]
+script = ExtResource("1_bex_dojo")
+id = "bex_dojo"
+display_name = "Bex's Metro Line School"
+shop_type = 2
+owner_name = "Bex"
+owner_portrait = ExtResource("2_bex_dojo")
+greeting = "Down here you learn to fight in a space you cannot leave."
+farewell = "Come back soon."
+broke_line = "The lesson costs. The platform is free."
+purchase_lines = Array[String](["Again, on the yellow line.", "Feet closer together.", "Good. Now do it tired."])
+inventory = Array[String](["turnstile_spin", "platform_drop", "closing_doors", "last_train"])
+music = "shop"

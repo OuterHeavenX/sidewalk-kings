@@ -11,5 +11,5 @@ music = "alley"
 ambience = "alley"
 gang = "grease"
 map_position = Vector2(2.0, 0.5)
-connections = Array[String](["lantern_market", "rustpile_yard"])
+connections = Array[String](["lantern_market", "rustpile_yard", "rooftop_route"])
 description = "Narrow, damp, full of useful objects and people who resent you finding them."

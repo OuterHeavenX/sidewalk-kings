@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DialogueData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/DialogueData.gd" id="1_roof_kid_intro"]
+
+[resource]
+script = ExtResource("1_roof_kid_intro")
+id = "roof_kid_intro"
+lines = Array[Dictionary]([{"name": "Kid", "text": "You came up the fire escape. Nobody comes up the fire escape.", "portrait": "roof_kid"}, {"name": "Kip", "text": "Where does it go?", "portrait": "kip"}, {"name": "Kid", "text": "Everywhere. You can reach Bellwater without touching a single pavement.", "portrait": "roof_kid"}, {"name": "Kip", "text": "Why would I want that?", "portrait": "kip"}, {"name": "Kid", "text": "Because the Commuters watch the street, and nobody watches up here.", "portrait": "roof_kid", "start_quest": "q_roof", "end": true}])
+pause_game = true
+once_flag = ""

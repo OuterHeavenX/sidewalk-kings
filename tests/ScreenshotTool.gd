@@ -138,7 +138,9 @@ func run() -> void:
 	await frames(6)
 
 	# --- Every area ---
-	for area_id in ["lantern_market", "grease_alley", "rustpile_yard"]:
+	GameManager.set_flag("metro_open", true)
+	for area_id in ["lantern_market", "grease_alley", "rustpile_yard",
+			"metro_platform", "rooftop_route", "bellwater_block"]:
 		await SceneManager.change_area(area_id, "start")
 		await seconds(0.8)
 		GameManager.player.global_position.x += 320.0
@@ -167,6 +169,19 @@ func run() -> void:
 		guard += 1
 	await seconds(2.2)
 	await shot("boss_fight")
+
+	# --- A Commuter fight, so chapter two is reviewed as well as chapter one ---
+	await SceneManager.change_area("bellwater_block", "start")
+	await seconds(0.8)
+	_clear_enemies()
+	await _stage_fight(["commuter_grunt", "commuter_rusher", "commuter_heavy"], 700.0)
+	await seconds(0.9)
+	await shot("commuter_fight")
+	ShopManager.open_shop("bex_dojo")
+	await seconds(0.7)
+	await shot("shop_bex_dojo")
+	ShopManager._ui.close()
+	await frames(6)
 
 func _clear_enemies() -> void:
 	for n in get_tree().get_nodes_in_group("enemies"):

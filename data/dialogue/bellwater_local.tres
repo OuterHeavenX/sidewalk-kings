@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DialogueData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/DialogueData.gd" id="1_bellwater_local"]
+
+[resource]
+script = ExtResource("1_bellwater_local")
+id = "bellwater_local"
+lines = Array[Dictionary]([{"name": "Local", "text": "You are the one clearing the wall outside Nadia's.", "portrait": "performer"}, {"name": "Kip", "text": "Word travels.", "portrait": "kip"}, {"name": "Local", "text": "There are forty of us and one shop. Word sprints.", "portrait": "performer", "end": true}])
+pause_game = true
+once_flag = ""

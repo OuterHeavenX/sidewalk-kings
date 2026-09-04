@@ -60,6 +60,8 @@ func run() -> void:
 	await test_shops()
 	await test_quests_and_dialogue()
 	await test_area_travel()
+	await test_world_graph()
+	await test_chapter_two()
 	await test_boss()
 	await test_touch_controls()
 	await test_save_load()
@@ -970,7 +972,12 @@ func test_quests_and_dialogue() -> void:
 # ---------------------------------------------------------------- travel
 func test_area_travel() -> void:
 	print("\n-- Area travel --")
-	var order := ["lantern_market", "grease_alley", "rustpile_yard", "starch_laundromat", "ferry_row"]
+	# Driven by ContentDB, not a hand-written list, so a new area is covered the day it
+	# is added instead of the day somebody remembers to update this array.
+	var order: Array[String] = []
+	for id in ContentDB.areas.keys():
+		order.append(str(id))
+	order.sort()
 	for area_id in order:
 		await SceneManager.change_area(area_id, "start")
 		await seconds(0.5)
@@ -998,6 +1005,166 @@ func _check_camera_follows(area_id: String) -> void:
 		if absf(player.global_position.x - cam.x) > half.x - 24.0:
 			worst = "player x=%.0f but camera centre x=%.0f" % [player.global_position.x, cam.x]
 	check("camera frames the player across %s" % area_id, worst == "", worst)
+
+# ---------------------------------------------------------------- world graph
+## The map is a graph of doors. A door that names a spawn point the destination does not
+## have drops the player at the area default, which reads as teleporting to the wrong end
+## of the street; a connection listed one way only breaks the map screen. Neither errors.
+func test_world_graph() -> void:
+	print("\n-- World graph --")
+	var layouts: Dictionary = {}
+	for id in ContentDB.areas.keys():
+		var path := "res://data/areas/%s.json" % id
+		if not FileAccess.file_exists(path):
+			continue
+		var f := FileAccess.open(path, FileAccess.READ)
+		var parsed = JSON.parse_string(f.get_as_text())
+		f.close()
+		if parsed is Dictionary:
+			layouts[str(id)] = parsed
+
+	check("every area has a layout", layouts.size() == ContentDB.areas.size(),
+		"%d layouts for %d areas" % [layouts.size(), ContentDB.areas.size()])
+
+	var bad_spawn: Array[String] = []
+	var graph: Dictionary = {}
+	for id in layouts.keys():
+		graph[id] = []
+		for d in layouts[id].get("doors", []):
+			var to := str(d.get("to", ""))
+			if to == "":
+				continue
+			graph[id].append(to)
+			if not layouts.has(to):
+				continue
+			var want := str(d.get("spawn", "start"))
+			var found := false
+			for sp in layouts[to].get("spawns", []):
+				if str(sp.get("id", "")) == want:
+					found = true
+			if not found:
+				bad_spawn.append("%s -> %s wants spawn '%s'" % [id, to, want])
+	check("every door lands on a spawn point that exists", bad_spawn.is_empty(), ", ".join(bad_spawn))
+
+	# A door one way needs a door back, or the player walks into a dead end.
+	var one_way: Array[String] = []
+	for id in graph.keys():
+		for to in graph[id]:
+			if graph.has(to) and not (id in graph[to]):
+				one_way.append("%s -> %s has no way back" % [id, to])
+	check("every door has a return door", one_way.is_empty(), ", ".join(one_way))
+
+	# AreaData.connections drives the map screen; it must agree with the actual doors.
+	var mismatch: Array[String] = []
+	for id in layouts.keys():
+		var a: AreaData = ContentDB.areas[id]
+		for to in graph[id]:
+			if not (to in a.connections):
+				mismatch.append("%s door -> %s missing from connections" % [id, to])
+		for c in a.connections:
+			if not (str(c) in graph[id]):
+				mismatch.append("%s connection -> %s has no door" % [id, c])
+	check("map connections match the doors", mismatch.is_empty(), ", ".join(mismatch))
+
+	# Every area must be walkable from the opening street, ignoring flag gates.
+	var seen: Dictionary = {"ferry_row": true}
+	var queue: Array[String] = ["ferry_row"]
+	while not queue.is_empty():
+		var cur: String = queue.pop_front()
+		for to in graph.get(cur, []):
+			if not seen.has(to):
+				seen[to] = true
+				queue.append(to)
+	var unreachable: Array[String] = []
+	for id in layouts.keys():
+		if not seen.has(id):
+			unreachable.append(id)
+	check("every area is reachable from ferry_row", unreachable.is_empty(), ", ".join(unreachable))
+
+# ---------------------------------------------------------------- chapter two
+## The Metro Line opens off a flag. If the gate never unlocks, three areas, two shops,
+## three quests and five enemies exist in the build and are unreachable, with no error.
+func test_chapter_two() -> void:
+	print("\n-- Chapter two: the Metro Line --")
+	for id in ["metro_platform", "rooftop_route", "bellwater_block"]:
+		check("area '%s' exists" % id, ContentDB.areas.has(id))
+	for id in ["commuter_grunt", "commuter_rusher", "commuter_grappler", "commuter_ranged", "commuter_heavy"]:
+		check("enemy '%s' exists" % id, ContentDB.enemies.has(id))
+	check("Bex's dojo sells four techniques",
+		ContentDB.get_shop("bex_dojo") != null and ContentDB.get_shop("bex_dojo").inventory.size() == 4,
+		"%d" % (ContentDB.get_shop("bex_dojo").inventory.size() if ContentDB.get_shop("bex_dojo") else -1))
+	check("Nadia's shop exists", ContentDB.get_shop("nadia_store") != null)
+	for q in ["q_commuters", "q_tuesday", "q_roof"]:
+		check("quest '%s' exists" % q, ContentDB.get_quest(q) != null)
+
+	# The gate.
+	GameManager.set_flag("metro_open", false)
+	await SceneManager.change_area("lantern_market", "start")
+	await seconds(0.4)
+	var door := _find_door("to_metro")
+	check("the market has a metro door", door != null)
+	if door:
+		check("the metro door is shut before the story opens it",
+			door.required_flag == "metro_open" and not GameManager.get_flag("metro_open"))
+	GameManager.set_flag("metro_open", true)
+	await SceneManager.change_area("metro_platform", "from_market")
+	await seconds(0.5)
+	check("the metro platform builds", GameManager.current_area != null
+		and GameManager.player_data.current_area == "metro_platform")
+	check("the platform spawn is at the market end", is_instance_valid(GameManager.player)
+		and GameManager.player.global_position.x < 200.0,
+		"x=%.0f" % (GameManager.player.global_position.x if is_instance_valid(GameManager.player) else -1.0))
+	await _check_camera_follows("metro_platform")
+
+	# The locker is the only thing that sets the flag q_tuesday waits on.
+	GameManager.set_flag("found_tuesday_locker", false)
+	var locker: Node = null
+	for n in GameManager.current_area.actors_root.get_children():
+		if n.get("prop_id") == "locker" and n.get("searchable"):
+			locker = n
+	check("locker 12 is searchable", locker != null)
+	if locker:
+		check("searching the locker opens the Tuesday lead",
+			str(locker.interact_dialogue) == "locker_found")
+
+	# Walk the chapter-two loop the way a player does.
+	await SceneManager.change_area("bellwater_block", "from_metro")
+	await seconds(0.5)
+	check("Bellwater builds off the platform", GameManager.player_data.current_area == "bellwater_block")
+	await _check_camera_follows("bellwater_block")
+	await SceneManager.change_area("rooftop_route", "from_bellwater")
+	await seconds(0.5)
+	check("the rooftop builds off Bellwater", GameManager.player_data.current_area == "rooftop_route")
+	check("the rooftop spawn is at the Bellwater end", is_instance_valid(GameManager.player)
+		and GameManager.player.global_position.x > 1000.0,
+		"x=%.0f" % (GameManager.player.global_position.x if is_instance_valid(GameManager.player) else -1.0))
+	await _check_camera_follows("rooftop_route")
+
+	# A Commuter must actually fight, not just exist as a resource.
+	clear_stage()
+	await frames(2)
+	var e := spawn_enemy("commuter_grunt", 40.0)
+	await frames(6)
+	check("a Commuter spawns and takes damage", e != null and _hit_once(e))
+
+func _find_door(door_id: String) -> Node:
+	if GameManager.current_area == null:
+		return null
+	for n in GameManager.current_area.actors_root.get_children():
+		if n.get("door_id") == door_id:
+			return n
+	return null
+
+func _hit_once(e: Node) -> bool:
+	if e == null or not is_instance_valid(e):
+		return false
+	var before: int = e.hp
+	var d := DamageData.new()
+	d.amount = 5
+	d.direction = 1
+	d.source = GameManager.player
+	e.take_damage(d)
+	return e.hp < before
 
 # ---------------------------------------------------------------- boss
 func test_boss() -> void:
@@ -1052,6 +1219,17 @@ func test_boss() -> void:
 	check("boss recorded as defeated", "big_starch" in GameManager.player_data.bosses_defeated)
 	check("boss awards money", GameManager.player_data.money > money0, "$%d -> $%d" % [money0, GameManager.player_data.money])
 	GameManager.clear_time_effects()
+	# Walking out mid-fight must take the boss bar with you.
+	var hud = get_tree().current_scene.get_node_or_null("UI/HUD")
+	if hud and is_instance_valid(boss):
+		hud._on_boss_started(boss)
+		await frames(2)
+		await SceneManager.change_area("ferry_row", "start")
+		await seconds(0.4)
+		check("the boss bar clears when you leave the area", not hud.boss_root.visible)
+	else:
+		check("the boss bar clears when you leave the area", false, "no HUD found")
+
 
 # ---------------------------------------------------------------- touch controls
 ## Drive the on-screen controls with synthetic touch events, exactly as a phone would.

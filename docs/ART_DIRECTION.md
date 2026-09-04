@@ -82,9 +82,19 @@ caps, beanies, bandanas and helmets.
 | **Girder** | Widest silhouette, hard hat, breathing mask, no visible face. |
 | **Pressman** | White shirt, blue apron, glasses, slicked hair. |
 | **Big Starch** | Broadest in the game, entirely white, white flat-top, moustache. |
+| **Straphanger** | Navy jacket, dark trousers, cap. Uniform without a badge. |
+| **Sprinter** | Same navy, lighter frame, no jacket. Built to close distance. |
+| **Turnstile** | Navy, wide and low, arms out. Reads as a barrier. |
+| **Busker** | Navy with a bright scarf, the only colour on the gang. |
+| **The Conductor** | Tallest of the Commuters, peaked cap, long coat, no visible face. |
+
+The Commuters share one navy palette on purpose. Chapter one's gangs are five different
+looks; the sixth is one look repeated, which is the joke and also how you read them at a
+glance in a crowd.
 
 NPCs are built the same way: Dez in a yellow shirt with an afro, Auntie Mae with a bun and
-an apron, Odell bald in a white gi with a black belt, Marisol with glasses and long hair.
+an apron, Odell bald in a white gi with a black belt, Marisol with glasses and long hair,
+Bex in a grey vest with wrapped hands, Nadia in an apron behind a shutter.
 
 ---
 
@@ -105,6 +115,17 @@ toward the sky so distance reads as haze.
 
 **Props** are drawn to be recognisable in one glance at 20 px: a hydrant is a red column
 with a cap and two side ports, a dumpster is a green box with a lighter lid.
+
+**Areas with no street behind them need their own placement rules.** Street scenery sits at
+building height, well above the walkable lane, because a building is there to hold it. On
+the Rooftop Route there is no building behind the roof, so anything placed at that height
+floats in open sky. Roof scenery stands on the parapet line instead. Interiors have the
+same problem in reverse: the Metro Platform's tunnel wall is a parallax layer drawn at 1:1,
+because at the 2x scale a street sky uses, one tunnel mouth fills the whole screen.
+
+**Alternating floor tiles are for outdoors.** The `alt` tile option reads as paving
+variation on a sidewalk and as a chessboard indoors. Both interior floors use a single
+tile.
 
 ---
 

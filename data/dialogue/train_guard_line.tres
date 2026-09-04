@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DialogueData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/DialogueData.gd" id="1_train_guard_line"]
+
+[resource]
+script = ExtResource("1_train_guard_line")
+id = "train_guard_line"
+lines = Array[Dictionary]([{"name": "Guard", "text": "Service is suspended.", "portrait": "train_guard"}, {"name": "Kip", "text": "A train just went through.", "portrait": "kip"}, {"name": "Guard", "text": "That one does not stop. That one has never stopped.", "portrait": "train_guard"}, {"name": "Kip", "text": "Since when?", "portrait": "kip"}, {"name": "Guard", "text": "Since they told me to write SUSPENDED on the board. I have a nice hand for it.", "portrait": "train_guard", "end": true}])
+pause_game = true
+once_flag = ""

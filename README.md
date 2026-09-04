@@ -20,6 +20,8 @@ animation, music, sound effects and level layouts. Nothing is taken from an exis
 | ![Combat](docs/screenshots/combat.png) | ![Boss fight](docs/screenshots/boss.png) |
 | ![Lantern Market](docs/screenshots/lantern-market.png) | ![Dialogue](docs/screenshots/dialogue.png) |
 | ![Restaurant](docs/screenshots/shop.png) | ![Touch controls](docs/screenshots/touch-controls.png) |
+| ![Metro Platform](docs/screenshots/metro-platform.png) | ![Bellwater Block](docs/screenshots/bellwater-block.png) |
+| ![Rooftop Route](docs/screenshots/rooftop-route.png) | ![The Commuters](docs/screenshots/commuter-fight.png) |
 
 ---
 
@@ -195,9 +197,9 @@ Details, including deployment to GitHub Pages and Cloudflare Pages, are in
 godot --headless --path . -- --smoke
 ```
 
-Runs 157 automated checks against a real session: content integrity, movement, every
+Runs 197 automated checks against a real session: content integrity, movement, every
 attack, the combo chain, grabs and throws, enemy AI, weapons and durability, pickups,
-levelling, every shop, quests, dialogue, travel between all five areas, camera framing,
+levelling, every shop, quests, dialogue, travel between all eight areas, the door graph, camera framing,
 the boss fight through both phases, and save/load with migration. Exit code is non-zero
 if anything fails, and a flushed log is written to `user://smoke_test.log`.
 

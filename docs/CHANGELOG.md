@@ -202,3 +202,67 @@ See [PHASE_2.md](PHASE_2.md) for the full plan.
 - Night lighting will use Godot's built-in 2D lights rather than the `lit` addon. Lit
   requires the Forward+ renderer and does not support Compatibility or Mobile; this game
   runs on Compatibility, which is what makes the browser and mobile builds work at all.
+
+---
+
+## Unreleased — Phase 2, Stage 2: the Metro Line
+
+Three new areas past the chained gate at the east end of Lantern Market, a sixth gang,
+a second dojo, a second general store, and the opening of chapter two.
+
+### Added
+
+**World**
+- **Metro Platform.** A station that is always open and never busy. Turnstiles, a ticket
+  machine, a bank of lockers and the second dojo. Reached through the gate in Lantern
+  Market once Dez tells you the chain is decorative.
+- **Rooftop Route.** Aerials, vents and washing lines above Grease Alley. A way across
+  the district that never touches a pavement, which is the point of it.
+- **Bellwater Block.** Forty flats and one shop, with the Commuters sat on the wall
+  outside it.
+- Two connecting doors into chapter one: a metro entrance in Lantern Market and a fire
+  escape in Grease Alley, both gated on the story flag that opens the chapter.
+
+**Enemies**
+- **The Commuters**, a sixth gang of five: Straphanger, Sprinter, Turnstile, Busker and
+  The Conductor. The Conductor is armoured and cannot be grabbed, which makes the
+  Bellwater fight a test of the guard and roll added in Stage 1.
+- Five new encounters, including a two-front fight on the platform and a mixed wave in
+  Bellwater.
+
+**Content**
+- **Bex's Metro Line School**, a second dojo teaching four techniques built for fighting
+  in a space you cannot back out of: Turnstile Spin, Platform Drop, Closing Doors and
+  Last Train. Last Train has armour, so it trades through a jab on the way in.
+- **Nadia's Corner**, Bellwater's only shop. Three new foods: Platform Coffee, Bellwater
+  Stew and a Lost Property Sandwich.
+- Three quests: Mind the Gap, Tuesday's Bag and The Long Way Round.
+- Nine new characters and eight new props, all generated.
+- A **metro** music track, so the new district is not borrowing chapter one's.
+
+**Tests**
+- A **world graph** section: every area has a layout, every door lands on a spawn point
+  that actually exists, every door has a return door, the map screen's connections agree
+  with the real doors, and every area is reachable on foot from the opening street.
+- A **chapter two** section walking the whole loop: the gate is shut before the story
+  opens it, each area builds, each spawn puts the player at the right end of the street,
+  the camera frames them, the locker that carries the quest flag is searchable, and a
+  Commuter actually takes damage.
+- The area travel loop is now driven by `ContentDB` rather than a hand-written list, so a
+  new area is covered the day it is added.
+- The suite is now **197 checks**.
+
+### Fixed
+
+- **The boss health bar could stay on screen forever.** It was only cleared by the boss
+  being defeated. Leaving the area mid-fight, or dying and respawning elsewhere, left a
+  bar on the HUD for a boss who was not there. It now clears on area load, with a check.
+
+### Changed
+
+- The metro tunnel wall is drawn at 1:1 instead of 2x. At 2x a single tunnel mouth filled
+  the screen and read as a black hole rather than a station.
+- Rooftop scenery stands on the parapet line. Placed at building height, as street
+  scenery is, it floated in open sky, because a roof has no building behind it.
+- The interior floors dropped their alternating tile, which was reading as a loud
+  checkerboard rather than a floor.

@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DialogueData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/DialogueData.gd" id="1_metro_poster"]
+
+[resource]
+script = ExtResource("1_metro_poster")
+id = "metro_poster"
+lines = Array[Dictionary]([{"name": "", "text": "A service poster, laminated and immaculate, on a wall nobody reads."}, {"name": "", "text": "TUESDAYS: NO STOPPING SERVICE. THIS IS NORMAL AND CORRECT."}, {"name": "Kip", "text": "Somebody laminated that.", "portrait": "kip", "end": true}])
+pause_game = true
+once_flag = ""

@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="AreaData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/AreaData.gd" id="1_rooftop_route"]
+
+[resource]
+script = ExtResource("1_rooftop_route")
+id = "rooftop_route"
+display_name = "Rooftop Route"
+district = "Above Riverbend"
+music = "market"
+ambience = "city"
+gang = "commuters"
+map_position = Vector2(2.6, -0.8)
+connections = Array[String](["grease_alley", "bellwater_block"])
+description = "Aerials, vents and washing lines. Nobody watches up here."

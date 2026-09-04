@@ -108,6 +108,7 @@ already learned, so it reads as the end of a line of investment rather than a pu
 | **The Grease Monkeys** | Grease Alley | Have tools and use them. Where weapons start mattering. |
 | **The Rust Rats** | Rustpile Yard | Fenced off a scrapyard nobody is scrapping. Heavies and throwers. |
 | **The Cleaners** | Starch & Sons | Immaculate, unhurried, work for the boss. |
+| **The Commuters** | The Metro Line | Ride the line down and never get back on. Uniform without a badge. |
 
 Each gang is a set of `EnemyData` resources sharing a `gang` id, which is what quest
 objectives like "defeat 5 Pigeons" count against.
@@ -221,14 +222,22 @@ In order, when something had to give:
 
 ---
 
-## What chapter two would open with
+## Chapter two: the Metro Line
 
-The hooks are already planted:
+The hooks planted in chapter one are now walkable.
 
-- The metro gate is chained and the sign is laminated.
-- Money arrives on Tuesdays from the metro side.
-- Someone brings it who never gets off the train.
+- The metro gate is chained and the sign is laminated. Dez points out that the chain has
+  never actually joined either side of the gate.
+- Money arrives on Tuesdays from the metro side. Locker 12 on the platform holds a paper
+  note band with one word written on it in pencil: BELLWATER.
+- Someone brings it who never gets off the train. The guard on the platform has been told
+  to write SUSPENDED on the board, and has a nice hand for it.
 - Big Starch was given a *route*, not a job.
 
-`AreaData.connections` and the map screen already accommodate more districts, and the
-existing content types cover everything a new neighbourhood needs.
+Three areas are in: the **Metro Platform**, the **Rooftop Route** above Grease Alley, and
+**Bellwater Block** at the end of the line. Both routes converge on Bellwater, which is
+where the Commuters sit on a wall outside the only shop for forty flats.
+
+Still open: who sends the money, and why a laundromat. That is Stage 4, and it is the only
+part of the phase that needs a genuinely new system, namely scripted cutscene camera and
+actor blocking. See [PHASE_2.md](PHASE_2.md).

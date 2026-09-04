@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="EncounterData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/EncounterData.gd" id="1_metro_platform_2"]
+
+[resource]
+script = ExtResource("1_metro_platform_2")
+id = "metro_platform_2"
+gang = "commuters"
+waves = Array[Dictionary]([{"enemy": "commuter_grunt", "count": 2, "side": "any", "delay": 0.0, "boss": false}, {"enemy": "commuter_ranged", "count": 2, "side": "any", "delay": 0.4, "boss": false}, {"enemy": "commuter_grappler", "count": 1, "side": "right", "delay": 0.7, "boss": false}])
+max_active = 4
+difficulty_scale_per_level = 0.06
+lock_camera = true
+once_flag = ""
+respawn_on_reenter = true
+boss_id = ""
+reward_flag = "metro_cleared"
+music = "metro"
+intro_dialogue = ""
+clear_dialogue = ""

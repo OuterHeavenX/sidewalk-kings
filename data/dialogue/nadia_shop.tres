@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DialogueData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/DialogueData.gd" id="1_nadia_shop"]
+
+[resource]
+script = ExtResource("1_nadia_shop")
+id = "nadia_shop"
+lines = Array[Dictionary]([{"name": "Nadia", "text": "Stew is on. It is always on. That is the trick.", "portrait": "nadia", "shop": "nadia_store", "end": true}])
+pause_game = true
+once_flag = ""

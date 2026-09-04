@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DialogueData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/DialogueData.gd" id="1_locker_found"]
+
+[resource]
+script = ExtResource("1_locker_found")
+id = "locker_found"
+lines = Array[Dictionary]([{"name": "", "text": "Locker 12. Unlocked. Empty, except for a paper band, the kind that goes round a stack of notes."}, {"name": "Kip", "text": "Tuesday.", "portrait": "kip"}, {"name": "", "text": "Someone has written one word on the band in pencil: BELLWATER."}, {"name": "Kip", "text": "That is not a name. That is an address.", "portrait": "kip", "set_flag": "found_tuesday_locker", "end": true}])
+pause_game = true
+once_flag = "found_tuesday_locker_seen"

@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="QuestData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/QuestData.gd" id="1_q_commuters"]
+
+[resource]
+script = ExtResource("1_q_commuters")
+id = "q_commuters"
+title = "Mind the Gap"
+description = "The Commuters run the metro line and never seem to get off it. Convince six of them to take a break."
+giver = "nadia"
+objective = 0
+target = "commuters"
+required_count = 6
+turn_in_npc = "nadia"
+reward_money = 180
+reward_xp = 120
+reward_items = Array[String](["bellwater_stew"])
+reward_move = ""
+reward_flag = ""
+optional = true
+hint = "They are all over the platform and Bellwater Block."

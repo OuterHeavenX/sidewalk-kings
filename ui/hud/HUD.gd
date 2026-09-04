@@ -173,6 +173,7 @@ func _connect() -> void:
 	EventBus.boss_started.connect(_on_boss_started)
 	EventBus.boss_hp_changed.connect(_on_boss_hp)
 	EventBus.boss_defeated.connect(_on_boss_defeated)
+	EventBus.area_loading.connect(_on_area_loading)
 	EventBus.notification.connect(_on_notify)
 	EventBus.area_entered.connect(_on_area)
 	EventBus.interactable_focused.connect(_on_focus)
@@ -256,6 +257,13 @@ func _on_boss_hp(hp: int, max_hp: int) -> void:
 	boss_bar.max_value = maxi(1, max_hp)
 	var tw := create_tween()
 	tw.tween_property(boss_bar, "value", float(hp), 0.15)
+
+## Leaving mid-fight is the case boss_defeated never covers: walk out of a door, or die
+## and respawn elsewhere, and the bar would otherwise sit on the HUD for the rest of the
+## session showing a boss who is not there.
+func _on_area_loading(_area_id: String) -> void:
+	boss_root.visible = false
+	boss_root.modulate.a = 1.0
 
 func _on_boss_defeated(_b: Node, _id: String) -> void:
 	var tw := create_tween()

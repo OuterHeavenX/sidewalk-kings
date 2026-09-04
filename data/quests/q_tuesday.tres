@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="QuestData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/QuestData.gd" id="1_q_tuesday"]
+
+[resource]
+script = ExtResource("1_q_tuesday")
+id = "q_tuesday"
+title = "Tuesday's Bag"
+description = "Somebody brings the money in on Tuesdays and never steps off the train. Find where they leave it."
+giver = "dez"
+objective = 7
+target = "found_tuesday_locker"
+required_count = 1
+turn_in_npc = "dez"
+reward_money = 220
+reward_xp = 160
+reward_items = []
+reward_move = ""
+reward_flag = "knows_tuesday_route"
+optional = false
+hint = "Search the metro platform. Try the lockers."

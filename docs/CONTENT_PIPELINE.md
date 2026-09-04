@@ -125,8 +125,8 @@ Editing balance means editing one Python file where every value sits next to eve
 rather than opening 39 resource files in the inspector. The generated `.tres` files are
 still normal Godot resources, editable by hand if you prefer.
 
-Current content: 39 moves, 11 enemies, 13 foods, 8 books, 5 items, 11 weapons, 6 shops,
-8 quests, 31 dialogues, 12 encounters, 5 areas.
+Current content: 43 moves, 16 enemies, 16 foods, 8 books, 5 items, 11 weapons, 8 shops,
+11 quests, 45 dialogues, 17 encounters, 8 areas.
 
 ---
 

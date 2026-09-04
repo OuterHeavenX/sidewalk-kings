@@ -377,13 +377,113 @@ def prop_ac_unit():
         d.line([(13.5, 12.5), (x1, y1)], fill=(120, 122, 128), width=2)
     return outline_alpha(im)
 
+
+def prop_turnstile():
+    im = Image.new("RGBA", (26, 34), (0, 0, 0, 0))
+    d = ImageDraw.Draw(im)
+    c = (118, 124, 134)
+    d.rectangle([9, 10, 16, 33], fill=c)
+    d.rectangle([9, 10, 11, 33], fill=shade(c, 1.25))
+    d.ellipse([7, 5, 18, 14], fill=shade(c, 0.85))
+    for a in (0, 120, 240):
+        x = 12.5 + 11 * math.cos(math.radians(a))
+        y = 16 + 4 * math.sin(math.radians(a))
+        d.line([(12.5, 16), (x, y)], fill=(176, 180, 188), width=3)
+    d.rectangle([6, 31, 19, 33], fill=shade(c, 0.6))
+    d.rectangle([10, 18, 15, 21], fill=(90, 200, 130))
+    return outline_alpha(im)
+
+def prop_ticket_machine():
+    im = Image.new("RGBA", (24, 40), (0, 0, 0, 0))
+    d = ImageDraw.Draw(im)
+    c = (58, 76, 104)
+    d.rectangle([2, 2, 21, 38], fill=c)
+    d.rectangle([2, 2, 5, 38], fill=shade(c, 1.25))
+    d.rectangle([18, 2, 21, 38], fill=shade(c, 0.72))
+    d.rectangle([5, 6, 18, 18], fill=(30, 38, 54))
+    d.rectangle([6, 7, 17, 13], fill=(120, 200, 190))
+    for i in range(3):
+        d.rectangle([6, 21 + i * 4, 10 + i, 23 + i * 4], fill=(200, 200, 208))
+    d.rectangle([13, 22, 17, 30], fill=(210, 180, 70))
+    d.rectangle([4, 36, 19, 38], fill=shade(c, 0.55))
+    return outline_alpha(noise(im, 4, 61))
+
+def prop_metro_sign():
+    im = Image.new("RGBA", (40, 26), (0, 0, 0, 0))
+    d = ImageDraw.Draw(im)
+    d.rectangle([0, 0, 39, 19], fill=(28, 36, 56))
+    d.rectangle([2, 2, 37, 17], fill=(58, 118, 190))
+    for i in range(4):
+        d.rectangle([6 + i * 8, 7, 10 + i * 8, 12], fill=(238, 240, 246))
+    d.rectangle([18, 19, 21, 25], fill=(70, 74, 84))
+    return outline_alpha(im)
+
+def prop_roof_vent():
+    im = Image.new("RGBA", (28, 22), (0, 0, 0, 0))
+    d = ImageDraw.Draw(im)
+    c = (140, 142, 148)
+    d.rectangle([3, 6, 24, 20], fill=c)
+    d.rectangle([3, 6, 24, 9], fill=shade(c, 1.2))
+    d.ellipse([1, 1, 26, 9], fill=shade(c, 0.9))
+    d.ellipse([4, 2, 23, 8], fill=(46, 48, 54))
+    for x in range(6, 22, 4):
+        d.line([(x, 12), (x, 19)], fill=shade(c, 0.75))
+    return outline_alpha(noise(im, 5, 67))
+
+def prop_aerial():
+    im = Image.new("RGBA", (22, 40), (0, 0, 0, 0))
+    d = ImageDraw.Draw(im)
+    c = (96, 100, 108)
+    d.line([(11, 4), (11, 39)], fill=c, width=2)
+    for i, y in enumerate((8, 14, 20, 26)):
+        w = 9 - i
+        d.line([(11 - w, y), (11 + w, y)], fill=c)
+    d.rectangle([7, 37, 15, 39], fill=shade(c, 0.7))
+    return outline_alpha(im)
+
+def prop_satellite_dish():
+    im = Image.new("RGBA", (26, 26), (0, 0, 0, 0))
+    d = ImageDraw.Draw(im)
+    c = (206, 204, 198)
+    d.ellipse([2, 2, 20, 20], fill=c)
+    d.ellipse([5, 5, 17, 17], fill=shade(c, 0.86))
+    d.line([(11, 11), (20, 22)], fill=(110, 110, 118), width=2)
+    d.rectangle([16, 21, 24, 24], fill=(90, 92, 100))
+    return outline_alpha(im)
+
+def prop_planter():
+    im = Image.new("RGBA", (26, 24), (0, 0, 0, 0))
+    d = ImageDraw.Draw(im)
+    c = (156, 106, 74)
+    d.polygon([(3, 10), (22, 10), (20, 23), (5, 23)], fill=c)
+    d.polygon([(3, 10), (8, 10), (7, 23), (5, 23)], fill=shade(c, 1.2))
+    for (x, y, r) in ((8, 7, 5), (14, 5, 6), (19, 8, 4)):
+        d.ellipse([x - r, y - r, x + r, y + r], fill=(84, 148, 84))
+        d.ellipse([x - r + 1, y - r + 1, x, y], fill=(120, 186, 110))
+    return outline_alpha(im)
+
+def prop_laundry_line(w=56):
+    im = Image.new("RGBA", (w, 26), (0, 0, 0, 0))
+    d = ImageDraw.Draw(im)
+    d.line([(0, 3), (w - 1, 5)], fill=(150, 140, 120))
+    cols = [(226, 96, 110), (240, 226, 180), (110, 170, 220), (150, 210, 150)]
+    for i, x in enumerate(range(4, w - 12, 13)):
+        c = cols[i % len(cols)]
+        d.rectangle([x, 4, x + 9, 18], fill=c)
+        d.rectangle([x, 4, x + 3, 18], fill=shade(c, 1.18))
+        d.rectangle([x, 4, x + 9, 5], fill=shade(c, 0.7))
+    return im
+
 PROPS = {
     "trashcan": prop_trashcan, "hydrant": prop_hydrant, "cone": prop_cone, "vending": prop_vending,
     "bench": prop_bench, "streetlight": prop_streetlight, "dumpster": prop_dumpster, "crate": prop_crate,
     "barrel": prop_barrel, "tire": prop_tire, "sewer_grate": prop_sewer, "phonebooth": prop_phonebooth,
     "sign": prop_sign, "puddle": prop_puddle, "bollard": prop_bollard, "bin_bags": prop_bin_bags,
     "flyer": prop_flyer, "locker": prop_locker, "pallet": prop_pallet, "pipe_stack": prop_pipe_stack,
-    "ac_unit": prop_ac_unit,
+    "ac_unit": prop_ac_unit, "turnstile": prop_turnstile, "ticket_machine": prop_ticket_machine,
+    "metro_sign": prop_metro_sign, "roof_vent": prop_roof_vent, "aerial": prop_aerial,
+    "satellite_dish": prop_satellite_dish, "planter": prop_planter,
+    "laundry_line": lambda: prop_laundry_line(56),
     "fence": lambda: prop_fence(64),
     "graffiti_a": lambda: prop_graffiti(1), "graffiti_b": lambda: prop_graffiti(5), "graffiti_c": lambda: prop_graffiti(9),
     "car_red": lambda: prop_car((190, 60, 60)), "car_blue": lambda: prop_car((60, 100, 190)),
@@ -934,6 +1034,30 @@ def build_backgrounds():
         w2 = rnd.randint(3, 12)
         d.line([(x, y), (x + w2, y)], fill=shade((58, 92, 128), rnd.uniform(1.05, 1.35)))
     im.save(os.path.join(out, "river.png"))
+    # metro platform wall: tiled, with a tunnel mouth and strip lighting
+    im = Image.new("RGBA", (480, 220), (0, 0, 0, 0))
+    d = ImageDraw.Draw(im)
+    d.rectangle([0, 0, 479, 219], fill=(74, 82, 98))
+    for y in range(0, 220, 14):
+        for x in range(0, 480, 22):
+            off = 11 if (y // 14) % 2 else 0
+            c = (188, 196, 206) if ((x + y) // 14) % 5 else (150, 170, 196)
+            d.rectangle([x + off, y, x + off + 20, y + 12], fill=c)
+            d.line([(x + off, y), (x + off + 20, y)], fill=shade(c, 1.12))
+    d.rectangle([0, 0, 479, 10], fill=(44, 50, 64))
+    for x in range(20, 480, 96):
+        d.rectangle([x, 2, x + 52, 7], fill=(250, 244, 208))
+    for x in (120, 330):
+        d.ellipse([x, 60, x + 120, 220], fill=(26, 30, 42))
+        d.ellipse([x + 10, 70, x + 110, 220], fill=(14, 16, 24))
+    noise(im, 5, 71).save(os.path.join(out, "metro_wall.png"))
+
+    # rooftop backdrop: sky plus the tops of neighbouring blocks
+    im = gradient(480, 200, (58, 52, 96), (226, 140, 110))
+    sky_line = skyline(480, 120, (40, 34, 58), far=False, seed=21)
+    im.alpha_composite(sky_line, (0, 80))
+    im.save(os.path.join(out, "rooftop_sky.png"))
+
     # interior wall
     im = Image.new("RGBA", (480, 200), (0, 0, 0, 0))
     d = ImageDraw.Draw(im)

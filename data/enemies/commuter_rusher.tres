@@ -1,0 +1,43 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://actors/enemies/EnemyData.gd" id="1_commuter_rusher"]
+[ext_resource type="SpriteFrames" path="res://assets/art/characters/commuter_rusher_frames.tres" id="2_commuter_rusher"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/portraits/commuter_rusher.png" id="3_commuter_rusher"]
+
+[resource]
+script = ExtResource("1_commuter_rusher")
+id = "commuter_rusher"
+display_name = "Sprinter"
+gang = "commuters"
+archetype = 1
+sprite_frames = ExtResource("2_commuter_rusher")
+portrait = ExtResource("3_commuter_rusher")
+max_hp = 32
+damage_multiplier = 1.0
+defense = 0.0
+move_speed = 112.0
+run_speed = 196.0
+weight = 0.75
+armor_threshold = 0
+grab_resist = 0.0
+can_be_grabbed = true
+preferred_distance = 24.0
+aggression = 0.78
+reaction_delay = 0.18
+attack_cooldown = 0.7
+circle_chance = 0.2
+picks_up_weapons = false
+ranged_distance = 140.0
+moves = Array[String](["enemy_jab", "enemy_rush"])
+heavy_move = ""
+ranged_move = ""
+xp = 20
+money_min = 12
+money_max = 24
+drop_table = []
+drop_chance = 0.12
+scale = 1.0
+tint = Color(1.0, 1.0, 1.0, 1.0)
+show_health_bar = true
+taunts = Array[String](["Hold the door!", "Move, move, move!"])
+defeat_lines = Array[String](["Missed it anyway."])

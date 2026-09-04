@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="AreaData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/AreaData.gd" id="1_metro_platform"]
+
+[resource]
+script = ExtResource("1_metro_platform")
+id = "metro_platform"
+display_name = "Metro Platform"
+district = "Metro Line"
+music = "metro"
+ambience = "interior"
+gang = "commuters"
+map_position = Vector2(1.0, 1.2)
+connections = Array[String](["lantern_market", "bellwater_block"])
+description = "A station that is always open, never busy, and mopped by somebody."

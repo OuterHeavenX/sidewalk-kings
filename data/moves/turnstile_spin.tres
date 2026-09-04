@@ -1,0 +1,46 @@
+[gd_resource type="Resource" script_class="MoveData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://combat/MoveData.gd" id="1_turnstile_spin"]
+
+[resource]
+script = ExtResource("1_turnstile_spin")
+id = "turnstile_spin"
+display_name = "Turnstile Spin"
+description = "A wider, faster spin. Clears a crowd off a platform edge."
+animation = "spin_kick"
+input = 2
+requirement = 1
+damage_kind = 1
+startup = 7
+active = 8
+recovery = 16
+cancel_window = 14
+hitstun = 22
+damage = 14
+knockback = Vector2(120.0, 0.0)
+launch_force = 0.0
+knockdown = true
+energy_cost = 13.0
+special_cost = 0.0
+forward_move = 0.0
+self_launch = 0.0
+grab_target = false
+multi_hit = 3
+armor = false
+hitbox_offset = Vector2(0.0, -22.0)
+hitbox_size = Vector2(58.0, 32.0)
+lane_tolerance = 20.0
+followups = []
+sound = "whoosh_heavy"
+hit_sound = "hit_heavy"
+screen_shake = 2.6
+hit_pause = 0.06
+hit_fx = "spark_big"
+camera_kick = 0.0
+price = 280
+required_level = 4
+required_stat = ""
+required_stat_value = 0
+required_move = "spin_kick"
+required_flag = ""
+learnable = true

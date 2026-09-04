@@ -1,0 +1,46 @@
+[gd_resource type="Resource" script_class="MoveData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://combat/MoveData.gd" id="1_last_train"]
+
+[resource]
+script = ExtResource("1_last_train")
+id = "last_train"
+display_name = "Last Train"
+description = "You are not stopping. Shrugs off small hits on the way through."
+animation = "run_attack"
+input = 1
+requirement = 3
+damage_kind = 5
+startup = 5
+active = 7
+recovery = 20
+cancel_window = 14
+hitstun = 30
+damage = 24
+knockback = Vector2(220.0, 0.0)
+launch_force = 0.0
+knockdown = true
+energy_cost = 16.0
+special_cost = 0.0
+forward_move = 230.0
+self_launch = 0.0
+grab_target = false
+multi_hit = 1
+armor = true
+hitbox_offset = Vector2(20.0, -20.0)
+hitbox_size = Vector2(28.0, 34.0)
+lane_tolerance = 13.0
+followups = []
+sound = "dash"
+hit_sound = "hit_crit"
+screen_shake = 4.2
+hit_pause = 0.09
+hit_fx = "spark_special"
+camera_kick = 0.0
+price = 420
+required_level = 6
+required_stat = ""
+required_stat_value = 0
+required_move = "run_attack"
+required_flag = ""
+learnable = true

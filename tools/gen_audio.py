@@ -569,9 +569,21 @@ def music_shop():
     drums = {"k": [0, 8], "h": [4, 12]}
     return build_song(98, 8, bass, lead, harm, drums, lead_kind="tri", harm_kind="tri", lead_vol=0.2)
 
+def music_metro():
+    bass = ["A1", "-", "A1", "-", "A1", "-", "A1", "-", "G1", "-", "G1", "-", "A1", "-", "-", "-",
+            "F1", "-", "F1", "-", "F1", "-", "G1", "-", "A1", "-", "-", "-", "E2", "-", "-", "-"]
+    lead = ["A4", "-", "-", "E4", "-", "G4", "-", "-", "A4", "-", "-", "-", "-", "-", "-", "-",
+            "C5", "-", "-", "B4", "-", "A4", "-", "-", "G4", "-", "E4", "-", "-", "-", "-", "-"]
+    harm = ["E4", ".", ".", ".", ".", ".", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-",
+            "F4", ".", ".", ".", ".", ".", "-", "-", "G4", ".", ".", ".", "-", "-", "-", "-"]
+    drums = {"k": [0, 4, 8, 12], "s": [4, 12], "h": [0, 2, 4, 6, 8, 10, 12, 14], "t": [15]}
+    return build_song(128, 8, bass, lead, harm, drums, lead_kind="square", harm_kind="tri",
+                      lead_vol=0.21)
+
 MUSIC = {
     "title": music_title, "street": music_street, "market": music_market, "alley": music_alley,
     "industrial": music_industrial, "boss": music_boss, "victory": music_victory, "shop": music_shop,
+    "metro": music_metro,
 }
 
 # ----------------------------------------------------------------------

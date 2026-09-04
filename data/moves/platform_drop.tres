@@ -1,0 +1,46 @@
+[gd_resource type="Resource" script_class="MoveData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://combat/MoveData.gd" id="1_platform_drop"]
+
+[resource]
+script = ExtResource("1_platform_drop")
+id = "platform_drop"
+display_name = "Platform Drop"
+description = "Come down on them with everything. Best from a height."
+animation = "ground_stomp"
+input = 2
+requirement = 2
+damage_kind = 1
+startup = 5
+active = 8
+recovery = 16
+cancel_window = 14
+hitstun = 30
+damage = 22
+knockback = Vector2(110.0, 0.0)
+launch_force = 0.0
+knockdown = true
+energy_cost = 0.0
+special_cost = 0.0
+forward_move = 0.0
+self_launch = 0.0
+grab_target = false
+multi_hit = 1
+armor = false
+hitbox_offset = Vector2(12.0, -8.0)
+hitbox_size = Vector2(30.0, 32.0)
+lane_tolerance = 13.0
+followups = []
+sound = "whoosh_heavy"
+hit_sound = "hit_heavy"
+screen_shake = 4.0
+hit_pause = 0.09
+hit_fx = "spark_big"
+camera_kick = 0.0
+price = 340
+required_level = 5
+required_stat = ""
+required_stat_value = 0
+required_move = "jump_stomp"
+required_flag = ""
+learnable = true

@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DialogueData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/DialogueData.gd" id="1_bex_shop"]
+
+[resource]
+script = ExtResource("1_bex_shop")
+id = "bex_shop"
+lines = Array[Dictionary]([{"name": "Bex", "text": "Feet closer together. Then we begin.", "portrait": "bex", "shop": "bex_dojo", "end": true}])
+pause_game = true
+once_flag = ""

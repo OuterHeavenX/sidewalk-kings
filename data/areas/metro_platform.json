@@ -1,0 +1,303 @@
+{
+ "parallax": [
+  {
+   "texture": "res://assets/art/backgrounds/metro_wall.png",
+   "y": -170.0,
+   "scroll": 0.55,
+   "repeat": 8,
+   "scale": 1.0,
+   "z": -90
+  }
+ ],
+ "ground": [
+  {
+   "color": [
+    0.08,
+    0.09,
+    0.12
+   ],
+   "y": -400.0,
+   "height": 620,
+   "z": -95,
+   "x": -40,
+   "x2": 1340
+  },
+  {
+   "color": [
+    0.2,
+    0.21,
+    0.25
+   ],
+   "y": 2.0,
+   "height": 460,
+   "z": -26,
+   "x": -40,
+   "x2": 1340
+  },
+  {
+   "tile": "metal",
+   "y": -46.0,
+   "height": 3,
+   "z": -24,
+   "x": -40,
+   "x2": 1340
+  },
+  {
+   "tile": "curb",
+   "y": 2.0,
+   "height": 1,
+   "z": -23,
+   "x": -40,
+   "x2": 1340
+  },
+  {
+   "tile": "tile_floor",
+   "y": 2.0,
+   "height": 10,
+   "z": -22,
+   "x": -40,
+   "x2": 1340
+  }
+ ],
+ "scenery": [
+  {
+   "texture": "res://assets/art/props/metro_sign.png",
+   "x": 90,
+   "y": -72.0,
+   "z": -28,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/props/sign.png",
+   "x": 560,
+   "y": -90.0,
+   "z": -28,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/props/ac_unit.png",
+   "x": 820,
+   "y": -70.0,
+   "z": -28,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/props/metro_sign.png",
+   "x": 1220,
+   "y": -72.0,
+   "z": -28,
+   "scale": 1.0
+  }
+ ],
+ "props": [
+  {
+   "id": "turnstile",
+   "x": 130,
+   "y": 30.0,
+   "solid": true
+  },
+  {
+   "id": "turnstile",
+   "x": 170,
+   "y": 30.0,
+   "solid": true
+  },
+  {
+   "id": "ticket_machine",
+   "x": 230,
+   "y": 29.0,
+   "solid": true,
+   "searchable": true,
+   "dialogue": "metro_poster",
+   "prompt": "Read notice"
+  },
+  {
+   "id": "bench",
+   "x": 400,
+   "y": 32.0
+  },
+  {
+   "id": "locker",
+   "x": 440,
+   "y": 30.0,
+   "solid": true
+  },
+  {
+   "id": "locker",
+   "x": 470,
+   "y": 30.0,
+   "solid": true,
+   "searchable": true,
+   "dialogue": "locker_found",
+   "prompt": "Open locker 12"
+  },
+  {
+   "id": "locker",
+   "x": 500,
+   "y": 30.0,
+   "solid": true
+  },
+  {
+   "id": "trashcan",
+   "x": 540,
+   "y": 76.0,
+   "breakable": true,
+   "hp": 10,
+   "money": 16,
+   "contains": "platform_coffee"
+  },
+  {
+   "id": "planter",
+   "x": 640,
+   "y": 70.0
+  },
+  {
+   "id": "bench",
+   "x": 760,
+   "y": 32.0
+  },
+  {
+   "id": "trashcan",
+   "x": 880,
+   "y": 76.0,
+   "breakable": true,
+   "hp": 10,
+   "money": 13
+  },
+  {
+   "id": "crate",
+   "x": 960,
+   "y": 76.0,
+   "breakable": true,
+   "hp": 8,
+   "contains": "weapon:pipe"
+  },
+  {
+   "id": "planter",
+   "x": 1040,
+   "y": 70.0
+  },
+  {
+   "id": "bench",
+   "x": 1150,
+   "y": 32.0
+  },
+  {
+   "id": "trashcan",
+   "x": 1240,
+   "y": 76.0,
+   "breakable": true,
+   "hp": 10,
+   "money": 20,
+   "contains": "lost_sandwich"
+  }
+ ],
+ "weapons": [
+  {
+   "id": "mop",
+   "x": 700
+  },
+  {
+   "id": "pipe",
+   "x": 1100
+  }
+ ],
+ "npcs": [
+  {
+   "id": "bex",
+   "name": "Bex",
+   "character": "bex",
+   "x": 660,
+   "y": 36.0,
+   "conditional": [
+    {
+     "dialogue": "bex_shop",
+     "if_flag": "met_bex"
+    }
+   ],
+   "dialogue": "bex_intro"
+  },
+  {
+   "id": "train_guard",
+   "name": "Guard",
+   "character": "train_guard",
+   "x": 200,
+   "y": 39.0,
+   "dialogue": "train_guard_line"
+  }
+ ],
+ "doors": [
+  {
+   "id": "to_market",
+   "to": "lantern_market",
+   "spawn": "from_metro",
+   "x": 16,
+   "y": 58.0,
+   "label": "Lantern Market",
+   "auto": true,
+   "w": 22,
+   "h": 46
+  },
+  {
+   "id": "to_bellwater",
+   "to": "bellwater_block",
+   "spawn": "from_metro",
+   "x": 1276,
+   "y": 58.0,
+   "label": "Bellwater Block",
+   "auto": true,
+   "w": 22,
+   "h": 46
+  },
+  {
+   "id": "bex_dojo_door",
+   "shop": "bex_dojo",
+   "x": 690,
+   "y": 32.0,
+   "label": "Metro Line School",
+   "required_flag": "met_bex",
+   "locked": "Bex has not invited you in yet."
+  }
+ ],
+ "spawns": [
+  {
+   "id": "start",
+   "x": 80,
+   "y": 58
+  },
+  {
+   "id": "from_market",
+   "x": 90,
+   "y": 58
+  },
+  {
+   "id": "from_bellwater",
+   "x": 1230,
+   "y": 58
+  }
+ ],
+ "encounters": [
+  {
+   "id": "metro_platform_1",
+   "x": 380,
+   "width": 70
+  },
+  {
+   "id": "metro_platform_2",
+   "x": 1000,
+   "width": 80
+  }
+ ],
+ "on_enter": [
+  {
+   "dialogue": "metro_arrival",
+   "if_not_flag": "seen_metro"
+  }
+ ],
+ "lane_min": 38.0,
+ "lane_max": 76.0,
+ "walk_min_x": 20.0,
+ "walk_max_x": 1280.0,
+ "ground_y": 2.0,
+ "camera_y": -12.0
+}

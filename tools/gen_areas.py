@@ -185,6 +185,7 @@ ferry = {
     "npcs": [
         {"id": "dez", "name": "Dez", "character": "dez", "x": 150, "y": LANE_MIN + 4,
          "conditional": [
+             {"dialogue": "dez_metro", "if_flag": "chapter_1_done", "if_not_flag": "metro_open"},
              {"dialogue": "dez_finale", "if_flag": "hideout_cleared"},
              {"dialogue": "dez_alley", "if_flag": "market_cleared"},
              {"dialogue": "dez_pigeons_done", "if_quest": ["q_pigeons", "ready"]},
@@ -250,6 +251,8 @@ market = {
             scenery(PROP + "graffiti_b", 830, BUILD_BASE - 58, z=-27),
             scenery(PROP + "car_yellow", 540, CURB_TOP - 38, z=-21),
             scenery(PROP + "car_red", 1140, CURB_TOP - 38, z=-21),
+            scenery("metro_entrance", 1330, BUILD_BASE - 120, z=-29),
+            scenery(PROP + "metro_sign", 1368, BUILD_BASE - 142, z=-27),
         ]
         + lamp_row(W2, 190, 100)
     ),
@@ -298,6 +301,10 @@ market = {
          "label": "Ferry Row", "auto": True, "w": 22, "h": 46},
         {"id": "to_alley", "to": "grease_alley", "spawn": "from_market", "x": W2 - 24,
          "y": LANE_MAX - 16, "label": "Grease Alley", "auto": True, "w": 22, "h": 46},
+        {"id": "to_metro", "to": "metro_platform", "spawn": "from_market", "x": 1352,
+         "y": LANE_MIN - 2, "label": "Metro Line", "required_flag": "metro_open",
+         "locked": "Chained shut. Somebody laminated the CLOSED sign, which suggests commitment.",
+         "w": 26, "h": 40},
         {"id": "mae_door", "shop": "mae_noodles", "x": 250, "y": LANE_MIN - 2, "label": "Mae's Noodles"},
         {"id": "vic_door", "shop": "vic_corner", "x": 410, "y": LANE_MIN - 2, "label": "Corner Store"},
         {"id": "books_door", "shop": "marisol_books", "x": 680, "y": LANE_MIN - 2, "label": "Bookstore"},
@@ -308,6 +315,7 @@ market = {
         {"id": "start", "x": 80, "y": 56},
         {"id": "from_ferry", "x": 70, "y": 56},
         {"id": "from_alley", "x": W2 - 70, "y": 56},
+        {"id": "from_metro", "x": 1340, "y": 58},
     ],
     "encounters": [
         {"id": "market_shakedown", "x": 760, "width": 70},
@@ -349,6 +357,7 @@ alley = {
             scenery(PROP + "graffiti_a", 1200, BUILD_BASE - 72, z=-27),
             scenery(PROP + "ac_unit", 340, BUILD_BASE - 130, z=-28),
             scenery(PROP + "ac_unit", 980, BUILD_BASE - 138, z=-28),
+            scenery(PROP + "laundry_line", 640, BUILD_BASE - 128, z=-28),
             scenery(PROP + "fence", 60, CURB_TOP - 38, z=-21),
         ]
         + lamp_row(W3, 240, 140)
@@ -393,11 +402,16 @@ alley = {
         {"id": "pops_shop_door", "shop": "pops_gear", "x": 1030, "y": LANE_MIN - 2,
          "label": "Pops' Gear", "required_flag": "met_pops",
          "locked": "Pops hasn't decided if he likes you yet."},
+        {"id": "to_roof", "to": "rooftop_route", "spawn": "from_alley", "x": 620,
+         "y": LANE_MIN - 2, "label": "Fire Escape", "required_flag": "metro_open",
+         "locked": "The ladder is folded up out of reach. No reason to want it yet.",
+         "w": 24, "h": 40},
     ],
     "spawns": [
         {"id": "start", "x": 80, "y": 58},
         {"id": "from_market", "x": 70, "y": 58},
         {"id": "from_yard", "x": W3 - 70, "y": 58},
+        {"id": "from_roof", "x": 600, "y": 60},
     ],
     "encounters": [
         {"id": "alley_ambush", "x": 420, "width": 70},
@@ -542,4 +556,237 @@ hideout = {
 }
 build("starch_laundromat", W5, hideout)
 
-print("5 area layouts written to data/areas/")
+# ===========================================================================
+# AREA 6 - METRO PLATFORM : chapter two opens, second dojo, the locker
+# ===========================================================================
+W6 = 1300
+metro = {
+    "parallax": [
+        # 1:1, not 2x. At 2x a single tunnel mouth fills the whole screen.
+        {"texture": _tex_path("metro_wall"), "y": -170.0, "scroll": 0.55, "repeat": 8,
+         "scale": 1.0, "z": -90},
+    ],
+    "ground": [
+        fill((0.08, 0.09, 0.12), -400.0, 620, -40, W6 + 40, z=-95),
+        fill((0.20, 0.21, 0.25), SIDEWALK_TOP - 16.0, 460, -40, W6 + 40),
+        ground("metal", ROAD_TOP, 3, -40, W6 + 40, z=-24),
+        ground("curb", CURB_TOP, 1, -40, W6 + 40, z=-23),
+        ground("tile_floor", SIDEWALK_TOP - 16.0, SIDEWALK_ROWS + 1, -40, W6 + 40, z=-22),
+    ],
+    "scenery": [
+        scenery(PROP + "metro_sign", 90, ROAD_TOP - 26, z=-28),
+        scenery(PROP + "sign", 560, ROAD_TOP - 44, z=-28),
+        scenery(PROP + "ac_unit", 820, ROAD_TOP - 24, z=-28),
+        scenery(PROP + "metro_sign", 1220, ROAD_TOP - 26, z=-28),
+    ],
+    "props": [
+        prop("turnstile", 130, LANE_MIN - 4, solid=True),
+        prop("turnstile", 170, LANE_MIN - 4, solid=True),
+        prop("ticket_machine", 230, LANE_MIN - 5, solid=True, searchable=True,
+             dialogue="metro_poster", prompt="Read notice"),
+        prop("bench", 400, LANE_MIN - 2),
+        prop("locker", 440, LANE_MIN - 4, solid=True),
+        prop("locker", 470, LANE_MIN - 4, solid=True, searchable=True,
+             dialogue="locker_found", prompt="Open locker 12"),
+        prop("locker", 500, LANE_MIN - 4, solid=True),
+        prop("trashcan", 540, breakable=True, hp=10, money=16, contains="platform_coffee"),
+        prop("planter", 640, LANE_MAX - 4),
+        prop("bench", 760, LANE_MIN - 2),
+        prop("trashcan", 880, breakable=True, hp=10, money=13),
+        prop("crate", 960, breakable=True, hp=8, contains="weapon:pipe"),
+        prop("planter", 1040, LANE_MAX - 4),
+        prop("bench", 1150, LANE_MIN - 2),
+        prop("trashcan", 1240, breakable=True, hp=10, money=20, contains="lost_sandwich"),
+    ],
+    "weapons": [
+        {"id": "mop", "x": 700},
+        {"id": "pipe", "x": 1100},
+    ],
+    "npcs": [
+        {"id": "bex", "name": "Bex", "character": "bex", "x": 660, "y": LANE_MIN + 2,
+         "conditional": [{"dialogue": "bex_shop", "if_flag": "met_bex"}],
+         "dialogue": "bex_intro"},
+        {"id": "train_guard", "name": "Guard", "character": "train_guard", "x": 200,
+         "y": LANE_MIN + 5, "dialogue": "train_guard_line"},
+    ],
+    "doors": [
+        {"id": "to_market", "to": "lantern_market", "spawn": "from_metro", "x": 16,
+         "y": LANE_MAX - 16, "label": "Lantern Market", "auto": True, "w": 22, "h": 46},
+        {"id": "to_bellwater", "to": "bellwater_block", "spawn": "from_metro", "x": W6 - 24,
+         "y": LANE_MAX - 16, "label": "Bellwater Block", "auto": True, "w": 22, "h": 46},
+        {"id": "bex_dojo_door", "shop": "bex_dojo", "x": 690, "y": LANE_MIN - 2,
+         "label": "Metro Line School", "required_flag": "met_bex",
+         "locked": "Bex has not invited you in yet."},
+    ],
+    "spawns": [
+        {"id": "start", "x": 80, "y": 58},
+        {"id": "from_market", "x": 90, "y": 58},
+        {"id": "from_bellwater", "x": W6 - 70, "y": 58},
+    ],
+    "encounters": [
+        {"id": "metro_platform_1", "x": 380, "width": 70},
+        {"id": "metro_platform_2", "x": 1000, "width": 80},
+    ],
+    "on_enter": [
+        {"dialogue": "metro_arrival", "if_not_flag": "seen_metro"},
+    ],
+    "lane_min": 38.0,
+    "lane_max": 76.0,
+}
+build("metro_platform", W6, metro)
+
+# ===========================================================================
+# AREA 7 - ROOFTOP ROUTE : the way over Bellwater, ambush, no shops
+# ===========================================================================
+W7 = 1200
+rooftop = {
+    "parallax": [
+        sky("rooftop_sky", -430.0, 0.02, 4, 2.2, z=-95),
+        sky("skyline_far", -150.0, 0.2, 4, 1.0, [0.58, 0.58, 0.8], z=-90),
+        sky("skyline_near", -104.0, 0.42, 4, 1.0, [0.74, 0.72, 0.9], z=-85),
+    ],
+    "ground": [
+        fill((0.38, 0.37, 0.40), SIDEWALK_TOP - 10.0, 460, -40, W7 + 40),
+        ground("metal", ROAD_TOP, 3, -40, W7 + 40, z=-24),
+        ground("curb", CURB_TOP, 1, -40, W7 + 40, z=-23),
+        ground("concrete", SIDEWALK_TOP - 10.0, SIDEWALK_ROWS + 1, -40, W7 + 40, z=-22),
+    ],
+    "scenery": [
+        # A roof has no building behind it, so everything stands on the parapet line.
+        scenery(PROP + "aerial", 120, ROAD_TOP - 40, z=-28),
+        scenery(PROP + "satellite_dish", 300, ROAD_TOP - 26, z=-28),
+        scenery(PROP + "laundry_line", 430, ROAD_TOP - 26, z=-28),
+        scenery(PROP + "aerial", 620, ROAD_TOP - 40, z=-28),
+        scenery(PROP + "ac_unit", 780, ROAD_TOP - 24, z=-28),
+        scenery(PROP + "laundry_line", 900, ROAD_TOP - 26, z=-28),
+        scenery(PROP + "satellite_dish", 1080, ROAD_TOP - 26, z=-28),
+        scenery(PROP + "aerial", 1160, ROAD_TOP - 40, z=-28),
+    ],
+    "props": [
+        prop("roof_vent", 160, LANE_MIN - 4, solid=True),
+        prop("crate", 250, breakable=True, hp=8, money=15),
+        prop("pallet", 330, LANE_MIN - 2),
+        prop("roof_vent", 420, LANE_MIN - 4, solid=True),
+        prop("barrel", 500, breakable=True, hp=12, contains="platform_coffee"),
+        prop("tire", 580, LANE_MAX - 4),
+        prop("crate", 700, breakable=True, hp=8, contains="weapon:plank"),
+        prop("roof_vent", 800, LANE_MIN - 4, solid=True),
+        prop("bin_bags", 880),
+        prop("barrel", 980, breakable=True, hp=12, money=26),
+        prop("crate", 1090, breakable=True, hp=8, contains="lost_sandwich"),
+    ],
+    "weapons": [
+        {"id": "plank", "x": 380},
+        {"id": "brick", "x": 860},
+    ],
+    "npcs": [
+        {"id": "roof_kid", "name": "Kid", "character": "roof_kid", "x": 200,
+         "y": LANE_MIN + 6,
+         "conditional": [{"dialogue": "roof_kid_done", "if_quest": ["q_roof", "ready"]}],
+         "dialogue": "roof_kid_intro", "wander": True},
+    ],
+    "doors": [
+        {"id": "to_alley", "to": "grease_alley", "spawn": "from_roof", "x": 16,
+         "y": LANE_MAX - 16, "label": "Down to Grease Alley", "auto": True, "w": 22, "h": 46},
+        {"id": "to_bellwater", "to": "bellwater_block", "spawn": "from_roof", "x": W7 - 24,
+         "y": LANE_MAX - 16, "label": "Down to Bellwater", "auto": True, "w": 22, "h": 46},
+    ],
+    "spawns": [
+        {"id": "start", "x": 80, "y": 58},
+        {"id": "from_alley", "x": 90, "y": 58},
+        {"id": "from_bellwater", "x": W7 - 70, "y": 58},
+    ],
+    "encounters": [
+        {"id": "rooftop_ambush", "x": 640, "width": 80},
+    ],
+    "lane_min": 36.0,
+    "lane_max": 74.0,
+}
+build("rooftop_route", W7, rooftop)
+
+# ===========================================================================
+# AREA 8 - BELLWATER BLOCK : forty flats, one shop, a wall full of Commuters
+# ===========================================================================
+W8 = 1500
+bellwater = {
+    "parallax": [
+        sky("sky_day", -430.0, 0.02, 4, 2.2, [0.82, 0.82, 0.94], z=-95),
+        sky("skyline_far", -120.0, 0.25, 4, 1.0, [0.6, 0.6, 0.8], z=-90),
+        sky("skyline_near", -86.0, 0.5, 4, 1.0, [0.76, 0.76, 0.9], z=-85),
+    ],
+    "ground": street_ground(W8),
+    "scenery": (
+        [
+            building("apartment_b", 30, 276, z=-30),
+            building("apartment_a", 170, 256, z=-30),
+            building("apartment_c", 300, 236, z=-30, flip=True),
+            building("shop_corner", 440, 196, z=-30),
+            building("apartment_b", 600, 276, z=-30),
+            building("apartment_a", 740, 256, z=-30, flip=True),
+            building("apartment_c", 880, 236, z=-30),
+            building("apartment_b", 1010, 276, z=-30, flip=True),
+            building("warehouse", 1150, 150, z=-30),
+            building("apartment_a", 1360, 256, z=-30),
+            scenery(PROP + "awning_green", 444, BUILD_BASE - 66, z=-28),
+            scenery(PROP + "graffiti_b", 700, BUILD_BASE - 62, z=-27),
+            scenery(PROP + "laundry_line", 250, BUILD_BASE - 120, z=-28),
+            scenery(PROP + "laundry_line", 950, BUILD_BASE - 126, z=-28),
+            scenery(PROP + "satellite_dish", 1058, BUILD_BASE - 134, z=-28),
+            scenery(PROP + "car_blue", 620, CURB_TOP - 38, z=-21),
+            scenery(PROP + "fence", 1440, CURB_TOP - 38, z=-21),
+        ]
+        + lamp_row(W8, 200, 110)
+    ),
+    "props": [
+        prop("planter", 120, LANE_MAX - 4),
+        prop("bench", 220, LANE_MIN - 2),
+        prop("trashcan", 320, breakable=True, hp=10, money=14, contains="bellwater_stew"),
+        prop("planter", 400, LANE_MAX - 4),
+        prop("bin_bags", 520),
+        prop("crate", 600, breakable=True, hp=8, money=18),
+        prop("hydrant", 680),
+        prop("bench", 780, LANE_MIN - 2),
+        prop("trashcan", 860, breakable=True, hp=10, contains="platform_coffee"),
+        prop("puddle", 940, LANE_MAX - 2),
+        prop("planter", 1030, LANE_MAX - 4),
+        prop("crate", 1120, breakable=True, hp=8, contains="weapon:chair"),
+        prop("cone", 1220),
+        prop("trashcan", 1300, breakable=True, hp=10, money=28),
+        prop("bin_bags", 1400),
+    ],
+    "weapons": [
+        {"id": "bat", "x": 560},
+        {"id": "bottle", "x": 900},
+        {"id": "pipe", "x": 1260},
+    ],
+    "npcs": [
+        {"id": "nadia", "name": "Nadia", "character": "nadia", "x": 470, "y": LANE_MIN + 2,
+         "conditional": [
+             {"dialogue": "nadia_done", "if_quest": ["q_commuters", "ready"]},
+             {"dialogue": "nadia_shop", "if_flag": "met_nadia"},
+         ], "dialogue": "nadia_intro"},
+        {"id": "bellwater_local", "name": "Local", "character": "worker", "x": 1080,
+         "y": LANE_MIN + 6, "dialogue": "bellwater_local", "wander": True},
+    ],
+    "doors": [
+        {"id": "to_metro", "to": "metro_platform", "spawn": "from_bellwater", "x": 16,
+         "y": LANE_MAX - 16, "label": "Metro Platform", "auto": True, "w": 22, "h": 46},
+        {"id": "to_roof", "to": "rooftop_route", "spawn": "from_bellwater", "x": W8 - 24,
+         "y": LANE_MAX - 16, "label": "Fire Escape", "auto": True, "w": 22, "h": 46},
+        {"id": "nadia_store_door", "shop": "nadia_store", "x": 500, "y": LANE_MIN - 2,
+         "label": "Nadia's Corner", "required_flag": "met_nadia",
+         "locked": "The shutter is half down. Talk to her first."},
+    ],
+    "spawns": [
+        {"id": "start", "x": 80, "y": 58},
+        {"id": "from_metro", "x": 90, "y": 58},
+        {"id": "from_roof", "x": W8 - 70, "y": 58},
+    ],
+    "encounters": [
+        {"id": "bellwater_wall", "x": 700, "width": 70},
+        {"id": "bellwater_conductor", "x": 1220, "width": 80},
+    ],
+}
+build("bellwater_block", W8, bellwater)
+
+print("8 area layouts written to data/areas/")

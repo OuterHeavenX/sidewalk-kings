@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DialogueData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/DialogueData.gd" id="1_bex_intro"]
+
+[resource]
+script = ExtResource("1_bex_intro")
+id = "bex_intro"
+lines = Array[Dictionary]([{"name": "Bex", "text": "Stop there. Look at your feet.", "portrait": "bex"}, {"name": "Kip", "text": "What about them?", "portrait": "kip"}, {"name": "Bex", "text": "Those are a street fighter's feet. Wide. Room to swing.", "portrait": "bex"}, {"name": "Bex", "text": "Down here there is no room. There is a platform, a wall, and a drop.", "portrait": "bex"}, {"name": "Kip", "text": "So I fight smaller.", "portrait": "kip"}, {"name": "Bex", "text": "You fight closer. Come back when you can afford to learn the difference.", "portrait": "bex", "set_flag": "met_bex", "shop": "bex_dojo", "end": true}])
+pause_game = true
+once_flag = ""
