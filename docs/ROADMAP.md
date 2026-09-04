@@ -16,16 +16,24 @@ Every system the full game needs, proved end to end on five connected areas.
 
 ---
 
-## Phase 2 — Expanded city
+## Phase 2 — Combat depth, then the expanded city
 
-Prove the "content, not code" claim by adding a district without touching the engine.
+**In progress.** Detailed plan: [PHASE_2.md](PHASE_2.md).
 
-- Three to four new areas beyond the metro gate: the metro platform, a rooftop route, a
-  riverside market, a residential block
-- A second district hub with its own shops
-- Fast travel between visited areas, using `AreaData.connections`
-- A proper map screen with the connection graph drawn, not a list
-- Interiors that are real rooms rather than shopfronts
+Combat changes land first, because content built against the current combat would need
+rebalancing once the player gains a defensive option and enemies start flanking.
+
+- **Stage 1, combat depth.** Guard, dodge roll, enemy flanking through director-assigned
+  engagement slots, and readable wind-up tells on heavy attacks.
+- **Stage 2, the district.** Metro Platform, Rooftop Route and Bellwater Block beyond the
+  chained gate. One new gang, two shops, a second dojo. No engine changes; if any are
+  needed, that is a gap in the data model worth recording.
+- **Stage 3, connective tissue.** A map screen drawing the real connection graph, fast
+  travel between visited areas, and the three save slots exposed in the UI.
+- **Stage 4, chapter two.** Who sends the Tuesday money, plus light cutscene support.
+- **Night lighting** using Godot's built-in 2D lights. The `lit` addon was evaluated and
+  rejected: it requires the Forward+ renderer, and this game runs on Compatibility so that
+  the browser and mobile builds work at all.
 
 ## Phase 3 — More gangs
 
