@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="BookData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://data/BookData.gd" id="1_lucky_pockets"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/items/book_gold.png" id="2_lucky_pockets"]
+
+[resource]
+script = ExtResource("1_lucky_pockets")
+id = "lucky_pockets"
+display_name = "Lucky Pockets"
+price = 200
+description = "On finding money in the street and other minor miracles."
+blurb = "Statistically dubious. Practically effective."
+unlock_move = ""
+stat = "luck"
+stat_bonus = 3
+bonus = "crit_chance"
+bonus_amount = 1
+required_level = 1
+icon = ExtResource("2_lucky_pockets")

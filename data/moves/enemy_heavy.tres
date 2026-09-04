@@ -1,0 +1,46 @@
+[gd_resource type="Resource" script_class="MoveData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://combat/MoveData.gd" id="1_enemy_heavy"]
+
+[resource]
+script = ExtResource("1_enemy_heavy")
+id = "enemy_heavy"
+display_name = "Thug Haymaker"
+description = ""
+animation = "heavy"
+input = 1
+requirement = 1
+damage_kind = 0
+startup = 18
+active = 4
+recovery = 26
+cancel_window = 14
+hitstun = 26
+damage = 14
+knockback = Vector2(170.0, 0.0)
+launch_force = 0.0
+knockdown = true
+energy_cost = 0.0
+special_cost = 0.0
+forward_move = 40.0
+self_launch = 0.0
+grab_target = false
+multi_hit = 1
+armor = false
+hitbox_offset = Vector2(23.0, -22.0)
+hitbox_size = Vector2(22.0, 30.0)
+lane_tolerance = 13.0
+followups = []
+sound = "whoosh_heavy"
+hit_sound = "hit_heavy"
+screen_shake = 2.4
+hit_pause = 0.06
+hit_fx = "spark_big"
+camera_kick = 0.0
+price = 0
+required_level = 1
+required_stat = ""
+required_stat_value = 0
+required_move = ""
+required_flag = ""
+learnable = false

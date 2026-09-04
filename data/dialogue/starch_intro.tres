@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DialogueData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/DialogueData.gd" id="1_starch_intro"]
+
+[resource]
+script = ExtResource("1_starch_intro")
+id = "starch_intro"
+lines = Array[Dictionary]([{"name": "Big Starch", "text": "You have tracked half the river across my floor.", "portrait": "big_starch"}, {"name": "Kip", "text": "You've been paying four gangs to sit still.", "portrait": "kip"}, {"name": "Big Starch", "text": "I have been paying four gangs to be *tidy*. There is a difference and you have never understood it.", "portrait": "big_starch"}, {"name": "Kip", "text": "Who's paying you?", "portrait": "kip"}, {"name": "Big Starch", "text": "Now that is a much better question. Ask it again when you can stand up.", "portrait": "big_starch", "end": true}])
+pause_game = true
+once_flag = ""

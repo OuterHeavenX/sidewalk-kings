@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DialogueData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/DialogueData.gd" id="1_performer_line"]
+
+[resource]
+script = ExtResource("1_performer_line")
+id = "performer_line"
+lines = Array[Dictionary]([{"name": "Street Performer", "text": "You want to hear a song about a man who lost everything?", "portrait": "performer"}, {"name": "Kip", "text": "Not really.", "portrait": "kip"}, {"name": "Street Performer", "text": "Good, I only know the first line. It's very sad and then it stops.", "portrait": "performer", "end": true}])
+pause_game = true
+once_flag = ""

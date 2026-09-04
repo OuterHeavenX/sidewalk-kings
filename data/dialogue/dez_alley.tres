@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DialogueData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/DialogueData.gd" id="1_dez_alley"]
+
+[resource]
+script = ExtResource("1_dez_alley")
+id = "dez_alley"
+lines = Array[Dictionary]([{"name": "Dez", "text": "Grease Alley next. They've got the least reason to be organised and the most gear.", "portrait": "dez", "start_quest": "q_alley_boss", "end": true}])
+pause_game = true
+once_flag = ""

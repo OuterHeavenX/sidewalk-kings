@@ -1,0 +1,46 @@
+[gd_resource type="Resource" script_class="MoveData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://combat/MoveData.gd" id="1_dash_strike"]
+
+[resource]
+script = ExtResource("1_dash_strike")
+id = "dash_strike"
+display_name = "Dash Strike"
+description = "Close distance instantly and open with a strike."
+animation = "dash"
+input = 1
+requirement = 1
+damage_kind = 0
+startup = 3
+active = 5
+recovery = 12
+cancel_window = 14
+hitstun = 18
+damage = 14
+knockback = Vector2(120.0, 0.0)
+launch_force = 0.0
+knockdown = false
+energy_cost = 8.0
+special_cost = 0.0
+forward_move = 210.0
+self_launch = 0.0
+grab_target = false
+multi_hit = 1
+armor = false
+hitbox_offset = Vector2(18.0, -22.0)
+hitbox_size = Vector2(24.0, 30.0)
+lane_tolerance = 13.0
+followups = Array[String](["punch_1", "heavy"])
+sound = "dash"
+hit_sound = "hit_light"
+screen_shake = 1.8
+hit_pause = 0.05
+hit_fx = "spark_small"
+camera_kick = 0.0
+price = 190
+required_level = 2
+required_stat = ""
+required_stat_value = 0
+required_move = ""
+required_flag = ""
+learnable = true

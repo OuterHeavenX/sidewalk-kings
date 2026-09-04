@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="EncounterData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/EncounterData.gd" id="1_yard_wave_2"]
+
+[resource]
+script = ExtResource("1_yard_wave_2")
+id = "yard_wave_2"
+gang = "rust_rats"
+waves = Array[Dictionary]([{"enemy": "rust_heavy", "count": 1, "side": "right", "delay": 0.0, "boss": false}, {"enemy": "rust_ranged", "count": 2, "side": "any", "delay": 0.5, "boss": false}, {"enemy": "grease_weapon", "count": 2, "side": "any", "delay": 0.7, "boss": false}])
+max_active = 4
+difficulty_scale_per_level = 0.06
+lock_camera = true
+once_flag = ""
+respawn_on_reenter = true
+boss_id = ""
+reward_flag = "yard_cleared"
+music = "industrial"
+intro_dialogue = ""
+clear_dialogue = ""

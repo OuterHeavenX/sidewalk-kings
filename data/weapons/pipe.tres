@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="WeaponData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://weapons/WeaponData.gd" id="1_pipe"]
+[ext_resource type="Texture2D" path="res://assets/art/weapons/pipe.png" id="2_pipe"]
+
+[resource]
+script = ExtResource("1_pipe")
+id = "pipe"
+display_name = "Length of Pipe"
+texture = ExtResource("2_pipe")
+style = 0
+damage = 18
+durability = 12
+breaks = true
+swing_move = "weapon_swing"
+throw_damage = 18
+throw_speed = 320.0
+weight = 1.0
+knockback = Vector2(170.0, 0.0)
+knockdown = false
+hit_sound = "hit_weapon"
+swing_sound = "whoosh_heavy"
+break_sound = "weapon_break"
+hand_offset = Vector2(14.0, -26.0)
+rotation_degrees_held = -35.0
+bounces_on_throw = false
+shop_price = 95

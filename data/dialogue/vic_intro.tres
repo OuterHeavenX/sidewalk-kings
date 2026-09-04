@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DialogueData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/DialogueData.gd" id="1_vic_intro"]
+
+[resource]
+script = ExtResource("1_vic_intro")
+id = "vic_intro"
+lines = Array[Dictionary]([{"name": "Vic", "text": "Whoa. Kip? Thought you moved.", "portrait": "vic"}, {"name": "Kip", "text": "I did. Then I came back.", "portrait": "kip"}, {"name": "Vic", "text": "Bold. Everything's priced. The chips are a lie, they're stale, buy the rice balls.", "portrait": "vic", "set_flag": "met_vic", "shop": "vic_corner", "end": true}])
+pause_game = true
+once_flag = ""

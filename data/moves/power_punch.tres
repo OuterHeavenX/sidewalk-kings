@@ -1,0 +1,46 @@
+[gd_resource type="Resource" script_class="MoveData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://combat/MoveData.gd" id="1_power_punch"]
+
+[resource]
+script = ExtResource("1_power_punch")
+id = "power_punch"
+display_name = "Power Punch"
+description = "Wind all the way up. You shrug off small hits while you swing."
+animation = "heavy"
+input = 2
+requirement = 1
+damage_kind = 0
+startup = 13
+active = 4
+recovery = 24
+cancel_window = 14
+hitstun = 34
+damage = 26
+knockback = Vector2(240.0, 0.0)
+launch_force = 140.0
+knockdown = true
+energy_cost = 18.0
+special_cost = 0.0
+forward_move = 0.0
+self_launch = 0.0
+grab_target = false
+multi_hit = 1
+armor = true
+hitbox_offset = Vector2(24.0, -22.0)
+hitbox_size = Vector2(28.0, 32.0)
+lane_tolerance = 13.0
+followups = []
+sound = "whoosh_heavy"
+hit_sound = "hit_crit"
+screen_shake = 4.6
+hit_pause = 0.11
+hit_fx = "spark_big"
+camera_kick = 0.0
+price = 420
+required_level = 5
+required_stat = "strength"
+required_stat_value = 12
+required_move = "heavy"
+required_flag = ""
+learnable = true

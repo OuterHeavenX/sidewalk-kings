@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="QuestData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/QuestData.gd" id="1_q_backpack"]
+
+[resource]
+script = ExtResource("1_q_backpack")
+id = "q_backpack"
+title = "The Very Heavy Backpack"
+description = "A student got jumped near the market and lost his backpack. It went into the alley."
+giver = "student"
+objective = 3
+target = "stolen_backpack"
+required_count = 1
+turn_in_npc = "student"
+reward_money = 90
+reward_xp = 55
+reward_items = Array[String](["bandage"])
+reward_move = ""
+reward_flag = ""
+optional = true
+hint = "Someone in Grease Alley is sitting on it."

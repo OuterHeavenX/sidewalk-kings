@@ -1,0 +1,33 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scenes/game/Game.gd" id="1"]
+[ext_resource type="Script" path="res://world/GameCamera.gd" id="2"]
+[ext_resource type="PackedScene" path="res://ui/hud/HUD.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://ui/menus/PauseMenu.tscn" id="4"]
+[ext_resource type="PackedScene" path="res://ui/mobile/TouchControls.tscn" id="5"]
+[ext_resource type="PackedScene" path="res://ui/menus/DebugPanel.tscn" id="6"]
+
+[node name="Game" type="Node2D"]
+script = ExtResource("1")
+
+[node name="World" type="Node2D" parent="."]
+
+[node name="Camera" type="Camera2D" parent="."]
+script = ExtResource("2")
+
+[node name="UI" type="CanvasLayer" parent="."]
+layer = 5
+
+[node name="HUD" parent="UI" instance=ExtResource("3")]
+
+[node name="PauseMenu" parent="UI" instance=ExtResource("4")]
+
+[node name="DebugPanel" parent="UI" instance=ExtResource("6")]
+
+[node name="TouchControlsHost" type="Control" parent="UI"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="TouchControls" parent="UI/TouchControlsHost" instance=ExtResource("5")]

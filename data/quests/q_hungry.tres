@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="QuestData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/QuestData.gd" id="1_q_hungry"]
+
+[resource]
+script = ExtResource("1_q_hungry")
+id = "q_hungry"
+title = "Feed the Ferry Man"
+description = "The old ferry operator has not eaten since his shift started. His shift started Tuesday."
+giver = "old_ferry"
+objective = 4
+target = "rice_ball"
+required_count = 1
+turn_in_npc = "old_ferry"
+reward_money = 45
+reward_xp = 25
+reward_items = Array[String](["river_coffee"])
+reward_move = ""
+reward_flag = ""
+optional = true
+hint = "Rice balls are at Vic's Corner Store."

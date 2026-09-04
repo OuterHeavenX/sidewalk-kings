@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="BookData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://data/BookData.gd" id="1_legal_throwing"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/items/book_gold.png" id="2_legal_throwing"]
+
+[resource]
+script = ExtResource("1_legal_throwing")
+id = "legal_throwing"
+display_name = "The Surprisingly Legal Art of Throwing People"
+price = 260
+description = "A hands-on guide to putting someone down safely. For them, mostly."
+blurb = "Includes a foreword by a very tired paramedic."
+unlock_move = "back_throw"
+stat = ""
+stat_bonus = 0
+bonus = ""
+bonus_amount = 0
+required_level = 3
+icon = ExtResource("2_legal_throwing")

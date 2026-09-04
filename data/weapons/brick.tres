@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="WeaponData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://weapons/WeaponData.gd" id="1_brick"]
+[ext_resource type="Texture2D" path="res://assets/art/weapons/brick.png" id="2_brick"]
+
+[resource]
+script = ExtResource("1_brick")
+id = "brick"
+display_name = "Loose Brick"
+texture = ExtResource("2_brick")
+style = 0
+damage = 13
+durability = 3
+breaks = true
+swing_move = "weapon_swing"
+throw_damage = 20
+throw_speed = 380.0
+weight = 1.0
+knockback = Vector2(120.0, 0.0)
+knockdown = false
+hit_sound = "hit_weapon"
+swing_sound = "whoosh_heavy"
+break_sound = "weapon_break"
+hand_offset = Vector2(12.0, -26.0)
+rotation_degrees_held = 0.0
+bounces_on_throw = false
+shop_price = 0

@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="ShopData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://data/ShopData.gd" id="1_marisol_books"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/portraits/marisol.png" id="2_marisol_books"]
+
+[resource]
+script = ExtResource("1_marisol_books")
+id = "marisol_books"
+display_name = "Marisol's Stacks"
+shop_type = 3
+owner_name = "Marisol"
+owner_portrait = ExtResource("2_marisol_books")
+greeting = "Everything's used. Everything's underlined. Sorry."
+farewell = "Come back soon."
+broke_line = "I take money, not enthusiasm."
+purchase_lines = Array[String](["Read the footnotes.", "That one's good. Weird, but good.", "No returns on wisdom."])
+inventory = Array[String](["street_physics", "punching_above", "footwork", "breathing", "hard_head", "swing_theory", "lucky_pockets", "legal_throwing"])
+music = "shop"

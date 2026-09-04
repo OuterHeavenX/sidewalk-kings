@@ -1,0 +1,43 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://actors/enemies/EnemyData.gd" id="1_pigeon_rusher"]
+[ext_resource type="SpriteFrames" path="res://assets/art/characters/pigeon_rusher_frames.tres" id="2_pigeon_rusher"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/portraits/pigeon_rusher.png" id="3_pigeon_rusher"]
+
+[resource]
+script = ExtResource("1_pigeon_rusher")
+id = "pigeon_rusher"
+display_name = "Skimmer"
+gang = "pigeons"
+archetype = 1
+sprite_frames = ExtResource("2_pigeon_rusher")
+portrait = ExtResource("3_pigeon_rusher")
+max_hp = 22
+damage_multiplier = 1.0
+defense = 0.0
+move_speed = 98.0
+run_speed = 178.0
+weight = 0.8
+armor_threshold = 0
+grab_resist = 0.0
+can_be_grabbed = true
+preferred_distance = 26.0
+aggression = 0.72
+reaction_delay = 0.2
+attack_cooldown = 0.8
+circle_chance = 0.2
+picks_up_weapons = false
+ranged_distance = 140.0
+moves = Array[String](["enemy_jab", "enemy_rush"])
+heavy_move = ""
+ranged_move = ""
+xp = 10
+money_min = 5
+money_max = 12
+drop_table = []
+drop_chance = 0.12
+scale = 1.0
+tint = Color(1.0, 1.0, 1.0, 1.0)
+show_health_bar = true
+taunts = Array[String](["Too slow!", "Catch me!"])
+defeat_lines = Array[String](["Ran out of road."])

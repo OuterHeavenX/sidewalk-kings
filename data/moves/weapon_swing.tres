@@ -1,0 +1,46 @@
+[gd_resource type="Resource" script_class="MoveData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://combat/MoveData.gd" id="1_weapon_swing"]
+
+[resource]
+script = ExtResource("1_weapon_swing")
+id = "weapon_swing"
+display_name = "Weapon Swing"
+description = "Swing whatever you are holding."
+animation = "weapon_swing"
+input = 1
+requirement = 1
+damage_kind = 3
+startup = 6
+active = 5
+recovery = 16
+cancel_window = 14
+hitstun = 24
+damage = 14
+knockback = Vector2(150.0, 0.0)
+launch_force = 0.0
+knockdown = false
+energy_cost = 0.0
+special_cost = 0.0
+forward_move = 0.0
+self_launch = 0.0
+grab_target = false
+multi_hit = 1
+armor = false
+hitbox_offset = Vector2(24.0, -22.0)
+hitbox_size = Vector2(30.0, 32.0)
+lane_tolerance = 13.0
+followups = []
+sound = "whoosh_heavy"
+hit_sound = "hit_weapon"
+screen_shake = 2.2
+hit_pause = 0.06
+hit_fx = "spark_weapon"
+camera_kick = 0.0
+price = 0
+required_level = 1
+required_stat = ""
+required_stat_value = 0
+required_move = ""
+required_flag = ""
+learnable = false

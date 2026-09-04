@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="FoodData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://data/FoodData.gd" id="1_morning_donut"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/items/donut.png" id="2_morning_donut"]
+
+[resource]
+script = ExtResource("1_morning_donut")
+id = "morning_donut"
+display_name = "Day-Old Donut"
+price = 5
+heal = 12
+energy = 0
+strength_bonus = 0
+defense_bonus = 0
+speed_bonus = 0
+stamina_bonus = 0
+technique_bonus = 0
+luck_bonus = 0
+max_hp_bonus = 0
+description = "The glaze has fused into a protective shell."
+icon = ExtResource("2_morning_donut")
+takeout = true
+eat_line = "Crunchy in an unexpected way."

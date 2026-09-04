@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="QuestData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/QuestData.gd" id="1_q_yard"]
+
+[resource]
+script = ExtResource("1_q_yard")
+id = "q_yard"
+title = "Rust and Trouble"
+description = "The Rust Rats took the scrapyard. Nobody hired them either, which is exactly the problem."
+giver = "pops"
+objective = 0
+target = "rust_rats"
+required_count = 6
+turn_in_npc = "pops"
+reward_money = 140
+reward_xp = 95
+reward_items = Array[String](["steel_lunch"])
+reward_move = ""
+reward_flag = ""
+optional = true
+hint = "Rustpile Yard, past the alley."

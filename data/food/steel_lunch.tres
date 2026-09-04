@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="FoodData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://data/FoodData.gd" id="1_steel_lunch"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/items/burger.png" id="2_steel_lunch"]
+
+[resource]
+script = ExtResource("1_steel_lunch")
+id = "steel_lunch"
+display_name = "Steelworker's Lunch"
+price = 40
+heal = 75
+energy = 0
+strength_bonus = 1
+defense_bonus = 0
+speed_bonus = 0
+stamina_bonus = 1
+technique_bonus = 0
+luck_bonus = 0
+max_hp_bonus = 6
+description = "Two of everything. Built for a twelve-hour shift."
+icon = ExtResource("2_steel_lunch")
+takeout = false
+eat_line = "Now that is lunch."

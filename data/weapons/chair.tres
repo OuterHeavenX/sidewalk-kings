@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="WeaponData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://weapons/WeaponData.gd" id="1_chair"]
+[ext_resource type="Texture2D" path="res://assets/art/weapons/chair.png" id="2_chair"]
+
+[resource]
+script = ExtResource("1_chair")
+id = "chair"
+display_name = "Folding Chair"
+texture = ExtResource("2_chair")
+style = 0
+damage = 24
+durability = 4
+breaks = true
+swing_move = "weapon_swing_heavy"
+throw_damage = 22
+throw_speed = 320.0
+weight = 1.5
+knockback = Vector2(210.0, 0.0)
+knockdown = true
+hit_sound = "hit_weapon"
+swing_sound = "whoosh_heavy"
+break_sound = "weapon_break"
+hand_offset = Vector2(16.0, -30.0)
+rotation_degrees_held = -55.0
+bounces_on_throw = false
+shop_price = 0

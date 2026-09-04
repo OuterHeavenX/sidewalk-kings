@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="BookData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://data/BookData.gd" id="1_footwork"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/items/book_green.png" id="2_footwork"]
+
+[resource]
+script = ExtResource("1_footwork")
+id = "footwork"
+display_name = "Footwork for People Who Hate Running"
+price = 150
+description = "Efficient movement for the chronically unenthusiastic."
+blurb = "Step one: stop flailing. Step two: there is no step two."
+unlock_move = ""
+stat = "speed"
+stat_bonus = 2
+bonus = "move_speed"
+bonus_amount = 4
+required_level = 1
+icon = ExtResource("2_footwork")

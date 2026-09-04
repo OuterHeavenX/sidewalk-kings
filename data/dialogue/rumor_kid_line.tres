@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DialogueData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/DialogueData.gd" id="1_rumor_kid_line"]
+
+[resource]
+script = ExtResource("1_rumor_kid_line")
+id = "rumor_kid_line"
+lines = Array[Dictionary]([{"name": "Kid", "text": "You know the laundromat behind the yard?", "portrait": "rumor_kid"}, {"name": "Kip", "text": "No.", "portrait": "kip"}, {"name": "Kid", "text": "Nobody does. That's the weird part. It's ALWAYS open and nobody's ever got clean clothes from it.", "portrait": "rumor_kid", "set_flag": "heard_laundromat_rumor", "end": true}])
+pause_game = true
+once_flag = ""

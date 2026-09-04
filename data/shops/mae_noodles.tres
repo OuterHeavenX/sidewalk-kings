@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="ShopData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://data/ShopData.gd" id="1_mae_noodles"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/portraits/auntie_mae.png" id="2_mae_noodles"]
+
+[resource]
+script = ExtResource("1_mae_noodles")
+id = "mae_noodles"
+display_name = "Mae's Noodle Counter"
+shop_type = 0
+owner_name = "Auntie Mae"
+owner_portrait = ExtResource("2_mae_noodles")
+greeting = "Sit. Eat. You look like a coat rack."
+farewell = "Come back soon."
+broke_line = "Money first. I have heard every story."
+purchase_lines = Array[String](["Eat it all.", "Chew. Do not inhale.", "Better already."])
+inventory = Array[String](["hot_noodles", "cold_noodles", "hot_soup", "skewer", "slice", "victory_cone"])
+music = "shop"

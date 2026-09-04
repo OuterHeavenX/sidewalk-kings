@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://data/ItemData.gd" id="1_dojo_flyer"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/items/flyer.png" id="2_dojo_flyer"]
+
+[resource]
+script = ExtResource("1_dojo_flyer")
+id = "dojo_flyer"
+display_name = "Crumpled Dojo Flyer"
+description = "A photocopy of a photocopy. 'FREE FIRST LESSON' is crossed out and rewritten twice."
+kind = 1
+price = 10
+icon = ExtResource("2_dojo_flyer")
+heal = 0
+energy = 0
+stackable = false
+usable_in_field = true
+flag_on_use = ""

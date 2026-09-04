@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DialogueData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/DialogueData.gd" id="1_odell_intro"]
+
+[resource]
+script = ExtResource("1_odell_intro")
+id = "odell_intro"
+lines = Array[Dictionary]([{"name": "Odell", "text": "No.", "portrait": "odell"}, {"name": "Kip", "text": "I haven't asked anything.", "portrait": "kip"}, {"name": "Odell", "text": "You walked in with your shoulders up. The answer to that is always no.", "portrait": "odell"}, {"name": "Kip", "text": "I want to learn.", "portrait": "kip"}, {"name": "Odell", "text": "Everybody wants to learn. Bring me one of my flyers. I put up forty and I have zero. Show me you can find something.", "portrait": "odell", "set_flag": "met_odell", "start_quest": "q_flyer", "end": true}])
+pause_game = true
+once_flag = ""

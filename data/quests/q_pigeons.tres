@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="QuestData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/QuestData.gd" id="1_q_pigeons"]
+
+[resource]
+script = ExtResource("1_q_pigeons")
+id = "q_pigeons"
+title = "Clear the Ferry Row"
+description = "Dez says the Pigeons have been shaking down the ferry queue. Convince five of them to find another block."
+giver = "dez"
+objective = 0
+target = "pigeons"
+required_count = 5
+turn_in_npc = "dez"
+reward_money = 60
+reward_xp = 40
+reward_items = []
+reward_move = ""
+reward_flag = "q_pigeons_done"
+optional = false
+hint = "Pigeons hang around Ferry Row."

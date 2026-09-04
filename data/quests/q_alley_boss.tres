@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="QuestData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/QuestData.gd" id="1_q_alley_boss"]
+
+[resource]
+script = ExtResource("1_q_alley_boss")
+id = "q_alley_boss"
+title = "Whoever Runs the Alley"
+description = "The Grease Monkeys answer to someone. Clear out the alley and find out who is paying them."
+giver = "dez"
+objective = 7
+target = "alley_cleared"
+required_count = 1
+turn_in_npc = "dez"
+reward_money = 120
+reward_xp = 80
+reward_items = []
+reward_move = ""
+reward_flag = "knows_about_payer"
+optional = false
+hint = "Fight your way through Grease Alley."

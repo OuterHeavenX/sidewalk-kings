@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DialogueData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/DialogueData.gd" id="1_alley_note"]
+
+[resource]
+script = ExtResource("1_alley_note")
+id = "alley_note"
+lines = Array[Dictionary]([{"name": "", "text": "A note taped inside the dumpster lid:"}, {"name": "", "text": "'ROUTE 4 - TUES. DO NOT COUNT IT IN FRONT OF THEM.'", "set_flag": "found_route_note", "end": true}])
+pause_game = true
+once_flag = ""

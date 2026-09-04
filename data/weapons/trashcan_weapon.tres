@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="WeaponData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://weapons/WeaponData.gd" id="1_trashcan_weapon"]
+[ext_resource type="Texture2D" path="res://assets/art/weapons/trashcan_weapon.png" id="2_trashcan_weapon"]
+
+[resource]
+script = ExtResource("1_trashcan_weapon")
+id = "trashcan_weapon"
+display_name = "Whole Trash Can"
+texture = ExtResource("2_trashcan_weapon")
+style = 0
+damage = 26
+durability = 3
+breaks = true
+swing_move = "weapon_swing_heavy"
+throw_damage = 26
+throw_speed = 260.0
+weight = 1.8
+knockback = Vector2(220.0, 0.0)
+knockdown = true
+hit_sound = "hit_weapon"
+swing_sound = "whoosh_heavy"
+break_sound = "weapon_break"
+hand_offset = Vector2(18.0, -30.0)
+rotation_degrees_held = 0.0
+bounces_on_throw = false
+shop_price = 0

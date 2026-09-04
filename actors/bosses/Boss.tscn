@@ -1,0 +1,63 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://actors/bosses/Boss.gd" id="1"]
+[ext_resource type="Script" path="res://combat/CombatController.gd" id="2"]
+[ext_resource type="Script" path="res://combat/Hitbox.gd" id="3"]
+[ext_resource type="Script" path="res://combat/Hurtbox.gd" id="4"]
+[ext_resource type="Script" path="res://actors/enemies/HealthBar.gd" id="5"]
+[ext_resource type="Texture2D" path="res://assets/art/fx/shadow.png" id="6"]
+[ext_resource type="Texture2D" path="res://assets/art/fx/alert.png" id="7"]
+
+[sub_resource type="RectangleShape2D" id="HurtShape"]
+size = Vector2(13, 12)
+
+[node name="Boss" type="CharacterBody2D"]
+collision_layer = 1
+collision_mask = 1
+motion_mode = 1
+script = ExtResource("1")
+boss_id = "big_starch"
+phase2_threshold = 0.5
+
+[node name="Body" type="CollisionShape2D" parent="."]
+shape = SubResource("HurtShape")
+
+[node name="Shadow" type="Sprite2D" parent="."]
+texture = ExtResource("6")
+position = Vector2(0, 1)
+
+[node name="Visual" type="Node2D" parent="."]
+
+[node name="Sprite" type="AnimatedSprite2D" parent="Visual"]
+position = Vector2(0, -29)
+centered = true
+
+[node name="HealthBar" type="Node2D" parent="."]
+position = Vector2(0, -58)
+script = ExtResource("5")
+
+[node name="Alert" type="Sprite2D" parent="."]
+texture = ExtResource("7")
+position = Vector2(8, -66)
+visible = false
+
+[node name="Hurtbox" type="Area2D" parent="." node_paths=PackedStringArray("actor_path")]
+collision_layer = 2
+collision_mask = 0
+monitorable = true
+monitoring = false
+script = ExtResource("4")
+actor_path = NodePath("..")
+
+[node name="Shape" type="CollisionShape2D" parent="Hurtbox"]
+shape = SubResource("HurtShape")
+
+[node name="Hitbox" type="Area2D" parent="."]
+collision_layer = 8
+collision_mask = 1
+monitorable = false
+monitoring = false
+script = ExtResource("3")
+
+[node name="Combat" type="Node" parent="."]
+script = ExtResource("2")

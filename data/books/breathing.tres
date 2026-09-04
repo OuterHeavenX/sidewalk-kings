@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="BookData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://data/BookData.gd" id="1_breathing"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/items/book_green.png" id="2_breathing"]
+
+[resource]
+script = ExtResource("1_breathing")
+id = "breathing"
+display_name = "Breathing Is Free, Use It"
+price = 120
+description = "Stamina work that costs nothing and hurts anyway."
+blurb = "Half the pages are just the word 'exhale'."
+unlock_move = ""
+stat = "stamina"
+stat_bonus = 2
+bonus = "stamina_recovery"
+bonus_amount = 2
+required_level = 1
+icon = ExtResource("2_breathing")

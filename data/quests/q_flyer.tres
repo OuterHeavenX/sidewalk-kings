@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="QuestData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/QuestData.gd" id="1_q_flyer"]
+
+[resource]
+script = ExtResource("1_q_flyer")
+id = "q_flyer"
+title = "Free First Lesson"
+description = "Odell's dojo flyer blew off the wall. Find one and bring it back, and he might take you seriously."
+giver = "odell"
+objective = 3
+target = "dojo_flyer"
+required_count = 1
+turn_in_npc = "odell"
+reward_money = 40
+reward_xp = 30
+reward_items = []
+reward_move = "dash_strike"
+reward_flag = ""
+optional = true
+hint = "Try the bins around Lantern Market."

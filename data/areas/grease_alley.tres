@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="AreaData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/AreaData.gd" id="1_grease_alley"]
+
+[resource]
+script = ExtResource("1_grease_alley")
+id = "grease_alley"
+display_name = "Grease Alley"
+district = "Backstreets"
+music = "alley"
+ambience = "alley"
+gang = "grease"
+map_position = Vector2(2.0, 0.5)
+connections = Array[String](["lantern_market", "rustpile_yard"])
+description = "Narrow, damp, full of useful objects and people who resent you finding them."

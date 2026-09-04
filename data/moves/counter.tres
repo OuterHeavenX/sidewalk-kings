@@ -1,0 +1,46 @@
+[gd_resource type="Resource" script_class="MoveData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://combat/MoveData.gd" id="1_counter"]
+
+[resource]
+script = ExtResource("1_counter")
+id = "counter"
+display_name = "Counter Stance"
+description = "Hold your ground. Anyone who walks into it gets flattened."
+animation = "block"
+input = 2
+requirement = 1
+damage_kind = 0
+startup = 2
+active = 14
+recovery = 14
+cancel_window = 14
+hitstun = 30
+damage = 18
+knockback = Vector2(160.0, 0.0)
+launch_force = 0.0
+knockdown = true
+energy_cost = 15.0
+special_cost = 0.0
+forward_move = 0.0
+self_launch = 0.0
+grab_target = false
+multi_hit = 1
+armor = true
+hitbox_offset = Vector2(16.0, -22.0)
+hitbox_size = Vector2(20.0, 30.0)
+lane_tolerance = 13.0
+followups = []
+sound = "block"
+hit_sound = "hit_crit"
+screen_shake = 3.0
+hit_pause = 0.09
+hit_fx = "spark_special"
+camera_kick = 0.0
+price = 380
+required_level = 4
+required_stat = "technique"
+required_stat_value = 10
+required_move = ""
+required_flag = ""
+learnable = true

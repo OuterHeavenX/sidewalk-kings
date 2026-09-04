@@ -1,0 +1,306 @@
+extends CanvasLayer
+## Pause menu with Resume, Inventory, Stats, Techniques, Map, Quests, Settings, Save, Title.
+
+enum Page { ROOT, INVENTORY, STATS, TECHNIQUES, MAP, QUESTS, SETTINGS }
+
+var root: Control
+var menu_col: VBoxContainer
+var page_panel: PanelContainer
+var page_col: VBoxContainer
+var page_title: Label
+var footer: Label
+var page: Page = Page.ROOT
+var buttons: Array[Button] = []
+var index: int = 0
+
+func _ready() -> void:
+	layer = 50
+	process_mode = Node.PROCESS_MODE_ALWAYS
+	_build()
+	visible = false
+
+func _build() -> void:
+	root = Control.new()
+	root.set_anchors_preset(Control.PRESET_FULL_RECT)
+	add_child(root)
+	var dim := ColorRect.new()
+	dim.set_anchors_preset(Control.PRESET_FULL_RECT)
+	dim.color = Color(0.03, 0.02, 0.05, 0.76)
+	root.add_child(dim)
+
+	var box := HBoxContainer.new()
+	box.set_anchors_preset(Control.PRESET_FULL_RECT)
+	box.offset_left = 16
+	box.offset_right = -16
+	box.offset_top = 12
+	box.offset_bottom = -12
+	box.add_theme_constant_override("separation", 6)
+	root.add_child(box)
+
+	var left := PanelContainer.new()
+	left.add_theme_stylebox_override("panel", UITheme.panel_style(UITheme.PANEL, UITheme.BORDER, 2))
+	left.custom_minimum_size = Vector2(96, 0)
+	box.add_child(left)
+	menu_col = VBoxContainer.new()
+	menu_col.add_theme_constant_override("separation", 2)
+	left.add_child(menu_col)
+
+	page_panel = PanelContainer.new()
+	page_panel.add_theme_stylebox_override("panel", UITheme.panel_style(UITheme.PANEL_DIM, Color(0.3, 0.27, 0.38), 2))
+	page_panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	box.add_child(page_panel)
+	var pc := VBoxContainer.new()
+	pc.add_theme_constant_override("separation", 2)
+	page_panel.add_child(pc)
+	page_title = Label.new()
+	UITheme.style_label(page_title, 12, UITheme.ACCENT_2)
+	pc.add_child(page_title)
+	var scroll := ScrollContainer.new()
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	pc.add_child(scroll)
+	page_col = VBoxContainer.new()
+	page_col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	page_col.add_theme_constant_override("separation", 1)
+	scroll.add_child(page_col)
+	footer = Label.new()
+	UITheme.style_label(footer, 8, UITheme.TEXT_DIM)
+	pc.add_child(footer)
+
+func open() -> void:
+	visible = true
+	get_tree().paused = true
+	GameManager.set_state(GameManager.State.PAUSED)
+	AudioManager.play_ui("pause")
+	page = Page.ROOT
+	_build_menu()
+	_show_page(Page.STATS)
+
+func close() -> void:
+	visible = false
+	get_tree().paused = false
+	GameManager.set_state(GameManager.State.PLAYING)
+	AudioManager.play_ui("menu_back")
+
+func _build_menu() -> void:
+	for b in buttons:
+		if is_instance_valid(b):
+			b.queue_free()
+	buttons.clear()
+	var items := [
+		["Resume", func(): close()],
+		["Stats", func(): _show_page(Page.STATS)],
+		["Inventory", func(): _show_page(Page.INVENTORY)],
+		["Techniques", func(): _show_page(Page.TECHNIQUES)],
+		["Quests", func(): _show_page(Page.QUESTS)],
+		["Map", func(): _show_page(Page.MAP)],
+		["Settings", func(): _show_page(Page.SETTINGS)],
+		["Save", func(): _save()],
+		["Title", func(): _to_title()],
+	]
+	for item in items:
+		var b := Button.new()
+		b.text = str(item[0])
+		UITheme.style_button(b, 10)
+		var cb: Callable = item[1]
+		b.pressed.connect(func():
+			AudioManager.play_ui("menu_confirm")
+			cb.call())
+		menu_col.add_child(b)
+		buttons.append(b)
+	index = 0
+	if not buttons.is_empty():
+		buttons[0].grab_focus()
+
+func _clear_page() -> void:
+	for c in page_col.get_children():
+		c.queue_free()
+
+func _row(text: String, value: String = "", color: Color = UITheme.TEXT) -> void:
+	var h := HBoxContainer.new()
+	var l := Label.new()
+	l.text = text
+	l.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	UITheme.style_label(l, 9, color)
+	h.add_child(l)
+	if value != "":
+		var v := Label.new()
+		v.text = value
+		UITheme.style_label(v, 9, UITheme.ACCENT_2)
+		h.add_child(v)
+	page_col.add_child(h)
+
+func _show_page(p: Page) -> void:
+	page = p
+	_clear_page()
+	footer.text = ""
+	var pd := GameManager.player_data
+	match p:
+		Page.STATS:
+			page_title.text = "Stats"
+			_row("Level", str(pd.level))
+			_row("XP", "%d / %d" % [pd.xp, pd.xp_to_next_level()])
+			_row("Money", "$%d" % pd.money)
+			_row("Max HP", str(pd.get_max_hp()))
+			page_col.add_child(HSeparator.new())
+			for s in PlayerState.STAT_NAMES:
+				_row(s.capitalize(), str(pd.stats[s]))
+			page_col.add_child(HSeparator.new())
+			_row("Punch power", "x%.2f" % pd.get_punch_multiplier())
+			_row("Kick power", "x%.2f" % pd.get_kick_multiplier())
+			_row("Throw power", "x%.2f" % pd.get_throw_multiplier())
+			_row("Weapon skill", "x%.2f" % pd.get_weapon_multiplier())
+			_row("Crit chance", "%.0f%%" % (pd.get_crit_chance() * 100.0))
+			_row("Playtime", _fmt_time(pd.playtime))
+		Page.INVENTORY:
+			page_title.text = "Inventory"
+			if pd.inventory.is_empty() and pd.key_items.is_empty():
+				_row("Nothing but lint.", "", UITheme.TEXT_DIM)
+			for id in pd.inventory.keys():
+				var res := ContentDB.get_item(str(id))
+				var nm := str(res.get("display_name")) if res and res.get("display_name") != null else str(id)
+				var b := Button.new()
+				b.text = "%s x%d" % [nm, int(pd.inventory[id])]
+				b.alignment = HORIZONTAL_ALIGNMENT_LEFT
+				UITheme.style_button(b, 9)
+				var item_id := str(id)
+				b.pressed.connect(func(): _use_item(item_id))
+				page_col.add_child(b)
+			if not pd.key_items.is_empty():
+				page_col.add_child(HSeparator.new())
+				_row("Key items", "", UITheme.ACCENT_2)
+				for id in pd.key_items:
+					var res2 := ContentDB.get_item(str(id))
+					_row(str(res2.get("display_name")) if res2 and res2.get("display_name") != null else str(id), "", UITheme.TEXT_DIM)
+			footer.text = "Select an item to use it."
+		Page.TECHNIQUES:
+			page_title.text = "Techniques"
+			for mid in pd.known_moves:
+				var m: MoveData = ContentDB.get_move(str(mid))
+				if m == null or m.display_name == "":
+					continue
+				_row(m.display_name, "DMG %d" % m.damage)
+			page_col.add_child(HSeparator.new())
+			_row("Books read", str(pd.books_read.size()), UITheme.TEXT_DIM)
+		Page.QUESTS:
+			page_title.text = "Quests"
+			var act := QuestManager.active_quests()
+			if act.is_empty():
+				_row("No active quests.", "", UITheme.TEXT_DIM)
+			for q in act:
+				var prog := QuestManager.get_progress(q.id)
+				_row(q.title, "%d/%d" % [prog, q.required_count], UITheme.ACCENT_2)
+				var d := Label.new()
+				d.text = "  " + q.description
+				d.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+				UITheme.style_label(d, 8, UITheme.TEXT_DIM)
+				page_col.add_child(d)
+			var done := QuestManager.completed_quests()
+			if not done.is_empty():
+				page_col.add_child(HSeparator.new())
+				_row("Completed", str(done.size()), UITheme.GOOD)
+				for q2 in done:
+					_row("  " + q2.title, "", UITheme.TEXT_DIM)
+		Page.MAP:
+			page_title.text = "Riverbend"
+			var current := pd.current_area
+			for id in ContentDB.areas.keys():
+				var a: AreaData = ContentDB.areas[id]
+				var visited: bool = bool(GameManager.get_flag("visited_" + str(id), false))
+				var mark: String = "> " if str(id) == current else ("  " if visited else "? ")
+				_row(mark + (a.display_name if visited or str(id) == current else "????"),
+					a.district if visited or str(id) == current else "",
+					UITheme.ACCENT_2 if str(id) == current else (UITheme.TEXT if visited else UITheme.TEXT_DIM))
+			footer.text = "Areas you have visited."
+		Page.SETTINGS:
+			page_title.text = "Settings"
+			for bus: String in AudioManager.BUSES:
+				var h := HBoxContainer.new()
+				var l := Label.new()
+				l.text = bus
+				l.custom_minimum_size = Vector2(58, 0)
+				UITheme.style_label(l, 9)
+				h.add_child(l)
+				var sl := HSlider.new()
+				sl.min_value = 0.0
+				sl.max_value = 1.0
+				sl.step = 0.05
+				sl.value = AudioManager.get_volume(bus)
+				sl.custom_minimum_size = Vector2(90, 12)
+				sl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+				var bus_name: String = bus
+				sl.value_changed.connect(func(v):
+					AudioManager.set_volume(bus_name, v)
+					SaveManager.save_settings())
+				h.add_child(sl)
+				page_col.add_child(h)
+			page_col.add_child(HSeparator.new())
+			var tb := Button.new()
+			tb.text = "Touch controls: %s" % ("ON" if InputManager.is_touch() else "OFF")
+			UITheme.style_button(tb, 9)
+			tb.pressed.connect(func():
+				InputManager.set_touch_mode(not InputManager.is_touch())
+				_show_page(Page.SETTINGS))
+			page_col.add_child(tb)
+			_row("Version", GameManager.version, UITheme.TEXT_DIM)
+	_show_root_focus()
+
+func _show_root_focus() -> void:
+	if not buttons.is_empty():
+		buttons[index].grab_focus()
+
+func _fmt_time(seconds: float) -> String:
+	var t := int(seconds)
+	return "%d:%02d:%02d" % [t / 3600, (t / 60) % 60, t % 60]
+
+func _use_item(item_id: String) -> void:
+	var res := ContentDB.get_item(item_id)
+	if res == null:
+		return
+	if res is FoodData:
+		ShopManager.apply_food(res)
+		GameManager.add_item(item_id, -1)
+		AudioManager.play_sfx("eat", -4.0)
+	elif res is ItemData and res.kind == ItemData.Kind.CONSUMABLE:
+		if res.heal > 0:
+			GameManager.heal_player(res.heal)
+		if res.energy > 0 and is_instance_valid(GameManager.player):
+			GameManager.player.restore_energy(res.energy)
+		if res.flag_on_use != "":
+			GameManager.set_flag(res.flag_on_use, true)
+		GameManager.add_item(item_id, -1)
+		AudioManager.play_sfx("eat", -4.0)
+	else:
+		AudioManager.play_ui("menu_deny")
+		return
+	EventBus.item_used.emit(item_id)
+	_show_page(Page.INVENTORY)
+
+func _save() -> void:
+	if SaveManager.save_game(0):
+		AudioManager.play_ui("save")
+		footer.text = "Game saved."
+
+func _to_title() -> void:
+	get_tree().paused = false
+	visible = false
+	SceneManager.goto_title()
+
+func _input(event: InputEvent) -> void:
+	if not visible:
+		return
+	if event.is_action_pressed("pause") or event.is_action_pressed("menu_back"):
+		close()
+		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("move_down") or event.is_action_pressed("move_up"):
+		if buttons.is_empty():
+			return
+		var dir := 1 if event.is_action_pressed("move_down") else -1
+		index = wrapi(index + dir, 0, buttons.size())
+		buttons[index].grab_focus()
+		AudioManager.play_ui("menu_move")
+		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("menu_confirm"):
+		if not buttons.is_empty():
+			buttons[index].emit_signal("pressed")
+		get_viewport().set_input_as_handled()

@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="BookData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://data/BookData.gd" id="1_hard_head"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/items/book_blue.png" id="2_hard_head"]
+
+[resource]
+script = ExtResource("1_hard_head")
+id = "hard_head"
+display_name = "Hard Head, Soft Landing"
+price = 170
+description = "Taking a hit without letting it take you."
+blurb = "The cover is dented."
+unlock_move = ""
+stat = "defense"
+stat_bonus = 2
+bonus = "max_hp"
+bonus_amount = 10
+required_level = 1
+icon = ExtResource("2_hard_head")

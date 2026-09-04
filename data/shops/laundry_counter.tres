@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="ShopData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://data/ShopData.gd" id="1_laundry_counter"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/portraits/laundry_lady.png" id="2_laundry_counter"]
+
+[resource]
+script = ExtResource("1_laundry_counter")
+id = "laundry_counter"
+display_name = "Starch & Sons Front Counter"
+shop_type = 1
+owner_name = "Attendant"
+owner_portrait = ExtResource("2_laundry_counter")
+greeting = "We are... not really open to walk-ins."
+farewell = "Come back soon."
+broke_line = "Then please leave."
+purchase_lines = Array[String](["Please don't tell anyone you were here."])
+inventory = Array[String](["bandage", "energy_drink", "pressed_sandwich"])
+music = "shop"

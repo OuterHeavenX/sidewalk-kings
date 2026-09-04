@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DialogueData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/DialogueData.gd" id="1_old_ferry_done"]
+
+[resource]
+script = ExtResource("1_old_ferry_done")
+id = "old_ferry_done"
+lines = Array[Dictionary]([{"name": "Ferry Man", "text": "...oh, that's a rice ball.", "portrait": "old_ferry"}, {"name": "Ferry Man", "text": "Kid, when the crews stopped fighting? The ferry stopped being late. Whoever's running this is *organised*.", "portrait": "old_ferry", "end": true}])
+pause_game = true
+once_flag = ""

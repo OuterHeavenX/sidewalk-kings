@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="AreaData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/AreaData.gd" id="1_lantern_market"]
+
+[resource]
+script = ExtResource("1_lantern_market")
+id = "lantern_market"
+display_name = "Lantern Market"
+district = "Riverbend East"
+music = "market"
+ambience = "city"
+gang = "sweaters"
+map_position = Vector2(1.0, 0.0)
+connections = Array[String](["ferry_row", "grease_alley"])
+description = "Two blocks of food stalls, secondhand books and a dojo nobody can find twice."

@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="ShopData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://data/ShopData.gd" id="1_odell_dojo"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/portraits/odell.png" id="2_odell_dojo"]
+
+[resource]
+script = ExtResource("1_odell_dojo")
+id = "odell_dojo"
+display_name = "Odell's Back Room Dojo"
+shop_type = 2
+owner_name = "Odell"
+owner_portrait = ExtResource("2_odell_dojo")
+greeting = "You want to learn or you want to look like you learned?"
+farewell = "Come back soon."
+broke_line = "Training's not free. Neither is the mat."
+purchase_lines = Array[String](["Again. Slower.", "Now you know it. Now go learn it.", "Good. Don't get smug."])
+inventory = Array[String](["uppercut", "spin_kick", "dash_strike", "flying_knee", "counter", "power_punch", "jump_stomp"])
+music = "shop"

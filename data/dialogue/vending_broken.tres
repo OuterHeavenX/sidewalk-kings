@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DialogueData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/DialogueData.gd" id="1_vending_broken"]
+
+[resource]
+script = ExtResource("1_vending_broken")
+id = "vending_broken"
+lines = Array[Dictionary]([{"name": "", "text": "The machine hums, takes your money, and gives you a look.", "end": true}])
+pause_game = true
+once_flag = ""

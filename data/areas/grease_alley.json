@@ -1,0 +1,486 @@
+{
+ "parallax": [
+  {
+   "texture": "res://assets/art/backgrounds/sky_alley",
+   "y": -190.0,
+   "scroll": 0.02,
+   "repeat": 4,
+   "scale": 1.0,
+   "z": -95
+  },
+  {
+   "texture": "res://assets/art/backgrounds/skyline_near",
+   "y": -70.0,
+   "scroll": 0.35,
+   "repeat": 4,
+   "scale": 1.0,
+   "z": -90,
+   "modulate": [
+    0.45,
+    0.42,
+    0.58
+   ]
+  }
+ ],
+ "ground": [
+  {
+   "tile": "concrete",
+   "y": 16.0,
+   "height": 2,
+   "z": -24,
+   "x": -40,
+   "x2": 1440
+  },
+  {
+   "tile": "curb",
+   "y": 48.0,
+   "height": 1,
+   "z": -23,
+   "x": -40,
+   "x2": 1440
+  },
+  {
+   "tile": "asphalt_a",
+   "y": 64.0,
+   "height": 6,
+   "z": -22,
+   "x": -40,
+   "x2": 1440,
+   "alt": "asphalt_b"
+  }
+ ],
+ "scenery": [
+  {
+   "texture": "res://assets/art/backgrounds/apartment_b",
+   "x": 0,
+   "y": -202.0,
+   "z": -30,
+   "scale": 1.0,
+   "modulate": [
+    0.72,
+    0.7,
+    0.86
+   ]
+  },
+  {
+   "texture": "res://assets/art/backgrounds/apartment_a",
+   "x": 130,
+   "y": -182.0,
+   "z": -30,
+   "scale": 1.0,
+   "modulate": [
+    0.72,
+    0.7,
+    0.86
+   ]
+  },
+  {
+   "texture": "res://assets/art/backgrounds/apartment_c",
+   "x": 250,
+   "y": -162.0,
+   "z": -30,
+   "scale": 1.0,
+   "modulate": [
+    0.7,
+    0.68,
+    0.84
+   ]
+  },
+  {
+   "texture": "res://assets/art/backgrounds/warehouse",
+   "x": 380,
+   "y": -76.0,
+   "z": -30,
+   "scale": 1.0,
+   "modulate": [
+    0.76,
+    0.74,
+    0.86
+   ]
+  },
+  {
+   "texture": "res://assets/art/backgrounds/apartment_b",
+   "x": 580,
+   "y": -202.0,
+   "z": -30,
+   "scale": 1.0,
+   "flip": true,
+   "modulate": [
+    0.72,
+    0.7,
+    0.86
+   ]
+  },
+  {
+   "texture": "res://assets/art/backgrounds/apartment_a",
+   "x": 720,
+   "y": -182.0,
+   "z": -30,
+   "scale": 1.0,
+   "modulate": [
+    0.7,
+    0.68,
+    0.84
+   ]
+  },
+  {
+   "texture": "res://assets/art/backgrounds/warehouse",
+   "x": 860,
+   "y": -76.0,
+   "z": -30,
+   "scale": 1.0,
+   "flip": true,
+   "modulate": [
+    0.74,
+    0.72,
+    0.85
+   ]
+  },
+  {
+   "texture": "res://assets/art/backgrounds/apartment_c",
+   "x": 1060,
+   "y": -162.0,
+   "z": -30,
+   "scale": 1.0,
+   "modulate": [
+    0.72,
+    0.7,
+    0.86
+   ]
+  },
+  {
+   "texture": "res://assets/art/backgrounds/apartment_b",
+   "x": 1180,
+   "y": -202.0,
+   "z": -30,
+   "scale": 1.0,
+   "modulate": [
+    0.7,
+    0.68,
+    0.84
+   ]
+  },
+  {
+   "texture": "res://assets/art/backgrounds/apartment_a",
+   "x": 1320,
+   "y": -182.0,
+   "z": -30,
+   "scale": 1.0,
+   "flip": true,
+   "modulate": [
+    0.72,
+    0.7,
+    0.86
+   ]
+  },
+  {
+   "texture": "res://assets/art/props/graffiti_a",
+   "x": 200,
+   "y": 4.0,
+   "z": -27,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/props/graffiti_b",
+   "x": 520,
+   "y": -2.0,
+   "z": -27,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/props/graffiti_c",
+   "x": 900,
+   "y": 6.0,
+   "z": -27,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/props/graffiti_a",
+   "x": 1200,
+   "y": 2.0,
+   "z": -27,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/props/ac_unit",
+   "x": 340,
+   "y": -56.0,
+   "z": -28,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/props/ac_unit",
+   "x": 980,
+   "y": -64.0,
+   "z": -28,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/props/fence",
+   "x": 60,
+   "y": 8.0,
+   "z": -26,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/props/streetlight",
+   "x": 140,
+   "y": -18.0,
+   "z": -8,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/props/streetlight",
+   "x": 380,
+   "y": -18.0,
+   "z": -8,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/props/streetlight",
+   "x": 620,
+   "y": -18.0,
+   "z": -8,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/props/streetlight",
+   "x": 860,
+   "y": -18.0,
+   "z": -8,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/props/streetlight",
+   "x": 1100,
+   "y": -18.0,
+   "z": -8,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/props/streetlight",
+   "x": 1340,
+   "y": -18.0,
+   "z": -8,
+   "scale": 1.0
+  }
+ ],
+ "props": [
+  {
+   "id": "dumpster",
+   "x": 180,
+   "y": 30.0,
+   "solid": true,
+   "searchable": true,
+   "dialogue": "alley_note",
+   "prompt": "Look inside"
+  },
+  {
+   "id": "crate",
+   "x": 260,
+   "y": 76.0,
+   "breakable": true,
+   "hp": 8,
+   "money": 14
+  },
+  {
+   "id": "barrel",
+   "x": 320,
+   "y": 68.0,
+   "breakable": true,
+   "hp": 12,
+   "contains": "weapon:pipe"
+  },
+  {
+   "id": "tire",
+   "x": 400,
+   "y": 76.0
+  },
+  {
+   "id": "pallet",
+   "x": 460,
+   "y": 32.0
+  },
+  {
+   "id": "crate",
+   "x": 540,
+   "y": 76.0,
+   "breakable": true,
+   "hp": 8,
+   "contains": "stolen_backpack"
+  },
+  {
+   "id": "bin_bags",
+   "x": 600,
+   "y": 76.0
+  },
+  {
+   "id": "barrel",
+   "x": 680,
+   "y": 76.0,
+   "breakable": true,
+   "hp": 12,
+   "money": 18
+  },
+  {
+   "id": "pipe_stack",
+   "x": 760,
+   "y": 31.0
+  },
+  {
+   "id": "dumpster",
+   "x": 860,
+   "y": 30.0,
+   "solid": true,
+   "searchable": true
+  },
+  {
+   "id": "tire",
+   "x": 940,
+   "y": 70.0
+  },
+  {
+   "id": "crate",
+   "x": 1020,
+   "y": 76.0,
+   "breakable": true,
+   "hp": 8,
+   "contains": "weapon:chair"
+  },
+  {
+   "id": "puddle",
+   "x": 1080,
+   "y": 72.0
+  },
+  {
+   "id": "barrel",
+   "x": 1160,
+   "y": 76.0,
+   "breakable": true,
+   "hp": 12,
+   "money": 22,
+   "contains": "energy_drink"
+  },
+  {
+   "id": "bin_bags",
+   "x": 1240,
+   "y": 76.0
+  },
+  {
+   "id": "crate",
+   "x": 1320,
+   "y": 76.0,
+   "breakable": true,
+   "hp": 8,
+   "money": 25
+  }
+ ],
+ "weapons": [
+  {
+   "id": "pipe",
+   "x": 300
+  },
+  {
+   "id": "plank",
+   "x": 720
+  },
+  {
+   "id": "brick",
+   "x": 880
+  },
+  {
+   "id": "bat",
+   "x": 1140
+  }
+ ],
+ "npcs": [
+  {
+   "id": "pops",
+   "name": "Pops",
+   "character": "pops",
+   "x": 1000,
+   "y": 37.0,
+   "conditional": [
+    {
+     "dialogue": "pops_soup",
+     "if_quest": [
+      "q_soup",
+      "ready"
+     ]
+    },
+    {
+     "dialogue": "pops_shop",
+     "if_flag": "met_pops"
+    }
+   ],
+   "dialogue": "pops_intro"
+  }
+ ],
+ "doors": [
+  {
+   "id": "to_market",
+   "to": "lantern_market",
+   "spawn": "from_alley",
+   "x": 16,
+   "y": 58.0,
+   "label": "Lantern Market",
+   "auto": true,
+   "w": 22,
+   "h": 46
+  },
+  {
+   "id": "to_yard",
+   "to": "rustpile_yard",
+   "spawn": "from_alley",
+   "x": 1376,
+   "y": 58.0,
+   "label": "Rustpile Yard",
+   "auto": true,
+   "w": 22,
+   "h": 46
+  },
+  {
+   "id": "pops_shop_door",
+   "shop": "pops_gear",
+   "x": 1030,
+   "y": 32.0,
+   "label": "Pops' Gear",
+   "required_flag": "met_pops",
+   "locked": "Pops hasn't decided if he likes you yet."
+  }
+ ],
+ "spawns": [
+  {
+   "id": "start",
+   "x": 80,
+   "y": 58
+  },
+  {
+   "id": "from_market",
+   "x": 70,
+   "y": 58
+  },
+  {
+   "id": "from_yard",
+   "x": 1330,
+   "y": 58
+  }
+ ],
+ "encounters": [
+  {
+   "id": "alley_ambush",
+   "x": 420,
+   "width": 70
+  },
+  {
+   "id": "alley_boss_fight",
+   "x": 1120,
+   "width": 80
+  }
+ ],
+ "lane_min": 34.0,
+ "lane_max": 74.0,
+ "walk_min_x": 20.0,
+ "walk_max_x": 1380.0,
+ "ground_y": 74.0
+}

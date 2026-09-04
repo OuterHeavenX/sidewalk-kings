@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DialogueData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/DialogueData.gd" id="1_dez_finale"]
+
+[resource]
+script = ExtResource("1_dez_finale")
+id = "dez_finale"
+lines = Array[Dictionary]([{"name": "Dez", "text": "A laundromat.", "portrait": "dez"}, {"name": "Kip", "text": "A laundromat.", "portrait": "kip"}, {"name": "Dez", "text": "That is either the dumbest lead we've had or the only one that explains crisp money.", "portrait": "dez"}, {"name": "Kip", "text": "It explains crisp money perfectly.", "portrait": "kip"}, {"name": "Dez", "text": "Go. I'll keep the lights on.", "portrait": "dez", "start_quest": "q_starch", "end": true}])
+pause_game = true
+once_flag = ""

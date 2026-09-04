@@ -1,0 +1,46 @@
+[gd_resource type="Resource" script_class="MoveData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://combat/MoveData.gd" id="1_heavy"]
+
+[resource]
+script = ExtResource("1_heavy")
+id = "heavy"
+display_name = "Haymaker"
+description = "Slow, heavy, and it puts them on the pavement."
+animation = "heavy"
+input = 2
+requirement = 1
+damage_kind = 0
+startup = 9
+active = 4
+recovery = 20
+cancel_window = 14
+hitstun = 26
+damage = 17
+knockback = Vector2(180.0, 0.0)
+launch_force = 110.0
+knockdown = true
+energy_cost = 6.0
+special_cost = 0.0
+forward_move = 60.0
+self_launch = 0.0
+grab_target = false
+multi_hit = 1
+armor = false
+hitbox_offset = Vector2(23.0, -22.0)
+hitbox_size = Vector2(26.0, 32.0)
+lane_tolerance = 13.0
+followups = []
+sound = "whoosh_heavy"
+hit_sound = "hit_heavy"
+screen_shake = 3.2
+hit_pause = 0.085
+hit_fx = "spark_big"
+camera_kick = 0.0
+price = 0
+required_level = 1
+required_stat = ""
+required_stat_value = 0
+required_move = ""
+required_flag = ""
+learnable = false

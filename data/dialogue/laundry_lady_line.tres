@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DialogueData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/DialogueData.gd" id="1_laundry_lady_line"]
+
+[resource]
+script = ExtResource("1_laundry_lady_line")
+id = "laundry_lady_line"
+lines = Array[Dictionary]([{"name": "Attendant", "text": "We're closed.", "portrait": "laundry_lady"}, {"name": "Kip", "text": "The sign says open.", "portrait": "kip"}, {"name": "Attendant", "text": "The sign is aspirational.", "portrait": "laundry_lady", "end": true}])
+pause_game = true
+once_flag = ""

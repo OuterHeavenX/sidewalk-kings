@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="QuestData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/QuestData.gd" id="1_q_soup"]
+
+[resource]
+script = ExtResource("1_q_soup")
+id = "q_soup"
+title = "Soup Delivery"
+description = "Auntie Mae wants a bowl of Furnace Soup taken to Pops before it cools. It will not cool."
+giver = "auntie_mae"
+objective = 4
+target = "hot_soup"
+required_count = 1
+turn_in_npc = "pops"
+reward_money = 70
+reward_xp = 35
+reward_items = Array[String](["victory_cone"])
+reward_move = ""
+reward_flag = ""
+optional = true
+hint = "Buy Furnace Soup at Mae's, then find Pops in Grease Alley."

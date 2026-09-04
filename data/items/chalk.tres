@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://data/ItemData.gd" id="1_chalk"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/items/letter.png" id="2_chalk"]
+
+[resource]
+script = ExtResource("1_chalk")
+id = "chalk"
+display_name = "Blue Chalk"
+description = "Odell hands these out. He will not explain why."
+kind = 4
+price = 5
+icon = ExtResource("2_chalk")
+heal = 0
+energy = 0
+stackable = true
+usable_in_field = true
+flag_on_use = ""

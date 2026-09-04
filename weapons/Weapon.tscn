@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://weapons/WeaponBase.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/art/fx/shadow.png" id="2"]
+
+[node name="Weapon" type="Node2D"]
+script = ExtResource("1")
+weapon_id = "bat"
+
+[node name="Shadow" type="Sprite2D" parent="."]
+texture = ExtResource("2")
+scale = Vector2(0.6, 0.6)
+modulate = Color(1, 1, 1, 0.4)
+
+[node name="Sprite" type="Sprite2D" parent="."]
+position = Vector2(0, -4)

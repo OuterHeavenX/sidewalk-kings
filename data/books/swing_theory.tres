@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="BookData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://data/BookData.gd" id="1_swing_theory"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/items/book_red.png" id="2_swing_theory"]
+
+[resource]
+script = ExtResource("1_swing_theory")
+id = "swing_theory"
+display_name = "Swing Theory"
+price = 210
+description = "Getting the most out of found objects."
+blurb = "Legally distinct from a manual on assault."
+unlock_move = ""
+stat = ""
+stat_bonus = 0
+bonus = "weapon_skill"
+bonus_amount = 2
+required_level = 2
+icon = ExtResource("2_swing_theory")

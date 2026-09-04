@@ -1,0 +1,29 @@
+# Godot 4
+.godot/
+.import/
+*.import.tmp
+export.cfg
+export_credentials.cfg
+*.translation
+mono_crash.*.json
+
+# Web build intermediates (the web/ export IS committed)
+web/.godot/
+
+# Editor / OS
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Python tool caches
+tools/__pycache__/
+__pycache__/
+*.pyc
+tools/_scratch/
+
+# Logs
+*.log
+logs/

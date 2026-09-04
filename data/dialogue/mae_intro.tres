@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DialogueData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/DialogueData.gd" id="1_mae_intro"]
+
+[resource]
+script = ExtResource("1_mae_intro")
+id = "mae_intro"
+lines = Array[Dictionary]([{"name": "Auntie Mae", "text": "You. Skinny. Sit.", "portrait": "auntie_mae"}, {"name": "Kip", "text": "I'm fine, Mae.", "portrait": "kip"}, {"name": "Auntie Mae", "text": "You are vertical. That is not the same as fine.", "portrait": "auntie_mae"}, {"name": "Auntie Mae", "text": "Sweaters came by. Asked for 'a contribution to the neighbourhood'. I gave them soup.", "portrait": "auntie_mae"}, {"name": "Kip", "text": "That was generous.", "portrait": "kip"}, {"name": "Auntie Mae", "text": "It was very hot soup.", "portrait": "auntie_mae", "set_flag": "met_mae", "start_quest": "q_soup", "shop": "mae_noodles", "end": true}])
+pause_game = true
+once_flag = ""

@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DialogueData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/DialogueData.gd" id="1_student_intro"]
+
+[resource]
+script = ExtResource("1_student_intro")
+id = "student_intro"
+lines = Array[Dictionary]([{"name": "Student", "text": "They took my bag. My BAG. My whole semester is in that bag.", "portrait": "student"}, {"name": "Kip", "text": "Who did?", "portrait": "kip"}, {"name": "Student", "text": "Guys with wrenches. They went into the alley. They said the bag was 'evidence'. Evidence of WHAT? Chemistry?", "portrait": "student"}, {"name": "Kip", "text": "I'll get it.", "portrait": "kip", "start_quest": "q_backpack", "end": true}])
+pause_game = true
+once_flag = ""

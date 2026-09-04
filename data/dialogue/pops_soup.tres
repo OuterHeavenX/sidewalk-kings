@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DialogueData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/DialogueData.gd" id="1_pops_soup"]
+
+[resource]
+script = ExtResource("1_pops_soup")
+id = "pops_soup"
+lines = Array[Dictionary]([{"name": "Pops", "text": "Is that from Mae?", "portrait": "pops"}, {"name": "Kip", "text": "It's still boiling.", "portrait": "kip"}, {"name": "Pops", "text": "It's always still boiling. Thirty years, that woman has never served a cool bowl.", "portrait": "pops", "end": true}])
+pause_game = true
+once_flag = ""

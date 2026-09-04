@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="FoodData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://data/FoodData.gd" id="1_pressed_sandwich"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/items/sandwich.png" id="2_pressed_sandwich"]
+
+[resource]
+script = ExtResource("1_pressed_sandwich")
+id = "pressed_sandwich"
+display_name = "Pressed Sandwich"
+price = 22
+heal = 42
+energy = 0
+strength_bonus = 0
+defense_bonus = 1
+speed_bonus = 0
+stamina_bonus = 0
+technique_bonus = 0
+luck_bonus = 0
+max_hp_bonus = 0
+description = "Flattened to perfection. The laundromat next door swears it is a coincidence."
+icon = ExtResource("2_pressed_sandwich")
+takeout = true
+eat_line = "Very flat. Very good."

@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="FoodData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://data/FoodData.gd" id="1_hot_noodles"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/items/noodles.png" id="2_hot_noodles"]
+
+[resource]
+script = ExtResource("1_hot_noodles")
+id = "hot_noodles"
+display_name = "Bowl of Hot Noodles"
+price = 26
+heal = 55
+energy = 0
+strength_bonus = 0
+defense_bonus = 0
+speed_bonus = 0
+stamina_bonus = 1
+technique_bonus = 0
+luck_bonus = 0
+max_hp_bonus = 3
+description = "Mae's house bowl. The broth is a family secret and the secret is patience."
+icon = ExtResource("2_hot_noodles")
+takeout = false
+eat_line = "That is a real bowl of noodles."

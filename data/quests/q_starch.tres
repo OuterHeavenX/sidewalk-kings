@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="QuestData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/QuestData.gd" id="1_q_starch"]
+
+[resource]
+script = ExtResource("1_q_starch")
+id = "q_starch"
+title = "Big Starch"
+description = "Every gang in Riverbend has been paid in crisp, folded bills. There is one laundromat in this city that folds anything."
+giver = "dez"
+objective = 2
+target = "big_starch"
+required_count = 1
+turn_in_npc = ""
+reward_money = 250
+reward_xp = 200
+reward_items = []
+reward_move = ""
+reward_flag = "chapter_1_done"
+optional = false
+hint = "Starch & Sons, behind the yard."

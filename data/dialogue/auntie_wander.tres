@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DialogueData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/DialogueData.gd" id="1_auntie_wander"]
+
+[resource]
+script = ExtResource("1_auntie_wander")
+id = "auntie_wander"
+lines = Array[Dictionary]([{"name": "Local", "text": "Whole block's been quiet. Too quiet. I liked the arguing.", "end": true}])
+pause_game = true
+once_flag = ""

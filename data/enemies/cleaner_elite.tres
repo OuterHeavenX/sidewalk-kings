@@ -1,0 +1,43 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://actors/enemies/EnemyData.gd" id="1_cleaner_elite"]
+[ext_resource type="SpriteFrames" path="res://assets/art/characters/cleaner_elite_frames.tres" id="2_cleaner_elite"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/portraits/cleaner_elite.png" id="3_cleaner_elite"]
+
+[resource]
+script = ExtResource("1_cleaner_elite")
+id = "cleaner_elite"
+display_name = "Pressman"
+gang = "cleaners"
+archetype = 0
+sprite_frames = ExtResource("2_cleaner_elite")
+portrait = ExtResource("3_cleaner_elite")
+max_hp = 52
+damage_multiplier = 1.0
+defense = 2.0
+move_speed = 88.0
+run_speed = 150.0
+weight = 1.0
+armor_threshold = 0
+grab_resist = 0.0
+can_be_grabbed = true
+preferred_distance = 30.0
+aggression = 0.68
+reaction_delay = 0.25
+attack_cooldown = 0.9
+circle_chance = 0.4
+picks_up_weapons = false
+ranged_distance = 140.0
+moves = Array[String](["enemy_jab", "enemy_cross", "enemy_kick"])
+heavy_move = "enemy_heavy"
+ranged_move = ""
+xp = 26
+money_min = 16
+money_max = 30
+drop_table = Array[String](["pressed_sandwich"])
+drop_chance = 0.22
+scale = 1.0
+tint = Color(1.0, 1.0, 1.0, 1.0)
+show_health_bar = true
+taunts = Array[String](["This is a private matter.", "You are making a mess."])
+defeat_lines = Array[String](["Unacceptable.", "I'll need to file that."])

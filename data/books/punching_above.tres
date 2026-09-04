@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="BookData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://data/BookData.gd" id="1_punching_above"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/items/book_red.png" id="2_punching_above"]
+
+[resource]
+script = ExtResource("1_punching_above")
+id = "punching_above"
+display_name = "Punching Above Your Weight"
+price = 180
+description = "How smaller fighters generate real power."
+blurb = "The author is 5'4\" and extremely confident."
+unlock_move = ""
+stat = "strength"
+stat_bonus = 1
+bonus = "punch_damage"
+bonus_amount = 2
+required_level = 1
+icon = ExtResource("2_punching_above")

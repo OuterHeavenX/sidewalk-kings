@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DialogueData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/DialogueData.gd" id="1_dez_hub"]
+
+[resource]
+script = ExtResource("1_dez_hub")
+id = "dez_hub"
+lines = Array[Dictionary]([{"name": "Dez", "text": "Still standing. Good sign.", "portrait": "dez"}, {"name": "Dez", "text": "Whoever's paying them is paying on time. That's the part that bothers me.", "portrait": "dez", "end": true}])
+pause_game = true
+once_flag = ""

@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://data/ItemData.gd" id="1_laundry_ticket"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/items/letter.png" id="2_laundry_ticket"]
+
+[resource]
+script = ExtResource("1_laundry_ticket")
+id = "laundry_ticket"
+display_name = "Laundry Ticket #0"
+description = "Numbered zero. The Cleaners hand these out to people who owe them something."
+kind = 1
+price = 10
+icon = ExtResource("2_laundry_ticket")
+heal = 0
+energy = 0
+stackable = false
+usable_in_field = true
+flag_on_use = ""

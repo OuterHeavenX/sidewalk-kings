@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="AreaData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/AreaData.gd" id="1_ferry_row"]
+
+[resource]
+script = ExtResource("1_ferry_row")
+id = "ferry_row"
+display_name = "Ferry Row"
+district = "Riverbend East"
+music = "street"
+ambience = "river"
+gang = "pigeons"
+map_position = Vector2(0.0, 0.0)
+connections = Array[String](["lantern_market"])
+description = "Where the river meets the city. Fried dough, ferry horns, and a gang named after birds."

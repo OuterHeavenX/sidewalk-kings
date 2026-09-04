@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="AreaData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/AreaData.gd" id="1_starch_laundromat"]
+
+[resource]
+script = ExtResource("1_starch_laundromat")
+id = "starch_laundromat"
+display_name = "Starch & Sons"
+district = "Industrial"
+music = "boss"
+ambience = "interior"
+gang = "cleaners"
+map_position = Vector2(4.0, 0.5)
+connections = Array[String](["rustpile_yard"])
+description = "Always open. Always empty. Always immaculate."

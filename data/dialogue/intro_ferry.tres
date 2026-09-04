@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DialogueData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/DialogueData.gd" id="1_intro_ferry"]
+
+[resource]
+script = ExtResource("1_intro_ferry")
+id = "intro_ferry"
+lines = Array[Dictionary]([{"name": "", "text": "Riverbend. Two years away, and the ferry still smells like diesel and fried dough."}, {"name": "Dez", "text": "KIP! Hey! Over here!", "portrait": "dez"}, {"name": "Kip", "text": "Dez. You got taller.", "portrait": "kip"}, {"name": "Dez", "text": "I got *worried*. Different thing.", "portrait": "dez"}, {"name": "Dez", "text": "Four blocks, four crews. Pigeons on the row, Sweaters in the market, Grease Monkeys in the alley, Rust Rats in the yard.", "portrait": "dez"}, {"name": "Kip", "text": "Gangs fight each other. That's the whole point of gangs.", "portrait": "kip"}, {"name": "Dez", "text": "That's the thing. They stopped. Last month they all just... agreed. Split the map. No arguing.", "portrait": "dez"}, {"name": "Kip", "text": "Gangs don't agree.", "portrait": "kip"}, {"name": "Dez", "text": "Gangs don't agree for free.", "portrait": "dez", "set_flag": "knows_premise", "start_quest": "q_pigeons"}, {"name": "Dez", "text": "Start with the Pigeons. They're the loudest and the softest. Then come find me.", "portrait": "dez", "end": true}])
+pause_game = true
+once_flag = "seen_intro"

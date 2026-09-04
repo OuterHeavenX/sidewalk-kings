@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DialogueData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/DialogueData.gd" id="1_odell_flyer_done"]
+
+[resource]
+script = ExtResource("1_odell_flyer_done")
+id = "odell_flyer_done"
+lines = Array[Dictionary]([{"name": "Odell", "text": "Hm. This one's from the bins.", "portrait": "odell"}, {"name": "Kip", "text": "It was in a bin.", "portrait": "kip"}, {"name": "Odell", "text": "Good. Means you looked instead of asked.", "portrait": "odell", "complete_quest": "q_flyer", "shop": "odell_dojo", "end": true}])
+pause_game = true
+once_flag = ""

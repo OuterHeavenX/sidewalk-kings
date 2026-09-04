@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DialogueData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/DialogueData.gd" id="1_metro_locked"]
+
+[resource]
+script = ExtResource("1_metro_locked")
+id = "metro_locked"
+lines = Array[Dictionary]([{"name": "", "text": "The metro gate is chained. Someone has laminated the 'CLOSED' sign, which suggests it has been closed for a while."}, {"name": "Kip", "text": "Tuesdays.", "portrait": "kip", "end": true}])
+pause_game = true
+once_flag = ""

@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DialogueData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/DialogueData.gd" id="1_marisol_intro"]
+
+[resource]
+script = ExtResource("1_marisol_intro")
+id = "marisol_intro"
+lines = Array[Dictionary]([{"name": "Marisol", "text": "Careful, that stack is load-bearing.", "portrait": "marisol"}, {"name": "Kip", "text": "Are these all fight books?", "portrait": "kip"}, {"name": "Marisol", "text": "They're all *physics* books. Some of them are honest about it.", "portrait": "marisol", "set_flag": "met_marisol", "shop": "marisol_books", "end": true}])
+pause_game = true
+once_flag = ""

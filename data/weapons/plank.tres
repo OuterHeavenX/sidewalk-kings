@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="WeaponData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://weapons/WeaponData.gd" id="1_plank"]
+[ext_resource type="Texture2D" path="res://assets/art/weapons/plank.png" id="2_plank"]
+
+[resource]
+script = ExtResource("1_plank")
+id = "plank"
+display_name = "Loose Plank"
+texture = ExtResource("2_plank")
+style = 0
+damage = 16
+durability = 5
+breaks = true
+swing_move = "weapon_swing"
+throw_damage = 14
+throw_speed = 320.0
+weight = 1.0
+knockback = Vector2(160.0, 0.0)
+knockdown = true
+hit_sound = "hit_weapon"
+swing_sound = "whoosh_heavy"
+break_sound = "weapon_break"
+hand_offset = Vector2(14.0, -26.0)
+rotation_degrees_held = -35.0
+bounces_on_throw = false
+shop_price = 0

@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="ShopData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://data/ShopData.gd" id="1_pops_gear"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/portraits/pops.png" id="2_pops_gear"]
+
+[resource]
+script = ExtResource("1_pops_gear")
+id = "pops_gear"
+display_name = "Pops' Useful Objects"
+shop_type = 4
+owner_name = "Pops"
+owner_portrait = ExtResource("2_pops_gear")
+greeting = "It's all legal. Mostly. It's all useful."
+farewell = "Come back soon."
+broke_line = "Look with your eyes, kid."
+purchase_lines = Array[String](["Don't hit anything you like.", "It'll last. Probably.", "Handle with confidence."])
+inventory = Array[String](["bat", "pipe", "trash_lid", "cone"])
+music = "shop"

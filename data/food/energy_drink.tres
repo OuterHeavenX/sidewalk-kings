@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="FoodData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://data/FoodData.gd" id="1_energy_drink"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/items/drink.png" id="2_energy_drink"]
+
+[resource]
+script = ExtResource("1_energy_drink")
+id = "energy_drink"
+display_name = "Amp Fizz"
+price = 18
+heal = 8
+energy = 40
+strength_bonus = 0
+defense_bonus = 0
+speed_bonus = 1
+stamina_bonus = 0
+technique_bonus = 0
+luck_bonus = 0
+max_hp_bonus = 0
+description = "Tastes like a battery that went to art school."
+icon = ExtResource("2_energy_drink")
+takeout = true
+eat_line = "Everything is faster now."

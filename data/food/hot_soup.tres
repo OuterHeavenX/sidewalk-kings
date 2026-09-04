@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="FoodData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://data/FoodData.gd" id="1_hot_soup"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/items/soup.png" id="2_hot_soup"]
+
+[resource]
+script = ExtResource("1_hot_soup")
+id = "hot_soup"
+display_name = "Furnace Soup"
+price = 30
+heal = 60
+energy = 0
+strength_bonus = 0
+defense_bonus = 1
+speed_bonus = 0
+stamina_bonus = 0
+technique_bonus = 0
+luck_bonus = 0
+max_hp_bonus = 4
+description = "So hot it is legally a hazard. Builds character and blisters."
+icon = ExtResource("2_hot_soup")
+takeout = true
+eat_line = "Ow. Worth it."

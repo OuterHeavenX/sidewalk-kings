@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DialogueData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/DialogueData.gd" id="1_dez_pigeons_done"]
+
+[resource]
+script = ExtResource("1_dez_pigeons_done")
+id = "dez_pigeons_done"
+lines = Array[Dictionary]([{"name": "Dez", "text": "Five Pigeons found other hobbies. Nice.", "portrait": "dez"}, {"name": "Kip", "text": "One of them had forty dollars on him. Folded. Crisp.", "portrait": "kip"}, {"name": "Dez", "text": "Crisp?", "portrait": "dez"}, {"name": "Kip", "text": "Like it came out of a press.", "portrait": "kip"}, {"name": "Dez", "text": "Huh. Head up to Lantern Market. Talk to Mae, talk to Odell. Somebody's seen something.", "portrait": "dez", "complete_quest": "q_pigeons", "set_flag": "market_opened", "end": true}])
+pause_game = true
+once_flag = ""

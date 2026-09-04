@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="WeaponData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://weapons/WeaponData.gd" id="1_basketball"]
+[ext_resource type="Texture2D" path="res://assets/art/weapons/basketball.png" id="2_basketball"]
+
+[resource]
+script = ExtResource("1_basketball")
+id = "basketball"
+display_name = "Lost Basketball"
+texture = ExtResource("2_basketball")
+style = 3
+damage = 8
+durability = -1
+breaks = false
+swing_move = "weapon_swing"
+throw_damage = 13
+throw_speed = 400.0
+weight = 0.5
+knockback = Vector2(80.0, 0.0)
+knockdown = false
+hit_sound = "hit_weapon"
+swing_sound = "whoosh_heavy"
+break_sound = "weapon_break"
+hand_offset = Vector2(12.0, -28.0)
+rotation_degrees_held = 0.0
+bounces_on_throw = true
+shop_price = 0

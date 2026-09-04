@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="ShopData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://data/ShopData.gd" id="1_vic_corner"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/portraits/vic.png" id="2_vic_corner"]
+
+[resource]
+script = ExtResource("1_vic_corner")
+id = "vic_corner"
+display_name = "Vic's Corner Store"
+shop_type = 1
+owner_name = "Vic"
+owner_portrait = ExtResource("2_vic_corner")
+greeting = "Hey! Everything's priced, don't ask for discounts."
+farewell = "Come back soon."
+broke_line = "This is a store, not a library."
+purchase_lines = Array[String](["Cash only. Well. It's all cash.", "Bag's extra. Kidding.", "Nice."])
+inventory = Array[String](["rice_ball", "candy_bar", "morning_donut", "energy_drink", "river_coffee", "pressed_sandwich", "bandage"])
+music = "shop"

@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DialogueData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/DialogueData.gd" id="1_starch_defeat"]
+
+[resource]
+script = ExtResource("1_starch_defeat")
+id = "starch_defeat"
+lines = Array[Dictionary]([{"name": "Big Starch", "text": "...everything I own is white.", "portrait": "big_starch"}, {"name": "Kip", "text": "Who hired you?", "portrait": "kip"}, {"name": "Big Starch", "text": "Hired. Please. I was given a *route*. Money comes in on Tuesdays, in a bag, from the metro side.", "portrait": "big_starch"}, {"name": "Kip", "text": "Who brings it?", "portrait": "kip"}, {"name": "Big Starch", "text": "Someone who never gets off the train.", "portrait": "big_starch"}, {"name": "Kip", "text": "That's not an answer.", "portrait": "kip"}, {"name": "Big Starch", "text": "It is the answer I was paid for. Go home, kid. Riverbend is bigger than four blocks.", "portrait": "big_starch", "set_flag": "chapter_1_done", "end": true}])
+pause_game = true
+once_flag = ""

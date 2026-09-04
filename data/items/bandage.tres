@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://data/ItemData.gd" id="1_bandage"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/items/letter.png" id="2_bandage"]
+
+[resource]
+script = ExtResource("1_bandage")
+id = "bandage"
+display_name = "Corner Store Bandage"
+description = "Restores a bit of health. Adhesive quality: aspirational."
+kind = 0
+price = 12
+icon = ExtResource("2_bandage")
+heal = 25
+energy = 0
+stackable = true
+usable_in_field = true
+flag_on_use = ""

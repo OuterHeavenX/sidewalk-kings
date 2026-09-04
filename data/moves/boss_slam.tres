@@ -1,0 +1,46 @@
+[gd_resource type="Resource" script_class="MoveData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://combat/MoveData.gd" id="1_boss_slam"]
+
+[resource]
+script = ExtResource("1_boss_slam")
+id = "boss_slam"
+display_name = "Pressing Slam"
+description = "The big telegraphed one. Get out of the way."
+animation = "ground_stomp"
+input = 1
+requirement = 1
+damage_kind = 5
+startup = 16
+active = 6
+recovery = 34
+cancel_window = 14
+hitstun = 40
+damage = 24
+knockback = Vector2(200.0, 0.0)
+launch_force = 0.0
+knockdown = true
+energy_cost = 0.0
+special_cost = 0.0
+forward_move = 0.0
+self_launch = 0.0
+grab_target = false
+multi_hit = 1
+armor = true
+hitbox_offset = Vector2(16.0, -12.0)
+hitbox_size = Vector2(46.0, 36.0)
+lane_tolerance = 22.0
+followups = []
+sound = "whoosh_heavy"
+hit_sound = "special_hit"
+screen_shake = 6.0
+hit_pause = 0.1
+hit_fx = "spark_special"
+camera_kick = 0.0
+price = 0
+required_level = 1
+required_stat = ""
+required_stat_value = 0
+required_move = ""
+required_flag = ""
+learnable = false

@@ -1,0 +1,43 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://actors/enemies/EnemyData.gd" id="1_rust_ranged"]
+[ext_resource type="SpriteFrames" path="res://assets/art/characters/rust_ranged_frames.tres" id="2_rust_ranged"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/portraits/rust_ranged.png" id="3_rust_ranged"]
+
+[resource]
+script = ExtResource("1_rust_ranged")
+id = "rust_ranged"
+display_name = "Slinger"
+gang = "rust_rats"
+archetype = 5
+sprite_frames = ExtResource("2_rust_ranged")
+portrait = ExtResource("3_rust_ranged")
+max_hp = 28
+damage_multiplier = 1.0
+defense = 0.0
+move_speed = 80.0
+run_speed = 140.0
+weight = 0.85
+armor_threshold = 0
+grab_resist = 0.0
+can_be_grabbed = true
+preferred_distance = 110.0
+aggression = 0.6
+reaction_delay = 0.35
+attack_cooldown = 1.6
+circle_chance = 0.5
+picks_up_weapons = false
+ranged_distance = 190.0
+moves = Array[String](["enemy_jab"])
+heavy_move = ""
+ranged_move = "enemy_throw_rock"
+xp = 16
+money_min = 9
+money_max = 18
+drop_table = Array[String](["candy_bar"])
+drop_chance = 0.18
+scale = 1.0
+tint = Color(1.0, 1.0, 1.0, 1.0)
+show_health_bar = true
+taunts = Array[String](["Heads up!", "Incoming!"])
+defeat_lines = Array[String](["Out of ammo."])

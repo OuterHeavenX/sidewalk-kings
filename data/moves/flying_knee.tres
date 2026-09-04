@@ -1,0 +1,46 @@
+[gd_resource type="Resource" script_class="MoveData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://combat/MoveData.gd" id="1_flying_knee"]
+
+[resource]
+script = ExtResource("1_flying_knee")
+id = "flying_knee"
+display_name = "Flying Knee"
+description = "Sprint, leap, and drive a knee through their guard."
+animation = "run_attack"
+input = 2
+requirement = 3
+damage_kind = 1
+startup = 5
+active = 7
+recovery = 18
+cancel_window = 14
+hitstun = 28
+damage = 21
+knockback = Vector2(190.0, 0.0)
+launch_force = 0.0
+knockdown = true
+energy_cost = 14.0
+special_cost = 0.0
+forward_move = 190.0
+self_launch = 150.0
+grab_target = false
+multi_hit = 1
+armor = false
+hitbox_offset = Vector2(20.0, -16.0)
+hitbox_size = Vector2(26.0, 34.0)
+lane_tolerance = 13.0
+followups = []
+sound = "dash"
+hit_sound = "hit_heavy"
+screen_shake = 3.2
+hit_pause = 0.08
+hit_fx = "spark_big"
+camera_kick = 0.0
+price = 300
+required_level = 4
+required_stat = ""
+required_stat_value = 0
+required_move = "run_attack"
+required_flag = ""
+learnable = true
