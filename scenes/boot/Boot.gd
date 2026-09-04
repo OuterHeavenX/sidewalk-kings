@@ -24,6 +24,11 @@ func _ready() -> void:
 		var test = load("res://tests/SmokeTest.gd").new()
 		get_tree().root.add_child(test)
 		return
+	# Audio diagnostic:  godot --path . -- --audio
+	if "--audio" in args:
+		var ac = load("res://tests/AudioCheck.gd").new()
+		get_tree().root.add_child(ac)
+		return
 	# Visual capture pass:  godot --path . -- --shots
 	if "--shots" in args:
 		var shots = load("res://tests/ScreenshotTool.gd").new()

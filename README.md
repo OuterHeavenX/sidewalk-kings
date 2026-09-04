@@ -152,6 +152,26 @@ Full detail in [docs/SAVE_SYSTEM.md](docs/SAVE_SYSTEM.md).
 
 ---
 
+## Building for desktop
+
+Presets for Windows and Linux (which covers the Steam Deck) are committed.
+
+```bash
+godot --headless --path . --export-release "Windows Desktop" build/windows/SidewalkKings.exe
+godot --headless --path . --export-release "Linux" build/linux/SidewalkKings.x86_64
+```
+
+Both embed the game data in a single executable. `build/` is not committed.
+
+To check audio on a machine where it seems wrong:
+
+```bash
+SidewalkKings.exe -- --audio
+```
+
+That prints the driver, bus volumes, whether every sound resolves, and whether music is set
+to loop.
+
 ## Building the web export
 
 Requires Godot 4.7.2 with the matching export templates installed.
@@ -175,7 +195,7 @@ Details, including deployment to GitHub Pages and Cloudflare Pages, are in
 godot --headless --path . -- --smoke
 ```
 
-Runs 125 automated checks against a real session: content integrity, movement, every
+Runs 157 automated checks against a real session: content integrity, movement, every
 attack, the combo chain, grabs and throws, enemy AI, weapons and durability, pickups,
 levelling, every shop, quests, dialogue, travel between all five areas, camera framing,
 the boss fight through both phases, and save/load with migration. Exit code is non-zero

@@ -22,7 +22,7 @@ for d in (SFX_DIR, MUS_DIR, AMB_DIR):
 # ----------------------------------------------------------------------
 # Core helpers
 # ----------------------------------------------------------------------
-def write_wav(path, samples, sr=SR):
+def write_wav(path, samples, sr=SR, loop=False):
     frames = bytearray()
     for s in samples:
         v = int(max(-1.0, min(1.0, s)) * 32000)
@@ -32,6 +32,28 @@ def write_wav(path, samples, sr=SR):
         w.setsampwidth(2)
         w.setframerate(sr)
         w.writeframes(bytes(frames))
+    if loop:
+        _append_loop_chunk(path, len(samples), sr)
+
+
+def _append_loop_chunk(path, num_frames, sr):
+    """Add a WAV 'smpl' chunk marking the whole file as a loop.
+
+    Godot's WAV importer defaults to "Detect From WAV", which means it looks for exactly
+    this chunk. Without it a track imports with looping disabled, plays once, and then the
+    game is silent for the rest of the session.
+    """
+    with open(path, "rb") as f:
+        data = bytearray(f.read())
+    # manufacturer, product, sample period (ns), MIDI note, pitch fraction,
+    # SMPTE format, SMPTE offset, loop count, sampler data bytes
+    body = struct.pack("<9I", 0, 0, int(1_000_000_000 / sr), 60, 0, 0, 0, 1, 0)
+    # loop: id, type (0 = forward), start, end, fraction, play count (0 = forever)
+    body += struct.pack("<6I", 0, 0, 0, max(0, num_frames - 1), 0, 0)
+    data += b"smpl" + struct.pack("<I", len(body)) + body
+    struct.pack_into("<I", data, 4, len(data) - 8)      # fix the RIFF size
+    with open(path, "wb") as f:
+        f.write(data)
 
 def env_ad(n, attack=0.005, decay=0.2, sustain=0.0, release=0.05, sr=SR):
     a = int(attack * sr); d = int(decay * sr); r = int(release * sr)
@@ -626,10 +648,10 @@ def main():
         write_wav(os.path.join(SFX_DIR, f"{name}.wav"), fn())
     print(f"sfx: {len(SFX)}")
     for name, fn in MUSIC.items():
-        write_wav(os.path.join(MUS_DIR, f"{name}.wav"), fn())
+        write_wav(os.path.join(MUS_DIR, f"{name}.wav"), fn(), loop=True)
     print(f"music: {len(MUSIC)}")
     for name, fn in AMBIENCE.items():
-        write_wav(os.path.join(AMB_DIR, f"{name}.wav"), fn())
+        write_wav(os.path.join(AMB_DIR, f"{name}.wav"), fn(), loop=True)
     print(f"ambience: {len(AMBIENCE)}")
 
 if __name__ == "__main__":

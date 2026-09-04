@@ -175,6 +175,28 @@ See [PHASE_2.md](PHASE_2.md) for the full plan.
 - A flanker that stops making progress, typically against a solid prop, now flips to the
   other edge of the lane rather than pressing into it forever. There is no pathfinding.
 
+### Fixed
+
+- **Music played once and then the game went silent.** The generated WAV files carried no
+  loop metadata, and Godot's WAV importer defaults to detecting looping from the file. Every
+  track imported with looping disabled, so a stage's music ran for about sixteen seconds and
+  never came back. The generator now writes a `smpl` chunk into music and ambience files,
+  which is exactly what the importer looks for.
+
+### Added (tooling)
+
+- **Windows and Linux export presets**, so PC and Steam Deck builds are a supported path
+  rather than something to improvise. Output goes to `build/`, which is not committed.
+- **`tests/AudioCheck.gd`**, run with `godot --path . -- --audio`. Reports the audio driver,
+  bus wiring and volumes, whether every sound the code asks for resolves, whether players
+  actually enter a playing state, and whether music is set to loop. A headless run uses the
+  Dummy audio driver and would report playback that never happened, so this one needs a real
+  window. It also ships in exported builds, so a shipped game can be checked in place with
+  `SidewalkKings.exe -- --audio`.
+- Nine audio checks in the smoke suite covering buses, resolution of every referenced sound,
+  and loop flags. Audio fails silently by nature: nothing errors, the game is just quiet.
+  The suite is now 157 checks.
+
 ### Decided
 
 - Night lighting will use Godot's built-in 2D lights rather than the `lit` addon. Lit

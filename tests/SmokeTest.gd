@@ -47,6 +47,7 @@ func seconds(s: float) -> void:
 
 func run() -> void:
 	await test_content()
+	await test_audio()
 	await test_title_flow()
 	await test_new_game()
 	await test_movement()
@@ -145,6 +146,82 @@ func test_content() -> void:
 			if not ContentDB.weapons.has(str(w.get("id", ""))):
 				bad_areas.append("%s weapon -> %s" % [id, w.get("id", "")])
 	check("all area layouts valid", bad_areas.is_empty(), ", ".join(bad_areas))
+
+# ---------------------------------------------------------------- audio
+## Audio fails silently by nature: nothing errors, the game is just quiet. These checks
+## caught music importing with looping disabled, which made every track play once for
+## sixteen seconds and then leave the game silent for the rest of the session.
+##
+## A headless run uses the Dummy audio driver, so this asserts wiring and asset state
+## rather than audible output. tests/AudioCheck.gd covers real playback.
+func test_audio() -> void:
+	log_line("
+-- Audio --")
+	var missing_bus: Array[String] = []
+	var silent_bus: Array[String] = []
+	for b in AudioManager.BUSES:
+		var idx := AudioServer.get_bus_index(b)
+		if idx == -1:
+			missing_bus.append(b)
+			continue
+		if AudioServer.is_bus_mute(idx) or AudioServer.get_bus_volume_db(idx) < -50.0:
+			silent_bus.append(b)
+	check("every audio bus exists", missing_bus.is_empty(), ", ".join(missing_bus))
+	check("no audio bus is muted or silent", silent_bus.is_empty(), ", ".join(silent_bus))
+
+	# Every sound the code asks for by name must resolve to a real stream.
+	var wanted_sfx: Array[String] = [
+		"punch_light", "punch_heavy", "kick", "whoosh_light", "whoosh_heavy", "hit_light",
+		"hit_heavy", "hit_weapon", "hit_crit", "block", "throw", "land", "jump", "step",
+		"hurt", "enemy_hurt", "enemy_defeat", "knockdown", "money", "pickup", "purchase",
+		"eat", "menu_move", "menu_confirm", "menu_back", "menu_deny", "level_up",
+		"quest_start", "quest_complete", "unlock", "weapon_pickup", "weapon_break",
+		"break_object", "door", "boss_warning", "telegraph", "special_charge",
+		"special_hit", "dash", "grab", "notify", "save", "pause",
+	]
+	var bad_sfx: Array[String] = []
+	for id in wanted_sfx:
+		if AudioManager._resolve(AudioManager.SFX_DIR, id) == null:
+			bad_sfx.append(id)
+	check("every sound effect resolves", bad_sfx.is_empty(), ", ".join(bad_sfx))
+
+	var bad_music: Array[String] = []
+	var not_looping: Array[String] = []
+	for id in ["title", "street", "market", "alley", "industrial", "boss", "victory", "shop"]:
+		var stream: AudioStream = AudioManager._resolve(AudioManager.MUSIC_DIR, id)
+		if stream == null:
+			bad_music.append(id)
+			continue
+		if stream is AudioStreamWAV and (stream as AudioStreamWAV).loop_mode == AudioStreamWAV.LOOP_DISABLED:
+			not_looping.append(id)
+	check("every music track resolves", bad_music.is_empty(), ", ".join(bad_music))
+	check("music loops instead of playing once and stopping", not_looping.is_empty(), ", ".join(not_looping))
+
+	var bad_amb: Array[String] = []
+	var amb_once: Array[String] = []
+	for id in ["city", "alley", "interior", "industrial", "river"]:
+		var stream: AudioStream = AudioManager._resolve(AudioManager.AMBIENCE_DIR, id)
+		if stream == null:
+			bad_amb.append(id)
+		elif stream is AudioStreamWAV and (stream as AudioStreamWAV).loop_mode == AudioStreamWAV.LOOP_DISABLED:
+			amb_once.append(id)
+	check("every ambience bed resolves", bad_amb.is_empty(), ", ".join(bad_amb))
+	check("ambience loops", amb_once.is_empty(), ", ".join(amb_once))
+
+	# Areas must not ask for audio that does not exist.
+	var bad_area: Array[String] = []
+	for id in ContentDB.areas.keys():
+		var a: AreaData = ContentDB.areas[id]
+		if a.music != "" and AudioManager._resolve(AudioManager.MUSIC_DIR, a.music) == null:
+			bad_area.append("%s music %s" % [id, a.music])
+		if a.ambience != "" and AudioManager._resolve(AudioManager.AMBIENCE_DIR, a.ambience) == null:
+			bad_area.append("%s ambience %s" % [id, a.ambience])
+	check("every area's music and ambience exist", bad_area.is_empty(), ", ".join(bad_area))
+
+	# And the players actually accept a stream.
+	AudioManager.play_music("street")
+	await frames(2)
+	check("play_music assigns a stream", AudioManager._music_active.stream != null)
 
 # ---------------------------------------------------------------- title flow
 ## Start a game the way a player does: title screen, New Game, wait for the street.
