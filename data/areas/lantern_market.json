@@ -187,14 +187,14 @@
    "texture": "res://assets/art/props/car_yellow.png",
    "x": 540,
    "y": -36.0,
-   "z": -26,
+   "z": -21,
    "scale": 1.0
   },
   {
    "texture": "res://assets/art/props/car_red.png",
    "x": 1140,
    "y": -36.0,
-   "z": -26,
+   "z": -21,
    "scale": 1.0
   },
   {

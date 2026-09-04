@@ -133,17 +133,6 @@ func run() -> void:
 	# --- Touch controls ---
 	InputManager.set_touch_mode(true)
 	await seconds(0.6)
-	var tc := get_tree().get_first_node_in_group("touch_controls")
-	if tc == null:
-		var g := get_tree().current_scene
-		tc = g.get_node_or_null("UI/TouchControlsHost/TouchControls")
-	print("[shots] touch node=", tc, " visible=", tc.visible if tc else "n/a",
-		" active=", TouchControls.active,
-		" buttons=", tc._buttons.size() if tc else -1,
-		" stick_pos=", tc.stick_base.position if tc else Vector2.ZERO,
-		" stick_size=", tc.stick_base.size if tc else Vector2.ZERO,
-		" tex=", tc.stick_base.texture if tc else null,
-		" parent_vis=", tc.get_parent().visible if tc else "n/a")
 	await shot("touch_controls")
 	InputManager.set_touch_mode(false)
 	await frames(6)
@@ -177,13 +166,6 @@ func run() -> void:
 		await frames(2)
 		guard += 1
 	await seconds(2.2)
-	var bl := get_tree().get_nodes_in_group("bosses")
-	var cam = GameManager.current_area.camera
-	print("[shots] boss=", bl.size(),
-		" boss_x=", (bl[0].global_position if not bl.is_empty() else Vector2.ZERO),
-		" player=", GameManager.player.global_position if is_instance_valid(GameManager.player) else "gone",
-		" cam=", cam.global_position, " limits=", cam.limit_left, "..", cam.limit_right,
-		" state=", GameManager.state, " running=", GameManager.current_area.director.is_running())
 	await shot("boss_fight")
 
 func _clear_enemies() -> void:

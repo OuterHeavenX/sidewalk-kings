@@ -143,9 +143,9 @@ ferry = {
             scenery(PROP + "awning_red", 646, BUILD_BASE - 70, z=-28),
             scenery(PROP + "graffiti_a", 420, BUILD_BASE - 60, z=-27),
             scenery(PROP + "graffiti_c", 1130, BUILD_BASE - 56, z=-27),
-            scenery(PROP + "car_blue", 300, CURB_TOP - 38, z=-26),
-            scenery(PROP + "car_red", 880, CURB_TOP - 38, z=-26),
-            scenery(PROP + "fence", 1420, CURB_TOP - 38, z=-26),
+            scenery(PROP + "car_blue", 300, CURB_TOP - 38, z=-21),
+            scenery(PROP + "car_red", 880, CURB_TOP - 38, z=-21),
+            scenery(PROP + "fence", 1420, CURB_TOP - 38, z=-21),
         ]
         + lamp_row(W1)
     ),
@@ -237,8 +237,8 @@ market = {
             scenery(PROP + "awning_blue", 624, BUILD_BASE - 66, z=-28),
             scenery(PROP + "awning_green", 1224, BUILD_BASE - 62, z=-28),
             scenery(PROP + "graffiti_b", 830, BUILD_BASE - 58, z=-27),
-            scenery(PROP + "car_yellow", 540, CURB_TOP - 38, z=-26),
-            scenery(PROP + "car_red", 1140, CURB_TOP - 38, z=-26),
+            scenery(PROP + "car_yellow", 540, CURB_TOP - 38, z=-21),
+            scenery(PROP + "car_red", 1140, CURB_TOP - 38, z=-21),
         ]
         + lamp_row(W2, 190, 100)
     ),
@@ -337,7 +337,7 @@ alley = {
             scenery(PROP + "graffiti_a", 1200, BUILD_BASE - 72, z=-27),
             scenery(PROP + "ac_unit", 340, BUILD_BASE - 130, z=-28),
             scenery(PROP + "ac_unit", 980, BUILD_BASE - 138, z=-28),
-            scenery(PROP + "fence", 60, CURB_TOP - 38, z=-26),
+            scenery(PROP + "fence", 60, CURB_TOP - 38, z=-21),
         ]
         + lamp_row(W3, 240, 140)
     ),
@@ -420,7 +420,7 @@ yard = {
             building("warehouse", 1180, 150, z=-30),
             building("shop_laundry", 1400, 206, z=-30),
         ]
-        + [scenery(PROP + "fence", x, CURB_TOP - 38, z=-26) for x in range(150, W4, 64) if not (560 < x < 900)]
+        + [scenery(PROP + "fence", x, CURB_TOP - 38, z=-21) for x in range(150, W4, 64) if not (560 < x < 900)]
         + lamp_row(W4, 260, 180)
     ),
     "props": [

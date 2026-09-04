@@ -1,0 +1,128 @@
+name: Export web build
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+
+env:
+  GODOT_VERSION: 4.7.2
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Test and export
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: Cache Godot and export templates
+        id: cache-godot
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/godot
+            ~/.local/share/godot/export_templates
+          key: godot-${{ env.GODOT_VERSION }}-linux
+
+      - name: Install Godot ${{ env.GODOT_VERSION }}
+        if: steps.cache-godot.outputs.cache-hit != 'true'
+        run: |
+          set -euo pipefail
+          BASE="https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable"
+          mkdir -p ~/godot
+          curl -fsSL -o /tmp/godot.zip \
+            "${BASE}/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip"
+          unzip -q -o /tmp/godot.zip -d ~/godot
+          mv ~/godot/Godot_v${GODOT_VERSION}-stable_linux.x86_64 ~/godot/godot
+          chmod +x ~/godot/godot
+
+      - name: Install export templates
+        if: steps.cache-godot.outputs.cache-hit != 'true'
+        run: |
+          set -euo pipefail
+          BASE="https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable"
+          curl -fsSL -o /tmp/templates.tpz \
+            "${BASE}/Godot_v${GODOT_VERSION}-stable_export_templates.tpz"
+          mkdir -p ~/.local/share/godot/export_templates
+          unzip -q -o /tmp/templates.tpz -d /tmp/templates
+          mv /tmp/templates/templates ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable
+
+      - name: Add Godot to PATH
+        run: echo "$HOME/godot" >> "$GITHUB_PATH"
+
+      - name: Import the project
+        run: |
+          # The first import populates .godot/ and registers global classes.
+          # It exits non-zero on some headless setups even when it succeeds.
+          godot --headless --path . --import || true
+          test -d .godot || { echo "::error::Project import produced no .godot directory"; exit 1; }
+
+      - name: Run the smoke test
+        run: |
+          set -euo pipefail
+          godot --headless --path . -- --smoke
+        # The test exits non-zero if any of its checks fail.
+
+      - name: Export the web build
+        run: |
+          set -euo pipefail
+          mkdir -p web
+          godot --headless --path . --export-release "Web" web/index.html
+          rm -f web/*.import
+
+      - name: Verify the export
+        run: |
+          set -euo pipefail
+          missing=0
+          for f in web/index.html web/index.js web/index.wasm web/index.pck; do
+            if [ ! -s "$f" ]; then
+              echo "::error::Missing or empty: $f"
+              missing=1
+            fi
+          done
+          [ "$missing" -eq 0 ] || exit 1
+          # The custom shell must have survived the export.
+          grep -q "SIDEWALK KINGS" web/index.html \
+            || { echo "::error::web/index.html is not the custom shell"; exit 1; }
+          echo "Web export OK:"
+          ls -lh web/
+
+      - name: Upload the build as an artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sidewalk-kings-web
+          path: web/
+          retention-days: 14
+
+      - name: Package for GitHub Pages
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: web/
+
+  deploy:
+    name: Deploy to GitHub Pages
+    # Only from main, and only once the build and tests pass.
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs: build
+    runs-on: ubuntu-latest
+
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4

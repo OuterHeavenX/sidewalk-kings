@@ -182,21 +182,21 @@
    "texture": "res://assets/art/props/car_blue.png",
    "x": 300,
    "y": -36.0,
-   "z": -26,
+   "z": -21,
    "scale": 1.0
   },
   {
    "texture": "res://assets/art/props/car_red.png",
    "x": 880,
    "y": -36.0,
-   "z": -26,
+   "z": -21,
    "scale": 1.0
   },
   {
    "texture": "res://assets/art/props/fence.png",
    "x": 1420,
    "y": -36.0,
-   "z": -26,
+   "z": -21,
    "scale": 1.0
   },
   {

@@ -9,7 +9,7 @@ static var sprinting: bool = false
 
 const DEADZONE := 0.18
 const STICK_RADIUS := 46.0
-const BTN := 40.0
+const BTN := 38.0
 
 @onready var stick_base: TextureRect = $Stick/Base
 @onready var stick_knob: TextureRect = $Stick/Knob
@@ -116,28 +116,33 @@ func _apply_safe_area() -> void:
 	var stick_r := STICK_RADIUS * ui_scale
 	# Stick, lower-left
 	var sb_size := Vector2(stick_r * 2.0, stick_r * 2.0)
+	stick_base.custom_minimum_size = sb_size
 	stick_base.size = sb_size
 	stick_base.position = Vector2(pad_l + 6.0, vp.y - pad_b - sb_size.y - 6.0)
+	stick_knob.custom_minimum_size = Vector2(stick_r, stick_r)
 	stick_knob.size = Vector2(stick_r, stick_r)
 	stick_knob.position = _knob_home()
 	# Action buttons sit on an arc around the bottom-right corner, thumb-reachable and
 	# always fully inside the viewport.
-	var centre := Vector2(vp.x - pad_r - btn * 1.9, vp.y - pad_b - btn * 1.35)
-	var radius := btn * 1.05
+	var centre := Vector2(vp.x - pad_r - btn * 2.3, vp.y - pad_b - btn * 1.55)
+	var radius := btn * 1.5
 	var angles := {
 		"jump": -10.0,
 		"attack_light": -70.0,
 		"attack_heavy": -130.0,
 		"special": -180.0,
-		"grab": 60.0,
+		"grab": 55.0,
 	}
 	for b in _buttons:
 		var act: String = b.action
 		var node: TextureRect = b.node
 		if act == "pause":
+			node.custom_minimum_size = Vector2(26, 26)
 			node.size = Vector2(26, 26)
-			node.position = Vector2(vp.x - pad_r - 30.0, 8.0)
+			# Top centre: clear of the vitals on the left and the money on the right.
+			node.position = Vector2(vp.x * 0.5 - 13.0, 6.0)
 			continue
+		node.custom_minimum_size = Vector2(btn, btn)
 		node.size = Vector2(btn, btn)
 		var ang: float = deg_to_rad(float(angles.get(act, -90.0)))
 		var pos := centre + Vector2(cos(ang), sin(ang)) * radius - Vector2(btn, btn) * 0.5

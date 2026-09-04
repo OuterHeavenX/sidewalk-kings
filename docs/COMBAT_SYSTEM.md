@@ -1,0 +1,218 @@
+# Combat system
+
+Combat is the part the rest of the game hangs off, so it is data-driven end to end. Every
+attack in the game, for the player and for enemies, is a `MoveData` resource in
+`data/moves/`.
+
+---
+
+## A move
+
+`MoveData` (see `combat/MoveData.gd`) carries:
+
+**Timing**, in frames at 60 fps
+- `startup` — wind-up before the hitbox exists
+- `active` — frames the hitbox can connect
+- `recovery` — frames before you can act again
+- `cancel_window` — frames after a hit lands during which a follow-up is accepted
+- `hitstun` — frames of stun applied to the target
+
+**Damage and physics**
+- `damage`, `knockback`, `launch_force`, `knockdown`
+- `energy_cost`, `special_cost`
+- `forward_move` — how far the attacker slides in during startup
+- `self_launch` — vertical launch for the attacker (flying knee)
+- `armor` — the attacker shrugs off light hitstun during the move
+- `grab_target` — the move initiates a grab on hit
+
+**Hitbox**
+- `hitbox_offset.x` — forward reach from the attacker
+- `hitbox_offset.y` — strike height, screen-space (negative is up)
+- `hitbox_size.x` — width, `hitbox_size.y` — vertical slack
+- `lane_tolerance` — half-depth in the lane
+
+**Feel**
+- `sound`, `hit_sound`, `hit_fx`, `screen_shake`, `hit_pause`
+
+**Chaining**
+- `followups` — move ids reachable from this move
+
+**Unlocking**
+- `price`, `required_level`, `required_stat`, `required_stat_value`, `required_move`,
+  `required_flag`, `learnable`
+
+---
+
+## The frame loop
+
+`CombatController` runs one move at a time:
+
+```
+phase 1  startup   frame >= startup   → activate hitbox
+phase 2  active    frame >= active    → deactivate hitbox
+phase 3  recovery  if the move hit and frame <= cancel_window → cancel is allowed
+                   frame >= recovery  → move ends, actor returns to idle
+```
+
+An input during recovery is only honoured if the move connected. Whiffing commits you to
+the full recovery, which is what makes heavy attacks a real decision.
+
+Inputs arriving too early are buffered for nine frames, so a slightly rushed combo still
+comes out.
+
+---
+
+## Hit detection
+
+The world is a shallow 2.5D lane, so a hit is two separate tests.
+
+**In the lane plane.** The hitbox is an `Area2D` rectangle: `hitbox_size.x` wide along the
+street, `lane_tolerance * 2` deep into the lane.
+
+**In height.** Done in code. The strike lands at
+
+```
+strike_z = -hitbox_offset.y + attacker.z_height
+```
+
+and the target occupies a body span from its feet to roughly 44 px above them. The hit
+counts if the strike falls inside that span, widened by `hitbox_size.y * 0.5` of slack.
+
+That is what makes the vertical game work:
+
+- A grounded punch lands at chest height and catches anyone standing.
+- Jumping high enough takes your body above a grounded attack's slack, so you dodge it.
+- A jump kick aimed below the attacker still catches a target on the ground.
+- Attacking from very high up misses entirely.
+
+Hitboxes keep `monitoring` enabled permanently and gate on an `active` flag. Enabling
+`monitoring` per swing costs a physics frame, which is long enough for a three-frame jab to
+miss every time.
+
+Each move records the instance ids it has already hit, so a single swing cannot hit the
+same target twice, and `multi_hit` sweeps like the spin kick still reach several enemies.
+
+---
+
+## The combo chain
+
+The player's core chain is defined entirely in data:
+
+```
+punch_1 (Jab)        → punch_2, heavy, uppercut
+punch_2 (Cross)      → punch_3, heavy, kick, uppercut
+punch_3 (Body Hook)  → heavy, kick, spin_kick
+kick   (Roundhouse)  → heavy
+```
+
+A follow-up must (a) be listed in `followups`, (b) match the input kind pressed, and
+(c) be a move the player has actually learned. The last condition is why buying a technique
+at the dojo immediately changes how the basic chain flows.
+
+Beyond the chain there are:
+
+| Move | How it comes out |
+|---|---|
+| Jump Kick | Light while airborne |
+| Falling Stomp | Heavy while airborne (learned) |
+| Shoulder Charge | Light while running |
+| Flying Knee | Heavy while running (learned) |
+| Grab | U next to a fighter |
+| Held Knee | Light while grabbing |
+| Throw | Heavy or jump while grabbing |
+| Ground Stomp | Heavy over a downed enemy |
+| Weapon Swing | Light while carrying |
+| Weapon Throw | Heavy while carrying |
+| Sidewalk Special | I, at a full special meter |
+
+---
+
+## Damage
+
+```
+final = move.damage
+      × attacker multiplier (by damage kind)
+      × crit (1.6× on a roll against crit chance)
+      − target defence
+```
+
+Player multipliers come from `PlayerState`: punch, kick, throw, weapon and special each
+scale from a different mix of Strength, Technique and their permanent bonuses. Incoming
+damage is reduced by `100 / (100 + defense × 4)`, which keeps Defence useful without ever
+reaching immunity.
+
+Heavy enemies have an `armor_threshold`: any hit below it does damage but does not stagger
+them, so you cannot jab a Girder into submission.
+
+---
+
+## Reactions
+
+A hit resolves into one of three outcomes:
+
+- **Absorbed** — damage below an armored target's threshold. Damage lands, no stagger.
+- **Hit stun** — `hitstun` frames of the hurt state, plus knockback scaled by weight.
+- **Knockdown** — the target is launched, falls, lies on the ground for about three
+  quarters of a second, then gets up with brief invulnerability.
+
+Knockback is divided by the target's `weight`, so the same punch shoves a Skimmer across
+the pavement and barely moves a Girder.
+
+---
+
+## Grabs and throws
+
+`U` next to a fighter grabs them if they are grabbable and roughly level with you. While
+holding:
+
+- **Light** works them over. Three hits and they slip free.
+- **Heavy** or **jump** throws them.
+
+A thrown body stays dangerous for forty frames: anyone it crashes into is knocked down too.
+
+Bosses cannot be grabbed in phase one. Big Starch only becomes grabbable once he drops
+below half health, which turns the phase change into an opening rather than just a
+difficulty bump.
+
+---
+
+## Feel
+
+Every impact fires several things at once, all configured on the move:
+
+- **Hit pause** freezes the game briefly. Light hits use 35 ms, heavies 85 ms, the
+  special 120 ms.
+- **Screen shake** adds camera trauma that decays; the camera squares the trauma so small
+  hits stay subtle.
+- **Impact sparks** spawn at the contact point, sized to the attack.
+- **A flash** whitens the target for two frames.
+- **Layered sound**: the swing whoosh, then the impact.
+- **Floating numbers** in yellow, or larger and orange on a crit.
+- **Slow motion** on the boss's phase change and defeat.
+
+The special and the boss defeat also use `EventBus.slow_motion`, which scales
+`Engine.time_scale` while leaving UI animation alone.
+
+---
+
+## Energy and the special meter
+
+- **Energy** gates heavy and technique moves and refills continuously, faster with
+  Stamina and the stamina-recovery bonus. Spending it pauses regeneration briefly, so
+  spamming heavies is self-limiting.
+- **The special meter** fills only through combat: landing hits, and taking them. At 100 it
+  powers one Sidewalk Special, which hits everything nearby, launches it, and gives brief
+  invulnerability on start-up.
+
+---
+
+## Adding a move
+
+1. Add an entry to `MOVES` in `tools/gen_data.py`.
+2. If it should be purchasable, set `learnable`, `price` and any requirements, then add its
+   id to a dojo or book in the same file.
+3. If it should chain, add its id to another move's `followups`.
+4. Run `python tools/gen_data.py`.
+5. Run the smoke test. It verifies that every move id referenced anywhere resolves.
+
+No engine code changes.

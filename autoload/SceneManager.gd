@@ -9,6 +9,12 @@ var _fade: ColorRect
 var _busy: bool = false
 var game_root: Node = null
 
+## Fade state. This is stepped by hand rather than with a Tween: the fade gates scene
+## flow, and a tween that fails to finish would leave the game stuck behind a black
+## rectangle with no way out.
+var _fade_target: float = 1.0
+var _fade_speed: float = 3.0
+
 func _ready() -> void:
 	layer = 100
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -19,19 +25,37 @@ func _ready() -> void:
 	_fade.modulate.a = 1.0
 	add_child(_fade)
 
+func _process(delta: float) -> void:
+	if _fade == null:
+		return
+	var a := _fade.modulate.a
+	if is_equal_approx(a, _fade_target):
+		return
+	# Unscaled: slow motion and hit stop must not stall a screen transition.
+	var step := _fade_speed * (delta / maxf(Engine.time_scale, 0.0001))
+	_fade.modulate.a = move_toward(a, _fade_target, step)
+
+func _fade_to(target: float, duration: float) -> void:
+	_fade_target = clampf(target, 0.0, 1.0)
+	_fade_speed = 1.0 / maxf(duration, 0.01)
+	# Bounded: a transition must never be able to trap the player behind the overlay.
+	var guard := 0
+	while not is_equal_approx(_fade.modulate.a, _fade_target) and guard < 600:
+		await get_tree().process_frame
+		guard += 1
+	_fade.modulate.a = _fade_target
+
 func fade_out(duration: float = 0.35) -> void:
 	_fade.mouse_filter = Control.MOUSE_FILTER_STOP
-	var tw := create_tween()
-	tw.set_ignore_time_scale(true)
-	tw.tween_property(_fade, "modulate:a", 1.0, duration)
-	await tw.finished
+	await _fade_to(1.0, duration)
 
 func fade_in(duration: float = 0.35) -> void:
-	var tw := create_tween()
-	tw.set_ignore_time_scale(true)
-	tw.tween_property(_fade, "modulate:a", 0.0, duration)
-	await tw.finished
+	await _fade_to(0.0, duration)
 	_fade.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+## Screen dimming state, for tests and for anything that needs to know a transition is up.
+func fade_alpha() -> float:
+	return _fade.modulate.a if _fade else 0.0
 
 func is_busy() -> bool:
 	return _busy

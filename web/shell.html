@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="mobile-web-app-capable" content="yes" />
+	<meta name="theme-color" content="#16131f" />
+	<meta name="description" content="Sidewalk Kings - an original 2D side-scrolling beat-'em-up RPG." />
+	<title>$GODOT_PROJECT_NAME</title>
+	<style>
+		:root { color-scheme: dark; }
+		html, body {
+			margin: 0;
+			padding: 0;
+			height: 100%;
+			width: 100%;
+			overflow: hidden;
+			background: #16131f;
+			color: #f1eee9;
+			font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+			overscroll-behavior: none;
+			touch-action: none;
+			-webkit-user-select: none;
+			user-select: none;
+			-webkit-tap-highlight-color: transparent;
+		}
+		/* The canvas is pinned to the viewport rather than laid out by a flex parent:
+		   a parent that measures zero at start-up gives WebGL a zero-size framebuffer. */
+		#canvas {
+			position: fixed;
+			top: 0;
+			left: 0;
+			display: block;
+			width: 100vw;
+			height: 100vh;
+			height: 100dvh;
+			border: 0;
+			outline: none;
+			background: #16131f;
+			image-rendering: pixelated;
+			image-rendering: crisp-edges;
+			touch-action: none;
+		}
+		#canvas:focus { outline: none; }
+
+		#boot {
+			position: fixed;
+			inset: 0;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			gap: 18px;
+			background: radial-gradient(circle at 50% 38%, #2a2338 0%, #16131f 70%);
+			z-index: 10;
+			transition: opacity .45s ease;
+			text-align: center;
+			padding: 24px;
+		}
+		#boot.hidden { opacity: 0; pointer-events: none; }
+		#boot h1 {
+			margin: 0;
+			font-size: clamp(26px, 7vw, 52px);
+			letter-spacing: .06em;
+			font-weight: 800;
+			color: #e54d55;
+			text-shadow: 0 3px 0 #2a1520, 0 0 26px rgba(229,77,85,.35);
+		}
+		#boot p { margin: 0; font-size: 13px; color: #9a94ab; letter-spacing: .04em; }
+		#bar {
+			width: min(340px, 74vw);
+			height: 10px;
+			border: 2px solid #6a5f86;
+			border-radius: 2px;
+			background: #221c2e;
+			overflow: hidden;
+		}
+		#fill {
+			height: 100%;
+			width: 0%;
+			background: linear-gradient(90deg, #e54d55, #fbc442);
+			transition: width .2s ease;
+		}
+		#status { font-size: 12px; color: #cfc8da; min-height: 1.2em; }
+		#hint { font-size: 11px; color: #7d7691; max-width: 30em; line-height: 1.5; }
+		#start {
+			display: none;
+			padding: 12px 28px;
+			font-size: 15px;
+			font-weight: 700;
+			letter-spacing: .08em;
+			color: #f5f2ec;
+			background: #3a2b46;
+			border: 2px solid #fbc442;
+			border-radius: 3px;
+			cursor: pointer;
+		}
+		#start:hover { background: #4c3760; }
+		#error {
+			display: none;
+			max-width: 34em;
+			font-size: 13px;
+			line-height: 1.6;
+			color: #ffb4b4;
+			background: #2a1a22;
+			border: 1px solid #7d4048;
+			border-radius: 4px;
+			padding: 14px 18px;
+			white-space: pre-wrap;
+			text-align: left;
+		}
+	</style>
+</head>
+<body>
+	<canvas id="canvas" tabindex="0">
+		Your browser does not support the HTML canvas element.
+	</canvas>
+
+	<div id="boot">
+		<h1>SIDEWALK KINGS</h1>
+		<p>a Riverbend street story</p>
+		<div id="bar"><div id="fill"></div></div>
+		<div id="status">Loading…</div>
+		<button id="start" type="button">PLAY</button>
+		<div id="hint">Arrows/WASD move &nbsp;·&nbsp; J light &nbsp;·&nbsp; K heavy &nbsp;·&nbsp; L jump &nbsp;·&nbsp; U grab/interact &nbsp;·&nbsp; I special &nbsp;·&nbsp; Shift run &nbsp;·&nbsp; Esc pause. On a touchscreen, on-screen controls appear automatically.</div>
+		<div id="error"></div>
+	</div>
+
+	<script src="$GODOT_URL"></script>
+	<script>
+	(function () {
+		"use strict";
+		const GODOT_CONFIG = $GODOT_CONFIG;
+		const canvasEl = document.getElementById("canvas");
+
+		// Keep the drawing buffer in step with the visual size. Mobile browsers change the
+		// viewport as the URL bar hides, and a stale zero size shows as a black screen.
+		function sizeCanvas() {
+			const w = Math.max(1, Math.round(canvasEl.clientWidth || window.innerWidth));
+			const h = Math.max(1, Math.round(canvasEl.clientHeight || window.innerHeight));
+			if (canvasEl.width !== w || canvasEl.height !== h) {
+				canvasEl.width = w;
+				canvasEl.height = h;
+			}
+		}
+		sizeCanvas();
+		window.addEventListener("resize", sizeCanvas);
+		window.addEventListener("orientationchange", function () { setTimeout(sizeCanvas, 120); });
+		if (window.visualViewport) {
+			window.visualViewport.addEventListener("resize", sizeCanvas);
+		}
+		const boot = document.getElementById("boot");
+		const fill = document.getElementById("fill");
+		const statusEl = document.getElementById("status");
+		const errorEl = document.getElementById("error");
+		const startBtn = document.getElementById("start");
+		const canvas = document.getElementById("canvas");
+
+		// Keep the page itself inert: the game owns every gesture.
+		["contextmenu", "gesturestart", "gesturechange", "gestureend"].forEach(function (evt) {
+			document.addEventListener(evt, function (e) { e.preventDefault(); }, { passive: false });
+		});
+		document.addEventListener("touchmove", function (e) {
+			if (e.touches.length > 1) { e.preventDefault(); }
+		}, { passive: false });
+		window.addEventListener("keydown", function (e) {
+			// Stop the page scrolling out from under the game.
+			if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", " ", "Tab"].indexOf(e.key) !== -1) {
+				e.preventDefault();
+			}
+		}, { passive: false });
+
+		function showError(message) {
+			statusEl.textContent = "Could not start the game.";
+			errorEl.style.display = "block";
+			errorEl.textContent = message;
+			boot.classList.remove("hidden");
+		}
+
+		if (typeof Engine === "undefined") {
+			showError("The Godot engine loader did not load.\n\nMake sure every exported file sits next to index.html and that the page is served over http(s), not opened from the file system.");
+			return;
+		}
+
+		const missing = Engine.getMissingFeatures({ threads: GODOT_CONFIG.serviceWorker !== undefined });
+		if (missing.length !== 0) {
+			showError("This browser is missing features the game needs:\n\n- " + missing.join("\n- ") + "\n\nTry the latest Chrome, Edge, Firefox or Safari.");
+			return;
+		}
+
+		const engine = new Engine(GODOT_CONFIG);
+		engine.startGame({
+			onProgress: function (current, total) {
+				if (total > 0) {
+					fill.style.width = Math.min(100, (current / total) * 100).toFixed(1) + "%";
+					statusEl.textContent = "Loading… " + Math.floor((current / total) * 100) + "%";
+				} else {
+					fill.style.width = "100%";
+					statusEl.textContent = "Starting…";
+				}
+			},
+		}).then(function () {
+			fill.style.width = "100%";
+			statusEl.textContent = "Ready";
+			boot.classList.add("hidden");
+			setTimeout(function () { boot.style.display = "none"; }, 500);
+			canvas.focus();
+		}).catch(function (err) {
+			showError(String(err && err.message ? err.message : err));
+		});
+
+		// Some browsers block audio until the page is touched; focus the canvas on any input.
+		["pointerdown", "touchstart", "keydown"].forEach(function (evt) {
+			window.addEventListener(evt, function () { canvas.focus(); }, { once: true });
+		});
+		startBtn.addEventListener("click", function () { canvas.focus(); });
+	})();
+	</script>
+</body>
+</html>

@@ -47,6 +47,7 @@ func seconds(s: float) -> void:
 
 func run() -> void:
 	await test_content()
+	await test_title_flow()
 	await test_new_game()
 	await test_movement()
 	await test_combat()
@@ -141,6 +142,47 @@ func test_content() -> void:
 			if not ContentDB.weapons.has(str(w.get("id", ""))):
 				bad_areas.append("%s weapon -> %s" % [id, w.get("id", "")])
 	check("all area layouts valid", bad_areas.is_empty(), ", ".join(bad_areas))
+
+# ---------------------------------------------------------------- title flow
+## Start a game the way a player does: title screen, New Game, wait for the street.
+## This is the path that leaves the screen black if a transition fade ever stalls.
+func test_title_flow() -> void:
+	log_line("
+-- Title screen flow --")
+	SaveManager.delete_save(0)
+	await SceneManager.goto_title()
+	await frames(6)
+	var title := get_tree().current_scene
+	check("title screen loads", title != null and title.name == "TitleScreen", str(title))
+	check("screen is not left dimmed on the title", SceneManager.fade_alpha() < 0.05,
+		"alpha %.2f" % SceneManager.fade_alpha())
+	if title == null or not title.has_method("_new_game"):
+		return
+	title._new_game()
+	var guard := 0
+	while (get_tree().current_scene == null or get_tree().current_scene.name != "Game") and guard < 600:
+		await frames(1)
+		guard += 1
+	check("New Game reaches the gameplay scene", get_tree().current_scene != null and get_tree().current_scene.name == "Game",
+		"%d frames" % guard)
+	# Give the entry fade and any intro dialogue time to settle.
+	guard = 0
+	while SceneManager.fade_alpha() > 0.05 and guard < 600:
+		await frames(1)
+		guard += 1
+	check("screen fades back in after New Game", SceneManager.fade_alpha() <= 0.05,
+		"alpha %.2f after %d frames" % [SceneManager.fade_alpha(), guard])
+	check("player exists after the title flow", is_instance_valid(GameManager.player))
+	# Entry events run on the frame after the fade completes.
+	guard = 0
+	while not DialogueManager.is_active() and guard < 60:
+		await frames(1)
+		guard += 1
+	check("opening scene runs its entry dialogue", DialogueManager.is_active() or GameManager.get_flag("seen_intro"),
+		"state=%d" % GameManager.state)
+	if DialogueManager.is_active():
+		DialogueManager._finish()
+	await frames(4)
 
 # ---------------------------------------------------------------- boot
 func test_new_game() -> void:
