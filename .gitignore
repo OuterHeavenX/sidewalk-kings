@@ -67,3 +67,5 @@ web/libterrabrush*.wasm
 
 # Godot import metadata for documentation images (not game assets)
 docs/screenshots/*.import
+/*.FBX.import
+/*.glb.import
