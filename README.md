@@ -207,6 +207,9 @@ python tools/gen_scenes.py       # .tscn scene files
 - **`index.wasm` is 39 MB uncompressed.** Static hosts serve it gzipped at roughly 10 MB,
   which is normal for a Godot web build but is the bulk of first-load time.
 - **No controller rumble, and gamepad hot-plug is untested.**
+- **Touch input is covered by automated tests but not yet by a physical device.** The
+  hit-testing, stick behaviour and layout are asserted in the smoke test at several aspect
+  ratios; a real finger on a real phone is still on the manual checklist.
 - **Only one save slot is exposed.** `SaveManager` supports three; the UI uses slot 0.
 - **The alley and the yard are visually plainer than the two street areas.** They read
   correctly but have fewer distinct landmarks.
