@@ -62,6 +62,8 @@ theme/default_font_subpixel_positioning=0
 2d_physics/layer_6="interactable"
 2d_physics/layer_7="player_sensor"
 2d_physics/layer_8="door"
+2d_physics/layer_9="player_body"
+2d_physics/layer_10="enemy_body"
 
 [physics]
 

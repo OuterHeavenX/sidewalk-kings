@@ -18,6 +18,12 @@ var spawned_total: int = 0
 var _spawn_timer: float = 0.0
 var _running: bool = false
 var _cleared_ids: Array[String] = []
+var _slot_timer: float = 0.0
+
+## How many enemies may hold an attacking slot at once. The rest flank or wait, which is
+## what keeps a crowd readable instead of a pile-on.
+const ATTACK_SLOTS := 2
+const SLOT_INTERVAL := 0.6
 
 func setup(area_node: Node) -> void:
 	area = area_node
@@ -53,7 +59,13 @@ func start_encounter(enc: EncounterData) -> void:
 		_spawn_timer = 0.25
 
 func _physics_process(delta: float) -> void:
-	if not _running or GameManager.is_frozen():
+	if GameManager.is_frozen():
+		return
+	_slot_timer -= delta
+	if _slot_timer <= 0.0:
+		_slot_timer = SLOT_INTERVAL
+		assign_slots()
+	if not _running:
 		return
 	alive = alive.filter(func(e): return is_instance_valid(e) and not e.dead)
 	if _spawn_timer > 0.0:
@@ -90,10 +102,83 @@ func _spawn(entry: Dictionary) -> void:
 	alive.append(e)
 	e.defeated.connect(_on_enemy_defeated)
 	EventBus.enemy_spawned.emit(e)
+	_slot_timer = 0.0
 	if is_boss:
 		e.start_fight()
 	# Walk-in from off-screen so fights start with movement, not a pop-in.
 	e.play_anim("walk")
+
+## Hand out engagement roles and approach sides.
+##
+## Enemies are split across both sides of the player rather than queuing up on whichever
+## side they spawned. Only ATTACK_SLOTS of them may commit to an attack at a time; the rest
+## circle round or hold back, so a group reads as a crowd surrounding you instead of a
+## line waiting its turn.
+func assign_slots() -> void:
+	var player := GameManager.player
+	if not is_instance_valid(player):
+		return
+	var fighters: Array[Node] = []
+	for e in get_tree().get_nodes_in_group("enemies"):
+		if is_instance_valid(e) and not e.dead and e.get("role") != null:
+			fighters.append(e)
+	if fighters.is_empty():
+		return
+
+	# Nearest first: whoever is already closest earns the right to engage.
+	var px: float = player.global_position.x
+	fighters.sort_custom(func(a, b):
+		return absf(a.global_position.x - px) < absf(b.global_position.x - px))
+
+	# Sides are sticky. Recomputing them from current positions every cycle would send an
+	# enemy that is halfway around the player straight back again, because crossing makes it
+	# the nearest one; it would pace on the spot forever.
+	var left: Array = []
+	var right: Array = []
+	var unassigned: Array = []
+	for e in fighters:
+		if e.desired_side < 0:
+			left.append(e)
+		elif e.desired_side > 0:
+			right.append(e)
+		else:
+			unassigned.append(e)
+
+	# New arrivals fill the lighter side, breaking ties toward the side they are already on.
+	for e in unassigned:
+		var side: int
+		if left.size() < right.size():
+			side = -1
+		elif right.size() < left.size():
+			side = 1
+		else:
+			side = 1 if e.global_position.x >= px else -1
+		e.desired_side = side
+		(right if side > 0 else left).append(e)
+
+	# Rebalance only when the split is genuinely lopsided, and move whoever has the least
+	# invested in their current position: the one furthest from the player.
+	while absi(left.size() - right.size()) > 1:
+		var heavy: Array = left if left.size() > right.size() else right
+		var light: Array = right if left.size() > right.size() else left
+		heavy.sort_custom(func(a, b):
+			return absf(a.global_position.x - px) > absf(b.global_position.x - px))
+		var mover = heavy.pop_front()
+		mover.desired_side = -1 if light == left else 1
+		light.append(mover)
+
+	for i in fighters.size():
+		var f = fighters[i]
+		f.slot_index = i
+		if i < ATTACK_SLOTS:
+			f.role = EnemyBase.Role.ATTACKER
+		elif i < ATTACK_SLOTS + 2:
+			f.role = EnemyBase.Role.FLANKER
+		else:
+			f.role = EnemyBase.Role.WAITING
+		# A newly reassigned enemy should reconsider promptly.
+		if f.think_timer > 0.35:
+			f.think_timer = 0.2
 
 func _spawn_position(side: String) -> Vector2:
 	var p := GameManager.player

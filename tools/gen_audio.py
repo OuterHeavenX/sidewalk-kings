@@ -334,6 +334,13 @@ def sfx_boss_warning():
         out = cat(out, tone(160, 0.22, "saw", 0.45, 3, vib=0.02, vibf=9), silence(0.08))
     return normalize(out, 0.8)
 
+def sfx_telegraph():
+    """Short rising warning under an enemy wind-up. Deliberately quiet and unmusical."""
+    return normalize(cat(
+        tone(320, 0.07, "square", 0.28, 14),
+        tone(430, 0.10, "square", 0.26, 11),
+    ), 0.5)
+
 def sfx_special_charge():
     return normalize(mix(
         tone(180, 0.5, "saw", 0.35, 0.6, slide=2.2, vib=0.02, vibf=14),
@@ -376,7 +383,7 @@ SFX = {
     "menu_move": sfx_menu_move, "menu_confirm": sfx_menu_confirm, "menu_back": sfx_menu_back, "menu_deny": sfx_menu_deny,
     "level_up": sfx_level_up, "quest_start": sfx_quest_start, "quest_complete": sfx_quest_complete, "unlock": sfx_unlock,
     "weapon_pickup": sfx_weapon_pickup, "weapon_break": sfx_weapon_break, "break_object": sfx_break_object,
-    "door": sfx_door, "boss_warning": sfx_boss_warning, "special_charge": sfx_special_charge,
+    "door": sfx_door, "boss_warning": sfx_boss_warning, "telegraph": sfx_telegraph, "special_charge": sfx_special_charge,
     "special_hit": sfx_special_hit, "dash": sfx_dash, "grab": sfx_grab, "notify": sfx_notify,
     "save": sfx_save, "pause": sfx_pause,
 }

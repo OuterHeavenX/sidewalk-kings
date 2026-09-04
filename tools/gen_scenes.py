@@ -27,7 +27,9 @@ L_PICKUP = 16
 L_INTERACT = 32
 L_SENSOR = 64
 L_DOOR = 128
-L_WORLD = 1          # solid bodies also use bit 1 for CharacterBody collision
+L_WORLD = 1          # solid props
+L_PLAYER_BODY = 256
+L_ENEMY_BODY = 512
 
 SCENES = {}
 
@@ -46,8 +48,8 @@ SCENES["actors/player/Player.tscn"] = f'''
 size = Vector2(13, 12)
 
 [node name="Player" type="CharacterBody2D"]
-collision_layer = 1
-collision_mask = 1
+collision_layer = {L_PLAYER_BODY}
+collision_mask = {L_WORLD}
 motion_mode = 1
 script = ExtResource("1")
 max_hp = 100
@@ -117,8 +119,8 @@ def enemy_scene(script_path, root_name, extra=""):
 size = Vector2(13, 12)
 
 [node name="{root_name}" type="CharacterBody2D"]
-collision_layer = 1
-collision_mask = 1
+collision_layer = {L_ENEMY_BODY}
+collision_mask = {L_WORLD}
 motion_mode = 1
 script = ExtResource("1")
 {extra}

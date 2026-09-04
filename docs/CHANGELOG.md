@@ -155,9 +155,25 @@ See [PHASE_2.md](PHASE_2.md) for the full plan.
   beyond being a standalone lunge.
 - A sixth touch button for guard, since the stick already means run. Special and guard now
   flank the action diamond.
+- **Enemy flanking.** `EnemyDirector` assigns engagement roles and approach sides so a
+  crowd surrounds the player instead of queuing on whichever side it spawned. Only two
+  enemies may commit to an attack at once; the rest walk around or hold back.
+- **Telegraphed attacks.** `MoveData.telegraph` marks heavy and slam moves. A telegraphed
+  move pulses a warning colour through its startup and plays an audio cue.
 - Thirteen automated checks covering guard damage reduction, energy drain, guard break,
   the empty-energy case, roll cost, roll invulnerability, roll travel, and the touch guard
-  button. The suite is now 140 checks.
+  button, plus eight more covering the crowd split, the attacker cap, an enemy actually
+  walking around to the far side, and a telegraph's wind-up preceding its hitbox. The suite
+  is now 148 checks.
+
+### Changed
+
+- Enemies no longer collide with each other or with the player. Hard bodies made crowds
+  jam: a flanker walking round would stall against whoever was already engaging. They now
+  sit on their own collision layer, collide only with solid props, and are pushed apart
+  softly each frame.
+- A flanker that stops making progress, typically against a solid prop, now flips to the
+  other edge of the lane rather than pressing into it forever. There is no pathfinding.
 
 ### Decided
 

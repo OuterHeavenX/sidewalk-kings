@@ -44,3 +44,4 @@ required_stat_value = 0
 required_move = ""
 required_flag = ""
 learnable = false
+telegraph = true

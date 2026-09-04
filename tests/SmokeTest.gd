@@ -52,6 +52,7 @@ func run() -> void:
 	await test_movement()
 	await test_combat()
 	await test_defence()
+	await test_crowd_ai()
 	await test_weapons()
 	await test_pickups_and_props()
 	await test_progression()
@@ -241,6 +242,11 @@ func clear_stage(x: float = 700.0) -> void:
 		player.global_position = Vector2(x, (GameManager.current_area.lane_min + GameManager.current_area.lane_max) * 0.5)
 		player.nearby_interactable = null
 	await frames(2)
+	# Solid props block movement, so a check about walking somewhere should not be run next
+	# to a phone booth.
+	for pr in get_tree().get_nodes_in_group("props"):
+		if is_instance_valid(pr) and pr.get("solid") == true and absf(pr.global_position.x - player.global_position.x) < 140.0:
+			pr.global_position += Vector2(600.0, 0)
 	# Move anything grabbable well out of reach so interact/pickup cannot pre-empt a grab.
 	for group in ["interactables", "weapons", "pickups"]:
 		for n in get_tree().get_nodes_in_group(group):
@@ -291,6 +297,19 @@ func test_movement() -> void:
 	check("lands", player.z_height <= 0.1, "z=%.1f" % player.z_height)
 
 # ---------------------------------------------------------------- combat
+## Freeze an enemy as a stationary target. The director now hands out flanking roles to
+## every enemy in the scene, so a spawned test dummy will otherwise walk off mid-check.
+func pin(e: EnemyBase) -> void:
+	if not is_instance_valid(e):
+		return
+	e.role = EnemyBase.Role.ATTACKER
+	e.desired_side = 0
+	e.ai_state = EnemyBase.AI.WAIT
+	e.think_timer = 999.0
+	e.move_input = Vector2.ZERO
+	if is_instance_valid(GameManager.player):
+		e.global_position.y = GameManager.player.global_position.y
+
 func spawn_enemy(id: String, offset: float = 40.0) -> EnemyBase:
 	var area = GameManager.current_area
 	var edata: EnemyData = ContentDB.get_enemy(id)
@@ -324,7 +343,7 @@ func test_combat() -> void:
 	await frames(2)
 	e = spawn_enemy("rust_heavy", 20.0)
 	await frames(4)
-	e.global_position.y = player.global_position.y
+	pin(e)
 	var hp1 := e.hp
 	var landed := 0
 	var chain: Array[String] = []
@@ -359,9 +378,8 @@ func test_combat() -> void:
 	if is_instance_valid(e):
 		player.combat.cancel()
 		player.set_state(Actor.State.IDLE)
-		e.move_input = Vector2.ZERO
+		pin(e)
 		player.global_position = e.global_position - Vector2(18, 0)
-		player.global_position.y = e.global_position.y
 		player.facing = 1
 		player.energy = player.max_energy
 		var hpk := e.hp
@@ -377,9 +395,7 @@ func test_combat() -> void:
 		player.combat.cancel()
 		player.set_state(Actor.State.IDLE)
 		# Hold the target still: lane drift during the jump would look like a broken move.
-		e.ai_state = EnemyBase.AI.WAIT
-		e.think_timer = 10.0
-		e.move_input = Vector2.ZERO
+		pin(e)
 		player.global_position = e.global_position - Vector2(16, 0)
 		player.global_position.y = e.global_position.y
 		player.facing = 1
@@ -505,9 +521,7 @@ func test_defence() -> void:
 
 	var e := spawn_enemy("sweater_grunt", 26.0)
 	await frames(4)
-	e.global_position.y = player.global_position.y
-	e.ai_state = EnemyBase.AI.WAIT
-	e.think_timer = 10.0
+	pin(e)
 	var hp0: int = player.hp
 	var en0: float = player.energy
 	var jab: MoveData = ContentDB.get_move("enemy_jab")
@@ -571,6 +585,103 @@ func test_defence() -> void:
 	check("the roll ends and control returns", player.state != Actor.State.DODGE, "state=%d" % player.state)
 	await clear_stage(700.0)
 
+# ---------------------------------------------------------------- crowd AI
+## Flanking and telegraphs. A crowd that all approaches from one side is not a crowd, and
+## guard and dodge are only fair if the attacks worth answering can be read coming.
+func test_crowd_ai() -> void:
+	log_line("
+-- Crowd AI --")
+	await clear_stage(700.0)
+	var player := p()
+	var area = GameManager.current_area
+	if area == null or area.director == null:
+		check("area has a director", false)
+		return
+
+	# Spawn three enemies all on the same side, which is the worst case.
+	var group: Array[EnemyBase] = []
+	for i in 3:
+		var e := spawn_enemy("sweater_grunt", 70.0 + i * 18.0)
+		if e:
+			e.global_position.y = player.global_position.y + (i - 1) * 6.0
+			e.aggro = true
+			group.append(e)
+	await frames(4)
+	check("three enemies spawned on one side", group.size() == 3)
+
+	area.director.assign_slots()
+	await frames(2)
+	var sides: Array[int] = []
+	for e in group:
+		sides.append(e.desired_side)
+	check("the director splits the crowd across both sides",
+		sides.has(1) and sides.has(-1), "sides %s" % str(sides))
+
+	var attackers := 0
+	for e in group:
+		if e.role == EnemyBase.Role.ATTACKER:
+			attackers += 1
+	check("only a couple may commit at once", attackers <= EnemyDirector.ATTACK_SLOTS,
+		"%d attackers" % attackers)
+
+	# Let them actually walk it, and confirm somebody ends up on the far side.
+	# The player is made untouchable first: being knocked backwards mid-check moves the
+	# very reference point the flank is measured against.
+	player.hurtbox.active = false
+	var anchor_x: float = player.global_position.x
+	var guard := 0
+	var flanked := false
+	while guard < 480 and not flanked:
+		await frames(1)
+		guard += 1
+		for e in group:
+			if not is_instance_valid(e):
+				continue
+			if e.global_position.x < anchor_x - 12.0:
+				flanked = true
+		player.global_position.x = anchor_x
+	player.hurtbox.active = true
+	check("an enemy walks around to the far side", flanked, "%d frames" % guard)
+
+	for e in group:
+		if is_instance_valid(e):
+			e.queue_free()
+	await frames(2)
+
+	# --- Telegraphs ---
+	var telegraphed: Array[String] = []
+	for id in ContentDB.moves.keys():
+		var m: MoveData = ContentDB.moves[id]
+		if m.telegraph:
+			telegraphed.append(str(id))
+	check("heavy enemy attacks are marked as telegraphed", telegraphed.size() >= 3,
+		", ".join(telegraphed))
+	var readable := true
+	var too_fast := ""
+	for id in telegraphed:
+		var m: MoveData = ContentDB.get_move(id)
+		# Under about a fifth of a second there is no time to react.
+		if m.startup < 12:
+			readable = false
+			too_fast = "%s startup %d" % [id, m.startup]
+	check("a telegraphed attack has a readable wind-up", readable, too_fast)
+
+	await clear_stage(760.0)
+	var boss_move: MoveData = ContentDB.get_move("enemy_slam")
+	var heavy := spawn_enemy("rust_heavy", 30.0)
+	await frames(4)
+	pin(heavy)
+	var before: int = p().hp
+	heavy.combat.start_move(boss_move, 1.0)
+	await frames(4)
+	check("the wind-up runs before the hitbox is live",
+		heavy.combat.current != null and heavy.combat.phase == 1 and p().hp == before,
+		"phase=%d" % heavy.combat.phase)
+	await frames(int(boss_move.startup) + 4)
+	check("the hitbox goes live after the wind-up", heavy.combat.phase >= 2,
+		"phase=%d" % heavy.combat.phase)
+	await clear_stage(700.0)
+
 # ---------------------------------------------------------------- weapons
 func test_weapons() -> void:
 	print("\n-- Weapons --")
@@ -581,6 +692,7 @@ func test_weapons() -> void:
 	check("weapon given and held", ok and is_instance_valid(player.held_weapon), str(player.held_weapon))
 	var e := spawn_enemy("rust_heavy", 20.0)
 	await frames(4)
+	pin(e)
 	if e and is_instance_valid(player.held_weapon):
 		var hp0 := e.hp
 		var uses0: int = player.held_weapon.uses_left

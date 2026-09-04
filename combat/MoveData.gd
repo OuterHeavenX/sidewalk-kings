@@ -35,6 +35,9 @@ enum DamageKind { PUNCH, KICK, THROW, WEAPON, SPECIAL, BODY }
 @export var grab_target: bool = false        # move initiates a grab on hit
 @export var multi_hit: int = 1
 @export var armor: bool = false              # attacker ignores light hitstun during the move
+## Show a visible wind-up while this move starts up. Guard and dodge only matter if the
+## attacks worth answering can be read coming.
+@export var telegraph: bool = false
 
 @export_group("Hitbox")
 @export var hitbox_offset: Vector2 = Vector2(18, -22)

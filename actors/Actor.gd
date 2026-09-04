@@ -210,6 +210,20 @@ func apply_hit_reaction(d: DamageData) -> void:
 		play_anim("hurt", true, true)
 	flash(0.12)
 
+## A readable wind-up: the fighter pulses a warning colour for the whole startup, with an
+## audio cue so a tell off the edge of the screen is still fair.
+func play_telegraph(seconds: float) -> void:
+	if sprite == null or seconds <= 0.0:
+		return
+	AudioManager.play_sfx("telegraph", -6.0)
+	var tw := create_tween()
+	tw.set_loops(maxi(1, int(seconds / 0.14)))
+	tw.tween_property(sprite, "modulate", Color(1.9, 1.15, 1.15), 0.07)
+	tw.tween_property(sprite, "modulate", Color(1, 1, 1), 0.07)
+	tw.finished.connect(func():
+		if is_instance_valid(self) and sprite and flash_time <= 0.0:
+			sprite.modulate = Color(1, 1, 1))
+
 func flash(duration: float = 0.12) -> void:
 	if sprite == null:
 		return

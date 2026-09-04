@@ -231,6 +231,48 @@ from the start.
 The follow-up is the point. Dash Strike stops being a standalone lunge and becomes the
 aggressive answer to a well-read roll, which gives the dojo purchase a real identity.
 
+## Crowds
+
+A group of enemies is coordinated by `EnemyDirector`, not left to each enemy deciding
+alone. Every 0.6s it hands out roles and approach sides.
+
+| Role | Behaviour |
+|---|---|
+| **Attacker** | May commit to an attack. Only two at a time. |
+| **Flanker** | Walks around the player to its assigned side. Will not attack on the way. |
+| **Waiting** | Holds at a distance, circling. |
+
+Each enemy also carries a **desired side**, left or right of the player. The director keeps
+the split even, so a crowd surrounds you instead of queuing up on whichever side it spawned.
+
+Two details make this work rather than thrash:
+
+**Sides are sticky.** Recomputing them from current positions every cycle sent an enemy
+that was halfway around the player straight back again, because crossing over made it the
+nearest one. It paced on the spot forever. Sides now persist, and only rebalance when the
+split is genuinely lopsided, moving whoever is furthest from the player.
+
+**Enemies are not solid to each other, or to the player.** Hard bodies made a crowd jam: a
+flanker walking round would shoulder into whoever was already engaging and stall against
+them. Enemies now sit on their own collision layer and collide only with solid props.
+Overlap is resolved by pushing apart softly each frame, which is how a brawler crowd should
+behave anyway.
+
+A flanker also swings out to the near edge of the lane before travelling along it, rather
+than pushing straight through the fight. There is no pathfinding, so a flanker can still
+meet a solid prop; if it stops making progress while trying to move it flips to the other
+edge of the lane and tries again.
+
+## Telegraphs
+
+Guard and dodge are only fair if the attacks worth answering can be read coming. `MoveData`
+carries a `telegraph` flag; heavy and slam attacks set it.
+
+A telegraphed move pulses a warning colour for its whole startup and plays a short audio
+cue, so a tell off the edge of the screen is still fair. The startup is long enough to
+react to: nothing marked as telegraphed comes out in under about a fifth of a second, and
+the test suite asserts that.
+
 ## Energy and the special meter
 
 - **Energy** gates heavy and technique moves and refills continuously, faster with

@@ -5,7 +5,11 @@ extends Actor
 ## The AI keeps a preferred fighting distance, circles, repositions in the lane and
 ## waits out cooldowns, so a group surrounds the player instead of stacking on one pixel.
 
-enum AI { WAIT, APPROACH, CIRCLE, ATTACK, RETREAT, RECOVER, SEEK_WEAPON, STUNNED_STATE }
+enum AI { WAIT, APPROACH, CIRCLE, ATTACK, RETREAT, RECOVER, SEEK_WEAPON, STUNNED_STATE, FLANK }
+
+## Assigned by EnemyDirector so a crowd surrounds the player instead of queueing up on
+## whichever side it happened to spawn.
+enum Role { ATTACKER, FLANKER, WAITING }
 
 @onready var combat: CombatController = $Combat
 @onready var hitbox: Hitbox = $Hitbox
@@ -22,6 +26,8 @@ var attack_cooldown: float = 0.0
 var circle_dir: int = 1
 var desired_lane_offset: float = 0.0
 var slot_index: int = 0
+var role: Role = Role.ATTACKER
+var desired_side: int = 0        # -1 left of the player, +1 right, 0 = no preference
 var aggro: bool = false
 var held_weapon: Node = null
 var level_scale: float = 1.0
@@ -31,6 +37,9 @@ var _stagger_frames: int = 0
 var _spawn_grace: float = 0.35
 var _knockdown_timer: float = 0.0
 var _taunted: bool = false
+var _flank_flip: bool = false
+var _stuck_time: float = 0.0
+var _stuck_from: Vector2 = Vector2.ZERO
 
 func _ready() -> void:
 	super._ready()
@@ -75,6 +84,7 @@ func _physics_process(delta: float) -> void:
 	if _spawn_grace > 0.0:
 		_spawn_grace -= delta
 	_update_ai(delta)
+	_update_stuck(delta)
 	super._physics_process(delta)
 	_update_thrown()
 	_update_health_bar()
@@ -121,6 +131,11 @@ func _update_ai(delta: float) -> void:
 		AI.APPROACH:
 			var want: float = data.preferred_distance
 			var mx: float = 0.0
+			if desired_side != 0 and _wrong_side():
+				# Assigned to the far side: go around rather than through.
+				move_input = _flank_input(target)
+				play_anim("walk")
+				return
 			if dist > want + 4.0:
 				mx = signf(to_target.x)
 			elif dist < want - 8.0:
@@ -129,6 +144,9 @@ func _update_ai(delta: float) -> void:
 			move_input = Vector2(mx, my)
 			var moving := move_input.length() > 0.1
 			play_anim("run" if (moving and data.archetype == EnemyData.Archetype.RUSHER) else ("walk" if moving else "idle"))
+		AI.FLANK:
+			move_input = _flank_input(target)
+			play_anim("walk" if move_input.length() > 0.1 else "idle")
 		AI.CIRCLE:
 			move_input = Vector2(0.0, float(circle_dir) * 0.85)
 			if dist > data.preferred_distance * 2.2:
@@ -185,6 +203,14 @@ func _decide() -> void:
 		ai_state = AI.APPROACH if dist > data.ranged_distance else AI.CIRCLE
 		return
 
+	# Only an attacker may commit. Flankers reposition; waiters hold at a distance.
+	if role == Role.FLANKER or _wrong_side():
+		ai_state = AI.FLANK
+		return
+	if role == Role.WAITING:
+		ai_state = AI.CIRCLE if randf() < 0.5 else AI.WAIT
+		return
+
 	var in_range := dist <= data.preferred_distance + 8.0 and lane_diff <= 16.0
 	if in_range and attack_cooldown <= 0.0:
 		if randf() < data.aggression:
@@ -198,6 +224,57 @@ func _decide() -> void:
 			circle_dir = -circle_dir
 		return
 	ai_state = AI.APPROACH
+
+## A flanker walking the back of the lane can meet a solid prop, and it has no pathfinding
+## to go round one. If it stops making progress while trying to move, send it along the
+## other edge of the lane instead.
+func _update_stuck(delta: float) -> void:
+	if ai_state != AI.FLANK or move_input.length() < 0.2:
+		_stuck_time = 0.0
+		_stuck_from = global_position
+		return
+	_stuck_time += delta
+	if _stuck_time < 0.7:
+		return
+	_stuck_time = 0.0
+	if global_position.distance_to(_stuck_from) < 5.0:
+		_flank_flip = not _flank_flip
+		think_timer = 0.0
+	_stuck_from = global_position
+
+## True when this enemy is on the opposite side of the player from the one it was assigned.
+func _wrong_side() -> bool:
+	if desired_side == 0 or target == null:
+		return false
+	var dx: float = global_position.x - target.global_position.x
+	if absf(dx) < 6.0:
+		return true
+	return signi(int(signf(dx))) != desired_side
+
+## Walk around the player to the assigned side. Crossing in front of them is avoided by
+## swinging out to a lane edge first, which is what makes the move read as a flank.
+func _flank_input(t: Node2D) -> Vector2:
+	if t == null:
+		return Vector2.ZERO
+	var want_x: float = t.global_position.x + float(desired_side) * data.preferred_distance
+	var dx: float = want_x - global_position.x
+	var rel: float = global_position.x - t.global_position.x
+	# Already round the far side and clear of the player: settle into the fighting row.
+	var arrived: bool = signi(int(signf(rel))) == desired_side and absf(rel) > data.preferred_distance * 0.7
+	if arrived:
+		var dy_in: float = t.global_position.y + desired_lane_offset - global_position.y
+		return Vector2(clampf(dx / 18.0, -1.0, 1.0), clampf(dy_in / 14.0, -1.0, 1.0))
+	# Otherwise swing out to the nearer edge of the lane first, then travel along it. Going
+	# straight through would mean shouldering past whoever is already engaging.
+	var to_front: bool = global_position.y >= t.global_position.y
+	if _flank_flip:
+		to_front = not to_front
+	var edge: float = lane_max - 3.0 if to_front else lane_min + 3.0
+	var dy: float = edge - global_position.y
+	var mx: float = clampf(dx / 18.0, -1.0, 1.0)
+	if absf(dy) > 7.0:
+		mx *= 0.4                       # get out of the row before committing along it
+	return Vector2(mx, clampf(dy / 9.0, -1.0, 1.0))
 
 func _become_aggro() -> void:
 	if aggro:
@@ -445,10 +522,23 @@ func _update_health_bar() -> void:
 	if health_bar and health_bar.visible:
 		health_bar.set_value(hp)
 
-## Push apart from other enemies so a crowd spreads out instead of stacking.
+## Enemies are not solid to each other or to the player: hard bodies made a crowd jam,
+## and a flanker walking round would get stuck against whoever was already engaging.
+## Overlap is resolved by pushing apart softly instead, which is how a brawler crowd
+## should behave.
 func _separate() -> void:
 	if dead:
 		return
+	var p := GameManager.player
+	if is_instance_valid(p) and not p.dead:
+		var pd: Vector2 = global_position - p.global_position
+		var pdist := pd.length()
+		var pmin: float = body_radius + p.body_radius
+		if pdist < pmin:
+			if pdist < 0.01:
+				pd = Vector2(float(-facing), randf_range(-1.0, 1.0))
+				pdist = 1.0
+			position += pd.normalized() * (pmin - pdist) * 0.6
 	for node in get_tree().get_nodes_in_group("enemies"):
 		var e := node as Actor
 		if e == null or e == self or not is_instance_valid(e) or e.dead:

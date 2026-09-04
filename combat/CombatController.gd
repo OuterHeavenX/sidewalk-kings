@@ -62,6 +62,8 @@ func start_move(move: MoveData, multiplier: float = 1.0) -> bool:
 		AudioManager.play_sfx(move.sound, -4.0)
 	if move.self_launch > 0.0:
 		actor.z_velocity = move.self_launch
+	if move.telegraph and not actor.is_player:
+		actor.play_telegraph(float(move.startup) / 60.0)
 	move_started.emit(move)
 	return true
 
