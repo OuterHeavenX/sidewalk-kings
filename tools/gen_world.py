@@ -742,7 +742,7 @@ def tile_tile_floor():
     d = ImageDraw.Draw(im)
     for i in range(2):
         for j in range(2):
-            c = (216, 214, 210) if (i + j) % 2 == 0 else (176, 178, 186)
+            c = (206, 196, 176) if (i + j) % 2 == 0 else (146, 138, 126)
             d.rectangle([i * 8, j * 8, i * 8 + 7, j * 8 + 7], fill=c)
     return noise(im, 4, 700)
 

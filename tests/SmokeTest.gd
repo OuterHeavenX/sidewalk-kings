@@ -36,9 +36,11 @@ func _ready() -> void:
 	await run()
 	_report()
 
+## Step physics frames, not render frames. All gameplay runs in _physics_process, and in
+## a headless run render frames are uncapped, so counting them measures nothing.
 func frames(n: int) -> void:
 	for i in n:
-		await get_tree().process_frame
+		await get_tree().physics_frame
 
 func seconds(s: float) -> void:
 	await get_tree().create_timer(s).timeout
@@ -164,6 +166,15 @@ func test_new_game() -> void:
 ## or loose weapons in reach. Without this, an accidental "interact" opens a shop or a
 ## conversation and every later check inherits a frozen game state.
 func clear_stage(x: float = 700.0) -> void:
+	# Stop any encounter and disarm the street's triggers: teleporting the player around
+	# would otherwise start real fights in the middle of a targeted check.
+	var area = GameManager.current_area
+	if area:
+		if area.director:
+			area.director.abort()
+		for t in area._encounter_triggers:
+			t.fired = true
+		area.lock_camera(false)
 	if DialogueManager.is_active():
 		DialogueManager._finish()
 	if ShopManager.is_open():
@@ -321,6 +332,10 @@ func test_combat() -> void:
 		await seconds(1.4)
 		player.combat.cancel()
 		player.set_state(Actor.State.IDLE)
+		# Hold the target still: lane drift during the jump would look like a broken move.
+		e.ai_state = EnemyBase.AI.WAIT
+		e.think_timer = 10.0
+		e.move_input = Vector2.ZERO
 		player.global_position = e.global_position - Vector2(16, 0)
 		player.global_position.y = e.global_position.y
 		player.facing = 1
@@ -644,7 +659,26 @@ func test_area_travel() -> void:
 		var built: bool = GameManager.current_area != null and GameManager.current_area.actors_root.get_child_count() > 2
 		check("travel to %s" % area_id, ok and built and is_instance_valid(GameManager.player),
 			"%d actor nodes" % (GameManager.current_area.actors_root.get_child_count() if GameManager.current_area else 0))
+		await _check_camera_follows(area_id)
 		GameManager.set_flag("visited_" + area_id, true)
+
+## The camera must keep the player on screen at both ends of the street. This catches
+## limit_left/limit_right being set as camera-centre bounds instead of world edges.
+func _check_camera_follows(area_id: String) -> void:
+	var area = GameManager.current_area
+	var player := p()
+	if area == null or player == null:
+		return
+	var half := get_viewport().get_visible_rect().size * 0.5
+	var worst := ""
+	for x in [area.walk_min_x + 30.0, area.walk_max_x - 30.0]:
+		player.global_position.x = x
+		area.camera.snap_to_target()
+		await frames(3)
+		var cam: Vector2 = area.camera.get_screen_center_position()
+		if absf(player.global_position.x - cam.x) > half.x - 24.0:
+			worst = "player x=%.0f but camera centre x=%.0f" % [player.global_position.x, cam.x]
+	check("camera frames the player across %s" % area_id, worst == "", worst)
 
 # ---------------------------------------------------------------- boss
 func test_boss() -> void:

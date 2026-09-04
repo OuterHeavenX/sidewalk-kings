@@ -1,7 +1,7 @@
 {
  "parallax": [
   {
-   "texture": "res://assets/art/backgrounds/sky_day",
+   "texture": "res://assets/art/backgrounds/sky_day.png",
    "y": -190.0,
    "scroll": 0.02,
    "repeat": 4,
@@ -14,7 +14,7 @@
    ]
   },
   {
-   "texture": "res://assets/art/backgrounds/skyline_far",
+   "texture": "res://assets/art/backgrounds/skyline_far.png",
    "y": -120.0,
    "scroll": 0.25,
    "repeat": 4,
@@ -27,7 +27,7 @@
    ]
   },
   {
-   "texture": "res://assets/art/backgrounds/skyline_near",
+   "texture": "res://assets/art/backgrounds/skyline_near.png",
    "y": -86.0,
    "scroll": 0.5,
    "repeat": 4,
@@ -43,8 +43,8 @@
  "ground": [
   {
    "tile": "asphalt_a",
-   "y": 16.0,
-   "height": 2,
+   "y": -46.0,
+   "height": 3,
    "z": -24,
    "x": -40,
    "x2": 1640,
@@ -52,7 +52,7 @@
   },
   {
    "tile": "curb",
-   "y": 48.0,
+   "y": 2.0,
    "height": 1,
    "z": -23,
    "x": -40,
@@ -60,8 +60,8 @@
   },
   {
    "tile": "sidewalk_a",
-   "y": 64.0,
-   "height": 6,
+   "y": 18.0,
+   "height": 7,
    "z": -22,
    "x": -40,
    "x2": 1640,
@@ -70,186 +70,186 @@
  ],
  "scenery": [
   {
-   "texture": "res://assets/art/backgrounds/apartment_b",
+   "texture": "res://assets/art/backgrounds/apartment_b.png",
    "x": 40,
-   "y": -192.0,
+   "y": -264.0,
    "z": -30,
    "scale": 1.0
   },
   {
-   "texture": "res://assets/art/backgrounds/shop_noodle",
+   "texture": "res://assets/art/backgrounds/shop_noodle.png",
    "x": 190,
-   "y": -132.0,
+   "y": -204.0,
    "z": -30,
    "scale": 1.0
   },
   {
-   "texture": "res://assets/art/backgrounds/shop_corner",
+   "texture": "res://assets/art/backgrounds/shop_corner.png",
    "x": 350,
-   "y": -122.0,
+   "y": -194.0,
    "z": -30,
    "scale": 1.0
   },
   {
-   "texture": "res://assets/art/backgrounds/apartment_c",
+   "texture": "res://assets/art/backgrounds/apartment_c.png",
    "x": 490,
-   "y": -152.0,
+   "y": -224.0,
    "z": -30,
    "scale": 1.0
   },
   {
-   "texture": "res://assets/art/backgrounds/shop_books",
+   "texture": "res://assets/art/backgrounds/shop_books.png",
    "x": 620,
-   "y": -128.0,
+   "y": -200.0,
    "z": -30,
    "scale": 1.0
   },
   {
-   "texture": "res://assets/art/backgrounds/apartment_a",
+   "texture": "res://assets/art/backgrounds/apartment_a.png",
    "x": 760,
-   "y": -172.0,
+   "y": -244.0,
    "z": -30,
    "scale": 1.0,
    "flip": true
   },
   {
-   "texture": "res://assets/art/backgrounds/shop_dojo",
+   "texture": "res://assets/art/backgrounds/shop_dojo.png",
    "x": 900,
-   "y": -138.0,
+   "y": -210.0,
    "z": -30,
    "scale": 1.0
   },
   {
-   "texture": "res://assets/art/backgrounds/apartment_b",
+   "texture": "res://assets/art/backgrounds/apartment_b.png",
    "x": 1060,
-   "y": -192.0,
+   "y": -264.0,
    "z": -30,
    "scale": 1.0
   },
   {
-   "texture": "res://assets/art/backgrounds/shop_weapon",
+   "texture": "res://assets/art/backgrounds/shop_weapon.png",
    "x": 1220,
-   "y": -122.0,
+   "y": -194.0,
    "z": -30,
    "scale": 1.0
   },
   {
-   "texture": "res://assets/art/backgrounds/apartment_c",
+   "texture": "res://assets/art/backgrounds/apartment_c.png",
    "x": 1370,
-   "y": -152.0,
+   "y": -224.0,
    "z": -30,
    "scale": 1.0,
    "flip": true
   },
   {
-   "texture": "res://assets/art/backgrounds/apartment_a",
+   "texture": "res://assets/art/backgrounds/apartment_a.png",
    "x": 1500,
-   "y": -172.0,
+   "y": -244.0,
    "z": -30,
    "scale": 1.0
   },
   {
-   "texture": "res://assets/art/props/awning_red",
+   "texture": "res://assets/art/props/awning_red.png",
    "x": 194,
-   "y": 4.0,
+   "y": -68.0,
    "z": -28,
    "scale": 1.0
   },
   {
-   "texture": "res://assets/art/props/awning_green",
+   "texture": "res://assets/art/props/awning_green.png",
    "x": 354,
-   "y": 8.0,
+   "y": -64.0,
    "z": -28,
    "scale": 1.0
   },
   {
-   "texture": "res://assets/art/props/awning_blue",
+   "texture": "res://assets/art/props/awning_blue.png",
    "x": 624,
-   "y": 8.0,
+   "y": -64.0,
    "z": -28,
    "scale": 1.0
   },
   {
-   "texture": "res://assets/art/props/awning_green",
+   "texture": "res://assets/art/props/awning_green.png",
    "x": 1224,
-   "y": 12.0,
+   "y": -60.0,
    "z": -28,
    "scale": 1.0
   },
   {
-   "texture": "res://assets/art/props/graffiti_b",
+   "texture": "res://assets/art/props/graffiti_b.png",
    "x": 830,
-   "y": 16.0,
+   "y": -56.0,
    "z": -27,
    "scale": 1.0
   },
   {
-   "texture": "res://assets/art/props/car_yellow",
+   "texture": "res://assets/art/props/car_yellow.png",
    "x": 540,
-   "y": -2.0,
+   "y": -36.0,
    "z": -26,
    "scale": 1.0
   },
   {
-   "texture": "res://assets/art/props/car_red",
+   "texture": "res://assets/art/props/car_red.png",
    "x": 1140,
-   "y": -2.0,
+   "y": -36.0,
    "z": -26,
    "scale": 1.0
   },
   {
-   "texture": "res://assets/art/props/streetlight",
+   "texture": "res://assets/art/props/streetlight.png",
    "x": 100,
-   "y": -18.0,
+   "y": -78.0,
    "z": -8,
    "scale": 1.0
   },
   {
-   "texture": "res://assets/art/props/streetlight",
+   "texture": "res://assets/art/props/streetlight.png",
    "x": 290,
-   "y": -18.0,
+   "y": -78.0,
    "z": -8,
    "scale": 1.0
   },
   {
-   "texture": "res://assets/art/props/streetlight",
+   "texture": "res://assets/art/props/streetlight.png",
    "x": 480,
-   "y": -18.0,
+   "y": -78.0,
    "z": -8,
    "scale": 1.0
   },
   {
-   "texture": "res://assets/art/props/streetlight",
+   "texture": "res://assets/art/props/streetlight.png",
    "x": 670,
-   "y": -18.0,
+   "y": -78.0,
    "z": -8,
    "scale": 1.0
   },
   {
-   "texture": "res://assets/art/props/streetlight",
+   "texture": "res://assets/art/props/streetlight.png",
    "x": 860,
-   "y": -18.0,
+   "y": -78.0,
    "z": -8,
    "scale": 1.0
   },
   {
-   "texture": "res://assets/art/props/streetlight",
+   "texture": "res://assets/art/props/streetlight.png",
    "x": 1050,
-   "y": -18.0,
+   "y": -78.0,
    "z": -8,
    "scale": 1.0
   },
   {
-   "texture": "res://assets/art/props/streetlight",
+   "texture": "res://assets/art/props/streetlight.png",
    "x": 1240,
-   "y": -18.0,
+   "y": -78.0,
    "z": -8,
    "scale": 1.0
   },
   {
-   "texture": "res://assets/art/props/streetlight",
+   "texture": "res://assets/art/props/streetlight.png",
    "x": 1430,
-   "y": -18.0,
+   "y": -78.0,
    "z": -8,
    "scale": 1.0
   }
@@ -537,5 +537,6 @@
  "lane_max": 74.0,
  "walk_min_x": 20.0,
  "walk_max_x": 1580.0,
- "ground_y": 74.0
+ "ground_y": 2.0,
+ "camera_y": -12.0
 }

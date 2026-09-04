@@ -79,7 +79,8 @@ func load_area(area_id: String, spawn_id: String = "start") -> void:
 	if GameManager.player_data.equipped_weapon != "":
 		player.give_weapon(GameManager.player_data.equipped_weapon)
 
-	camera.setup(player, area.walk_min_x + 160.0, area.walk_max_x - 160.0, area.ground_y + 30.0)
+	# Camera2D limits are world edges, not bounds on the camera centre.
+	camera.setup(player, area.walk_min_x - 20.0, area.walk_max_x + 20.0, area.camera_y)
 	camera.snap_to_target()
 
 	var meta: AreaData = ContentDB.get_area(area_id)

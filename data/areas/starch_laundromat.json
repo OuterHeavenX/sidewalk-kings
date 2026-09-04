@@ -1,10 +1,10 @@
 {
  "parallax": [
   {
-   "texture": "res://assets/art/backgrounds/laundromat_wall",
-   "y": -140.0,
-   "scroll": 0.75,
-   "repeat": 4,
+   "texture": "res://assets/art/backgrounds/laundromat_wall.png",
+   "y": -196.0,
+   "scroll": 0.8,
+   "repeat": 5,
    "scale": 1.0,
    "z": -90
   }
@@ -12,7 +12,7 @@
  "ground": [
   {
    "tile": "tile_floor",
-   "y": 16.0,
+   "y": 2.0,
    "height": 8,
    "z": -22,
    "x": -40,
@@ -21,44 +21,44 @@
  ],
  "scenery": [
   {
-   "texture": "res://assets/art/props/locker",
+   "texture": "res://assets/art/props/locker.png",
    "x": 90,
-   "y": -34.0,
+   "y": -106.0,
    "z": -28,
    "scale": 1.0
   },
   {
-   "texture": "res://assets/art/props/locker",
+   "texture": "res://assets/art/props/locker.png",
    "x": 130,
-   "y": -34.0,
+   "y": -106.0,
    "z": -28,
    "scale": 1.0
   },
   {
-   "texture": "res://assets/art/props/ac_unit",
+   "texture": "res://assets/art/props/ac_unit.png",
    "x": 400,
-   "y": -76.0,
+   "y": -148.0,
    "z": -28,
    "scale": 1.0
   },
   {
-   "texture": "res://assets/art/props/sign",
+   "texture": "res://assets/art/props/sign.png",
    "x": 640,
-   "y": -44.0,
+   "y": -116.0,
    "z": -28,
    "scale": 1.0
   },
   {
-   "texture": "res://assets/art/props/locker",
+   "texture": "res://assets/art/props/locker.png",
    "x": 900,
-   "y": -34.0,
+   "y": -106.0,
    "z": -28,
    "scale": 1.0
   },
   {
-   "texture": "res://assets/art/props/locker",
+   "texture": "res://assets/art/props/locker.png",
    "x": 940,
-   "y": -34.0,
+   "y": -106.0,
    "z": -28,
    "scale": 1.0
   }
@@ -185,5 +185,6 @@
  "lane_max": 76.0,
  "walk_min_x": 20.0,
  "walk_max_x": 980.0,
- "ground_y": 74.0
+ "ground_y": 2.0,
+ "camera_y": -12.0
 }

@@ -9,7 +9,7 @@ static var sprinting: bool = false
 
 const DEADZONE := 0.18
 const STICK_RADIUS := 46.0
-const BTN := 66.0
+const BTN := 40.0
 
 @onready var stick_base: TextureRect = $Stick/Base
 @onready var stick_knob: TextureRect = $Stick/Knob
@@ -30,9 +30,11 @@ func _ready() -> void:
 	get_viewport().size_changed.connect(_apply_safe_area)
 	EventBus.game_state_changed.connect(_on_state_changed)
 	EventBus.touch_mode_changed.connect(_on_touch_mode)
-	visible = InputManager.is_touch()
-	active = visible
+	visible = false
+	active = false
 	set_process_input(true)
+	# Defer so the viewport has its final size before buttons are placed.
+	call_deferred("_set_shown", InputManager.is_touch() and _gameplay_state())
 
 func _exit_tree() -> void:
 	active = false
@@ -46,18 +48,23 @@ func _collect_buttons() -> void:
 			_buttons.append({"action": str(child.get_meta("action")), "node": child})
 
 func _on_touch_mode(enabled: bool) -> void:
-	visible = enabled
-	active = enabled
-	if not enabled:
-		_reset()
+	_set_shown(enabled and _gameplay_state())
 
-func _on_state_changed(new_state: int) -> void:
-	var playing := new_state == GameManager.State.PLAYING
-	if visible != (playing and InputManager.is_touch()):
-		visible = playing and InputManager.is_touch()
-		active = visible
-		if not visible:
-			_reset()
+func _on_state_changed(_new_state: int) -> void:
+	_set_shown(InputManager.is_touch() and _gameplay_state())
+
+func _gameplay_state() -> bool:
+	return GameManager.state in [GameManager.State.PLAYING, GameManager.State.DIALOGUE]
+
+func _set_shown(shown: bool) -> void:
+	if visible == shown:
+		return
+	visible = shown
+	active = shown
+	if shown:
+		_apply_safe_area()
+	else:
+		_reset()
 
 func _reset() -> void:
 	_stick_touch = -1
@@ -72,41 +79,72 @@ func _reset() -> void:
 func _knob_home() -> Vector2:
 	return stick_base.position + stick_base.size * 0.5 - stick_knob.size * 0.5
 
+## Insets for notches and rounded corners, in UI units.
+## DisplayServer.get_display_safe_area() is reported in screen coordinates and on desktop
+## describes the whole monitor, so it is only trusted when it actually sits inside the
+## window and the platform is one that has cutouts.
+func _safe_insets(vp: Vector2) -> Vector3:
+	var base := Vector3(10.0, 10.0, 10.0)      # left, right, bottom
+	if not (OS.has_feature("mobile") or OS.has_feature("web_android") or OS.has_feature("web_ios")):
+		return base
+	var win := DisplayServer.window_get_size()
+	var safe := DisplayServer.get_display_safe_area()
+	if win.x <= 0 or win.y <= 0 or safe.size.x <= 0 or safe.size.y <= 0:
+		return base
+	if safe.size.x > win.x or safe.size.y > win.y:
+		return base                             # not describing this window
+	var sx := vp.x / float(win.x)
+	var sy := vp.y / float(win.y)
+	var max_x := vp.x * 0.2
+	var max_y := vp.y * 0.2
+	base.x += clampf(float(safe.position.x) * sx, 0.0, max_x)
+	base.y += clampf(float(win.x - (safe.position.x + safe.size.x)) * sx, 0.0, max_x)
+	base.z += clampf(float(win.y - (safe.position.y + safe.size.y)) * sy, 0.0, max_y)
+	return base
+
 func _apply_safe_area() -> void:
 	var vp := get_viewport_rect().size
-	var safe := DisplayServer.get_display_safe_area()
-	var win := DisplayServer.window_get_size()
-	var pad_l := 10.0
-	var pad_r := 10.0
-	var pad_b := 10.0
-	if win.x > 0 and win.y > 0 and safe.size.x > 0:
-		pad_l += float(safe.position.x) / float(win.x) * vp.x
-		pad_r += float(win.x - (safe.position.x + safe.size.x)) / float(win.x) * vp.x
-		pad_b += float(win.y - (safe.position.y + safe.size.y)) / float(win.y) * vp.y
+	if vp.x <= 0.0 or vp.y <= 0.0:
+		return
+	var insets := _safe_insets(vp)
+	var pad_l := insets.x
+	var pad_r := insets.y
+	var pad_b := insets.z
+	# Scale the whole layout down on very short viewports so nothing overlaps.
+	var ui_scale := clampf(vp.y / 270.0, 0.75, 1.35)
+	var btn := BTN * ui_scale
+	var stick_r := STICK_RADIUS * ui_scale
 	# Stick, lower-left
-	var sb_size := Vector2(STICK_RADIUS * 2.0, STICK_RADIUS * 2.0)
+	var sb_size := Vector2(stick_r * 2.0, stick_r * 2.0)
 	stick_base.size = sb_size
 	stick_base.position = Vector2(pad_l + 6.0, vp.y - pad_b - sb_size.y - 6.0)
-	stick_knob.size = Vector2(STICK_RADIUS, STICK_RADIUS)
+	stick_knob.size = Vector2(stick_r, stick_r)
 	stick_knob.position = _knob_home()
-	# Buttons, lower-right in a fan
-	var layout := {
-		"attack_light": Vector2(-1.72, -0.30),
-		"attack_heavy": Vector2(-0.95, -0.92),
-		"jump": Vector2(-0.30, -0.20),
-		"grab": Vector2(-1.05, 0.30),
-		"special": Vector2(-0.28, -1.10),
+	# Action buttons sit on an arc around the bottom-right corner, thumb-reachable and
+	# always fully inside the viewport.
+	var centre := Vector2(vp.x - pad_r - btn * 1.9, vp.y - pad_b - btn * 1.35)
+	var radius := btn * 1.05
+	var angles := {
+		"jump": -10.0,
+		"attack_light": -70.0,
+		"attack_heavy": -130.0,
+		"special": -180.0,
+		"grab": 60.0,
 	}
 	for b in _buttons:
 		var act: String = b.action
 		var node: TextureRect = b.node
-		node.size = Vector2(BTN, BTN)
 		if act == "pause":
-			node.position = Vector2(vp.x - pad_r - 34.0, 8.0)
-			node.size = Vector2(30, 30)
+			node.size = Vector2(26, 26)
+			node.position = Vector2(vp.x - pad_r - 30.0, 8.0)
 			continue
-		var off: Vector2 = layout.get(act, Vector2(-1, 0))
-		node.position = Vector2(vp.x - pad_r + off.x * BTN, vp.y - pad_b - BTN + off.y * BTN)
+		node.size = Vector2(btn, btn)
+		var ang: float = deg_to_rad(float(angles.get(act, -90.0)))
+		var pos := centre + Vector2(cos(ang), sin(ang)) * radius - Vector2(btn, btn) * 0.5
+		# Never let a button leave the screen on an unusual aspect ratio.
+		pos.x = clampf(pos.x, 4.0, vp.x - btn - 4.0)
+		pos.y = clampf(pos.y, 4.0, vp.y - btn - 4.0)
+		node.position = pos
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventScreenTouch:
@@ -164,7 +202,7 @@ func _touch_up(index: int) -> void:
 
 func _update_stick(p: Vector2) -> void:
 	var delta := p - _stick_origin
-	var r := STICK_RADIUS
+	var r := maxf(12.0, stick_base.size.x * 0.5)
 	var mag := delta.length()
 	if mag > r:
 		# Move the origin so the stick follows a long drag instead of sticking at the rim.

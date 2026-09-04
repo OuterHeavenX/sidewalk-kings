@@ -84,11 +84,15 @@ func _build() -> void:
 	col.add_child(text_label)
 
 	advance_hint = Label.new()
-	advance_hint.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
 	advance_hint.text = "▼"
+	advance_hint.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
+	advance_hint.offset_left = -22
+	advance_hint.offset_top = -22
+	advance_hint.offset_right = -8
+	advance_hint.offset_bottom = -8
+	advance_hint.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	UITheme.style_label(advance_hint, 9, UITheme.ACCENT_2)
-	advance_hint.position = Vector2(-16, -14)
-	panel.add_child(advance_hint)
+	root.add_child(advance_hint)
 
 	choice_box = VBoxContainer.new()
 	choice_box.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)

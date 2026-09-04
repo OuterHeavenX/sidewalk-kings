@@ -1,7 +1,7 @@
 {
  "parallax": [
   {
-   "texture": "res://assets/art/backgrounds/sky_alley",
+   "texture": "res://assets/art/backgrounds/sky_alley.png",
    "y": -190.0,
    "scroll": 0.02,
    "repeat": 4,
@@ -9,7 +9,7 @@
    "z": -95
   },
   {
-   "texture": "res://assets/art/backgrounds/skyline_near",
+   "texture": "res://assets/art/backgrounds/skyline_near.png",
    "y": -70.0,
    "scroll": 0.35,
    "repeat": 4,
@@ -25,15 +25,15 @@
  "ground": [
   {
    "tile": "concrete",
-   "y": 16.0,
-   "height": 2,
+   "y": -46.0,
+   "height": 3,
    "z": -24,
    "x": -40,
    "x2": 1440
   },
   {
    "tile": "curb",
-   "y": 48.0,
+   "y": 2.0,
    "height": 1,
    "z": -23,
    "x": -40,
@@ -41,8 +41,8 @@
   },
   {
    "tile": "asphalt_a",
-   "y": 64.0,
-   "height": 6,
+   "y": 18.0,
+   "height": 7,
    "z": -22,
    "x": -40,
    "x2": 1440,
@@ -51,9 +51,9 @@
  ],
  "scenery": [
   {
-   "texture": "res://assets/art/backgrounds/apartment_b",
+   "texture": "res://assets/art/backgrounds/apartment_b.png",
    "x": 0,
-   "y": -202.0,
+   "y": -274.0,
    "z": -30,
    "scale": 1.0,
    "modulate": [
@@ -63,9 +63,9 @@
    ]
   },
   {
-   "texture": "res://assets/art/backgrounds/apartment_a",
+   "texture": "res://assets/art/backgrounds/apartment_a.png",
    "x": 130,
-   "y": -182.0,
+   "y": -254.0,
    "z": -30,
    "scale": 1.0,
    "modulate": [
@@ -75,9 +75,9 @@
    ]
   },
   {
-   "texture": "res://assets/art/backgrounds/apartment_c",
+   "texture": "res://assets/art/backgrounds/apartment_c.png",
    "x": 250,
-   "y": -162.0,
+   "y": -234.0,
    "z": -30,
    "scale": 1.0,
    "modulate": [
@@ -87,9 +87,9 @@
    ]
   },
   {
-   "texture": "res://assets/art/backgrounds/warehouse",
+   "texture": "res://assets/art/backgrounds/warehouse.png",
    "x": 380,
-   "y": -76.0,
+   "y": -148.0,
    "z": -30,
    "scale": 1.0,
    "modulate": [
@@ -99,9 +99,9 @@
    ]
   },
   {
-   "texture": "res://assets/art/backgrounds/apartment_b",
+   "texture": "res://assets/art/backgrounds/apartment_b.png",
    "x": 580,
-   "y": -202.0,
+   "y": -274.0,
    "z": -30,
    "scale": 1.0,
    "flip": true,
@@ -112,9 +112,9 @@
    ]
   },
   {
-   "texture": "res://assets/art/backgrounds/apartment_a",
+   "texture": "res://assets/art/backgrounds/apartment_a.png",
    "x": 720,
-   "y": -182.0,
+   "y": -254.0,
    "z": -30,
    "scale": 1.0,
    "modulate": [
@@ -124,9 +124,9 @@
    ]
   },
   {
-   "texture": "res://assets/art/backgrounds/warehouse",
+   "texture": "res://assets/art/backgrounds/warehouse.png",
    "x": 860,
-   "y": -76.0,
+   "y": -148.0,
    "z": -30,
    "scale": 1.0,
    "flip": true,
@@ -137,9 +137,9 @@
    ]
   },
   {
-   "texture": "res://assets/art/backgrounds/apartment_c",
+   "texture": "res://assets/art/backgrounds/apartment_c.png",
    "x": 1060,
-   "y": -162.0,
+   "y": -234.0,
    "z": -30,
    "scale": 1.0,
    "modulate": [
@@ -149,9 +149,9 @@
    ]
   },
   {
-   "texture": "res://assets/art/backgrounds/apartment_b",
+   "texture": "res://assets/art/backgrounds/apartment_b.png",
    "x": 1180,
-   "y": -202.0,
+   "y": -274.0,
    "z": -30,
    "scale": 1.0,
    "modulate": [
@@ -161,9 +161,9 @@
    ]
   },
   {
-   "texture": "res://assets/art/backgrounds/apartment_a",
+   "texture": "res://assets/art/backgrounds/apartment_a.png",
    "x": 1320,
-   "y": -182.0,
+   "y": -254.0,
    "z": -30,
    "scale": 1.0,
    "flip": true,
@@ -174,93 +174,93 @@
    ]
   },
   {
-   "texture": "res://assets/art/props/graffiti_a",
+   "texture": "res://assets/art/props/graffiti_a.png",
    "x": 200,
-   "y": 4.0,
+   "y": -68.0,
    "z": -27,
    "scale": 1.0
   },
   {
-   "texture": "res://assets/art/props/graffiti_b",
+   "texture": "res://assets/art/props/graffiti_b.png",
    "x": 520,
-   "y": -2.0,
+   "y": -74.0,
    "z": -27,
    "scale": 1.0
   },
   {
-   "texture": "res://assets/art/props/graffiti_c",
+   "texture": "res://assets/art/props/graffiti_c.png",
    "x": 900,
-   "y": 6.0,
+   "y": -66.0,
    "z": -27,
    "scale": 1.0
   },
   {
-   "texture": "res://assets/art/props/graffiti_a",
+   "texture": "res://assets/art/props/graffiti_a.png",
    "x": 1200,
-   "y": 2.0,
+   "y": -70.0,
    "z": -27,
    "scale": 1.0
   },
   {
-   "texture": "res://assets/art/props/ac_unit",
+   "texture": "res://assets/art/props/ac_unit.png",
    "x": 340,
-   "y": -56.0,
+   "y": -128.0,
    "z": -28,
    "scale": 1.0
   },
   {
-   "texture": "res://assets/art/props/ac_unit",
+   "texture": "res://assets/art/props/ac_unit.png",
    "x": 980,
-   "y": -64.0,
+   "y": -136.0,
    "z": -28,
    "scale": 1.0
   },
   {
-   "texture": "res://assets/art/props/fence",
+   "texture": "res://assets/art/props/fence.png",
    "x": 60,
-   "y": 8.0,
+   "y": -36.0,
    "z": -26,
    "scale": 1.0
   },
   {
-   "texture": "res://assets/art/props/streetlight",
+   "texture": "res://assets/art/props/streetlight.png",
    "x": 140,
-   "y": -18.0,
+   "y": -78.0,
    "z": -8,
    "scale": 1.0
   },
   {
-   "texture": "res://assets/art/props/streetlight",
+   "texture": "res://assets/art/props/streetlight.png",
    "x": 380,
-   "y": -18.0,
+   "y": -78.0,
    "z": -8,
    "scale": 1.0
   },
   {
-   "texture": "res://assets/art/props/streetlight",
+   "texture": "res://assets/art/props/streetlight.png",
    "x": 620,
-   "y": -18.0,
+   "y": -78.0,
    "z": -8,
    "scale": 1.0
   },
   {
-   "texture": "res://assets/art/props/streetlight",
+   "texture": "res://assets/art/props/streetlight.png",
    "x": 860,
-   "y": -18.0,
+   "y": -78.0,
    "z": -8,
    "scale": 1.0
   },
   {
-   "texture": "res://assets/art/props/streetlight",
+   "texture": "res://assets/art/props/streetlight.png",
    "x": 1100,
-   "y": -18.0,
+   "y": -78.0,
    "z": -8,
    "scale": 1.0
   },
   {
-   "texture": "res://assets/art/props/streetlight",
+   "texture": "res://assets/art/props/streetlight.png",
    "x": 1340,
-   "y": -18.0,
+   "y": -78.0,
    "z": -8,
    "scale": 1.0
   }
@@ -482,5 +482,6 @@
  "lane_max": 74.0,
  "walk_min_x": 20.0,
  "walk_max_x": 1380.0,
- "ground_y": 74.0
+ "ground_y": 2.0,
+ "camera_y": -12.0
 }

@@ -176,8 +176,9 @@ func _press_attack(kind: int) -> void:
 	if state == State.GRABBING and is_instance_valid(grabbing):
 		_grab_attack(kind)
 		return
-	# Air attack
-	if z_height > 12.0 and not _jump_attacked:
+	# Air attack: anything off the ground counts, so a quick tap after jumping
+	# never falls through to a grounded attack that cannot start.
+	if (z_height > 4.0 or z_velocity > 0.0) and not _jump_attacked:
 		var air_id := "jump_kick" if kind == MoveData.InputKind.LIGHT else "jump_stomp"
 		var air := _get_move(air_id)
 		if air == null:

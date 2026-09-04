@@ -40,9 +40,15 @@ func _ready() -> void:
 
 func _load_texture() -> void:
 	var path := "res://assets/art/props/%s.png" % prop_id
-	if ResourceLoader.exists(path) and sprite:
-		sprite.texture = load(path)
-		sprite.offset.y = -float(sprite.texture.get_height()) * 0.5
+	if sprite == null:
+		return
+	var tex: Texture2D = load(path) if ResourceLoader.exists(path) else null
+	if tex == null:
+		push_warning("[Prop] missing texture for '%s'" % prop_id)
+		return
+	sprite.texture = tex
+	# Anchor the sprite so its base sits on the prop's ground position.
+	sprite.offset.y = -float(tex.get_height()) * 0.5
 
 func get_interact_prompt() -> String:
 	return interact_prompt

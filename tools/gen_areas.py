@@ -17,21 +17,42 @@ os.makedirs(OUT, exist_ok=True)
 BG = "res://assets/art/backgrounds/"
 PROP = "res://assets/art/props/"
 
-# The walkable lane. y is depth: smaller = further from the camera.
+# Vertical layout, in world pixels. y grows downward and doubles as lane depth:
+# a smaller y is further into the screen, which is what drives Y-sorting.
+#
+#   ROAD_TOP  -46 ┬ road (parked cars, back edge of the scene)
+#   BUILD_BASE  2 ┼ buildings stand on this line
+#   SIDEWALK   18 ┼ sidewalk tiles start
+#   LANE_MIN   34 ┼ back of the walkable lane
+#   LANE_MAX   74 ┼ front of the walkable lane
+#             130 ┴ sidewalk tiles end
 LANE_MIN = 34.0
 LANE_MAX = 74.0
-GROUND_Y = 74.0     # where the sidewalk strip starts drawing
+SIDEWALK_TOP = 18.0
+SIDEWALK_ROWS = 7
+CURB_TOP = 2.0
+ROAD_TOP = -46.0
+BUILD_BASE = 2.0      # buildings rest here, behind the road
+CAMERA_Y = -12.0      # camera centre; shows roughly y -147..123 at 480x270
+GROUND_Y = BUILD_BASE
+
+
+def _tex_path(name, base=None):
+    """Accept a bare asset name, a folder-relative name, or a full res:// path."""
+    if name.startswith("res://"):
+        return name if name.endswith(".png") else name + ".png"
+    return (base or BG) + name + ".png"
 
 
 def sky(tex, y=-150.0, scroll=0.05, repeat=3, scale=1.0, modulate=None, z=-90):
-    d = {"texture": BG + tex, "y": y, "scroll": scroll, "repeat": repeat, "scale": scale, "z": z}
+    d = {"texture": _tex_path(tex), "y": y, "scroll": scroll, "repeat": repeat, "scale": scale, "z": z}
     if modulate:
         d["modulate"] = modulate
     return d
 
 
 def scenery(tex, x, y, z=-10, scale=1.0, front=False, flip=False, modulate=None):
-    d = {"texture": tex if tex.startswith("res://") else BG + tex, "x": x, "y": y, "z": z, "scale": scale}
+    d = {"texture": _tex_path(tex), "x": x, "y": y, "z": z, "scale": scale}
     if front:
         d["front"] = True
     if flip:
@@ -64,25 +85,32 @@ def build(area_id, width, layout):
     layout.setdefault("walk_min_x", 20.0)
     layout.setdefault("walk_max_x", width - 20.0)
     layout.setdefault("ground_y", GROUND_Y)
+    layout.setdefault("camera_y", CAMERA_Y)
     with open(os.path.join(OUT, area_id + ".json"), "w", newline="\n") as f:
         json.dump(layout, f, indent=1)
     print("  %s (%dpx wide)" % (area_id, width))
 
 
 def street_ground(width, main="sidewalk_a", alt="sidewalk_b", road="asphalt_a"):
-    """Standard street: road strip at the back, curb, then the walkable sidewalk."""
+    """Standard street: road at the back, a curb line, then the walkable sidewalk."""
     return [
-        ground(road, GROUND_Y - 58, 2, -40, width + 40, alt="asphalt_b", z=-24),
-        ground("curb", GROUND_Y - 26, 1, -40, width + 40, z=-23),
-        ground(main, GROUND_Y - 10, 6, -40, width + 40, alt=alt, z=-22),
+        ground(road, ROAD_TOP, 3, -40, width + 40, alt="asphalt_b", z=-24),
+        ground("curb", CURB_TOP, 1, -40, width + 40, z=-23),
+        ground(main, SIDEWALK_TOP, SIDEWALK_ROWS, -40, width + 40, alt=alt, z=-22),
     ]
 
 
+def building(tex, x, height, z=-30, **kw):
+    """Place a building so its base sits on the road's far edge."""
+    return scenery(tex, x, BUILD_BASE - height, z=z, **kw)
+
+
 def lamp_row(width, spacing=170, start=60):
+    """Street lights stand on the back edge of the sidewalk."""
     out = []
     x = start
     while x < width - 40:
-        out.append(scenery(PROP + "streetlight", x, GROUND_Y - 92, z=-8))
+        out.append(scenery(PROP + "streetlight", x, SIDEWALK_TOP - 96.0, z=-8))
         x += spacing
     return out
 
@@ -101,23 +129,23 @@ ferry = {
     "ground": street_ground(W1),
     "scenery": (
         [
-            scenery("apartment_a", 60, GROUND_Y - 246, z=-30),
-            scenery("shop_corner", 210, GROUND_Y - 196, z=-30),
-            scenery("apartment_c", 350, GROUND_Y - 226, z=-30),
-            scenery("apartment_b", 470, GROUND_Y - 266, z=-30),
-            scenery("shop_noodle", 640, GROUND_Y - 206, z=-30),
-            scenery("apartment_a", 790, GROUND_Y - 246, z=-30, flip=True),
-            scenery("apartment_c", 930, GROUND_Y - 226, z=-30),
-            scenery("apartment_b", 1060, GROUND_Y - 266, z=-30, flip=True),
-            scenery("shop_corner", 1230, GROUND_Y - 196, z=-30, flip=True),
-            scenery("apartment_a", 1370, GROUND_Y - 246, z=-30),
-            scenery(PROP + "awning_blue", 214, GROUND_Y - 62, z=-28),
-            scenery(PROP + "awning_red", 646, GROUND_Y - 70, z=-28),
-            scenery(PROP + "graffiti_a", 420, GROUND_Y - 60, z=-27),
-            scenery(PROP + "graffiti_c", 1130, GROUND_Y - 56, z=-27),
-            scenery(PROP + "car_blue", 300, GROUND_Y - 76, z=-26),
-            scenery(PROP + "car_red", 880, GROUND_Y - 76, z=-26),
-            scenery(PROP + "fence", 1420, GROUND_Y - 66, z=-26),
+            building("apartment_a", 60, 246, z=-30),
+            building("shop_corner", 210, 196, z=-30),
+            building("apartment_c", 350, 226, z=-30),
+            building("apartment_b", 470, 266, z=-30),
+            building("shop_noodle", 640, 206, z=-30),
+            building("apartment_a", 790, 246, z=-30, flip=True),
+            building("apartment_c", 930, 226, z=-30),
+            building("apartment_b", 1060, 266, z=-30, flip=True),
+            building("shop_corner", 1230, 196, z=-30, flip=True),
+            building("apartment_a", 1370, 246, z=-30),
+            scenery(PROP + "awning_blue", 214, BUILD_BASE - 62, z=-28),
+            scenery(PROP + "awning_red", 646, BUILD_BASE - 70, z=-28),
+            scenery(PROP + "graffiti_a", 420, BUILD_BASE - 60, z=-27),
+            scenery(PROP + "graffiti_c", 1130, BUILD_BASE - 56, z=-27),
+            scenery(PROP + "car_blue", 300, CURB_TOP - 38, z=-26),
+            scenery(PROP + "car_red", 880, CURB_TOP - 38, z=-26),
+            scenery(PROP + "fence", 1420, CURB_TOP - 38, z=-26),
         ]
         + lamp_row(W1)
     ),
@@ -193,24 +221,24 @@ market = {
     "ground": street_ground(W2),
     "scenery": (
         [
-            scenery("apartment_b", 40, GROUND_Y - 266, z=-30),
-            scenery("shop_noodle", 190, GROUND_Y - 206, z=-30),
-            scenery("shop_corner", 350, GROUND_Y - 196, z=-30),
-            scenery("apartment_c", 490, GROUND_Y - 226, z=-30),
-            scenery("shop_books", 620, GROUND_Y - 202, z=-30),
-            scenery("apartment_a", 760, GROUND_Y - 246, z=-30, flip=True),
-            scenery("shop_dojo", 900, GROUND_Y - 212, z=-30),
-            scenery("apartment_b", 1060, GROUND_Y - 266, z=-30),
-            scenery("shop_weapon", 1220, GROUND_Y - 196, z=-30),
-            scenery("apartment_c", 1370, GROUND_Y - 226, z=-30, flip=True),
-            scenery("apartment_a", 1500, GROUND_Y - 246, z=-30),
-            scenery(PROP + "awning_red", 194, GROUND_Y - 70, z=-28),
-            scenery(PROP + "awning_green", 354, GROUND_Y - 66, z=-28),
-            scenery(PROP + "awning_blue", 624, GROUND_Y - 66, z=-28),
-            scenery(PROP + "awning_green", 1224, GROUND_Y - 62, z=-28),
-            scenery(PROP + "graffiti_b", 830, GROUND_Y - 58, z=-27),
-            scenery(PROP + "car_yellow", 540, GROUND_Y - 76, z=-26),
-            scenery(PROP + "car_red", 1140, GROUND_Y - 76, z=-26),
+            building("apartment_b", 40, 266, z=-30),
+            building("shop_noodle", 190, 206, z=-30),
+            building("shop_corner", 350, 196, z=-30),
+            building("apartment_c", 490, 226, z=-30),
+            building("shop_books", 620, 202, z=-30),
+            building("apartment_a", 760, 246, z=-30, flip=True),
+            building("shop_dojo", 900, 212, z=-30),
+            building("apartment_b", 1060, 266, z=-30),
+            building("shop_weapon", 1220, 196, z=-30),
+            building("apartment_c", 1370, 226, z=-30, flip=True),
+            building("apartment_a", 1500, 246, z=-30),
+            scenery(PROP + "awning_red", 194, BUILD_BASE - 70, z=-28),
+            scenery(PROP + "awning_green", 354, BUILD_BASE - 66, z=-28),
+            scenery(PROP + "awning_blue", 624, BUILD_BASE - 66, z=-28),
+            scenery(PROP + "awning_green", 1224, BUILD_BASE - 62, z=-28),
+            scenery(PROP + "graffiti_b", 830, BUILD_BASE - 58, z=-27),
+            scenery(PROP + "car_yellow", 540, CURB_TOP - 38, z=-26),
+            scenery(PROP + "car_red", 1140, CURB_TOP - 38, z=-26),
         ]
         + lamp_row(W2, 190, 100)
     ),
@@ -287,29 +315,29 @@ alley = {
         sky("skyline_near", -70.0, 0.35, 4, 1.0, [0.45, 0.42, 0.58], z=-90),
     ],
     "ground": [
-        ground("concrete", GROUND_Y - 58, 2, -40, W3 + 40, z=-24),
-        ground("curb", GROUND_Y - 26, 1, -40, W3 + 40, z=-23),
-        ground("asphalt_a", GROUND_Y - 10, 6, -40, W3 + 40, alt="asphalt_b", z=-22),
+        ground("concrete", ROAD_TOP, 3, -40, W3 + 40, z=-24),
+        ground("curb", CURB_TOP, 1, -40, W3 + 40, z=-23),
+        ground("asphalt_a", SIDEWALK_TOP, SIDEWALK_ROWS, -40, W3 + 40, alt="asphalt_b", z=-22),
     ],
     "scenery": (
         [
-            scenery("apartment_b", 0, GROUND_Y - 276, z=-30, modulate=[0.72, 0.7, 0.86]),
-            scenery("apartment_a", 130, GROUND_Y - 256, z=-30, modulate=[0.72, 0.7, 0.86]),
-            scenery("apartment_c", 250, GROUND_Y - 236, z=-30, modulate=[0.7, 0.68, 0.84]),
-            scenery("warehouse", 380, GROUND_Y - 150, z=-30, modulate=[0.76, 0.74, 0.86]),
-            scenery("apartment_b", 580, GROUND_Y - 276, z=-30, flip=True, modulate=[0.72, 0.7, 0.86]),
-            scenery("apartment_a", 720, GROUND_Y - 256, z=-30, modulate=[0.7, 0.68, 0.84]),
-            scenery("warehouse", 860, GROUND_Y - 150, z=-30, flip=True, modulate=[0.74, 0.72, 0.85]),
-            scenery("apartment_c", 1060, GROUND_Y - 236, z=-30, modulate=[0.72, 0.7, 0.86]),
-            scenery("apartment_b", 1180, GROUND_Y - 276, z=-30, modulate=[0.7, 0.68, 0.84]),
-            scenery("apartment_a", 1320, GROUND_Y - 256, z=-30, flip=True, modulate=[0.72, 0.7, 0.86]),
-            scenery(PROP + "graffiti_a", 200, GROUND_Y - 70, z=-27),
-            scenery(PROP + "graffiti_b", 520, GROUND_Y - 76, z=-27),
-            scenery(PROP + "graffiti_c", 900, GROUND_Y - 68, z=-27),
-            scenery(PROP + "graffiti_a", 1200, GROUND_Y - 72, z=-27),
-            scenery(PROP + "ac_unit", 340, GROUND_Y - 130, z=-28),
-            scenery(PROP + "ac_unit", 980, GROUND_Y - 138, z=-28),
-            scenery(PROP + "fence", 60, GROUND_Y - 66, z=-26),
+            building("apartment_b", 0, 276, z=-30, modulate=[0.72, 0.7, 0.86]),
+            building("apartment_a", 130, 256, z=-30, modulate=[0.72, 0.7, 0.86]),
+            building("apartment_c", 250, 236, z=-30, modulate=[0.7, 0.68, 0.84]),
+            building("warehouse", 380, 150, z=-30, modulate=[0.76, 0.74, 0.86]),
+            building("apartment_b", 580, 276, z=-30, flip=True, modulate=[0.72, 0.7, 0.86]),
+            building("apartment_a", 720, 256, z=-30, modulate=[0.7, 0.68, 0.84]),
+            building("warehouse", 860, 150, z=-30, flip=True, modulate=[0.74, 0.72, 0.85]),
+            building("apartment_c", 1060, 236, z=-30, modulate=[0.72, 0.7, 0.86]),
+            building("apartment_b", 1180, 276, z=-30, modulate=[0.7, 0.68, 0.84]),
+            building("apartment_a", 1320, 256, z=-30, flip=True, modulate=[0.72, 0.7, 0.86]),
+            scenery(PROP + "graffiti_a", 200, BUILD_BASE - 70, z=-27),
+            scenery(PROP + "graffiti_b", 520, BUILD_BASE - 76, z=-27),
+            scenery(PROP + "graffiti_c", 900, BUILD_BASE - 68, z=-27),
+            scenery(PROP + "graffiti_a", 1200, BUILD_BASE - 72, z=-27),
+            scenery(PROP + "ac_unit", 340, BUILD_BASE - 130, z=-28),
+            scenery(PROP + "ac_unit", 980, BUILD_BASE - 138, z=-28),
+            scenery(PROP + "fence", 60, CURB_TOP - 38, z=-26),
         ]
         + lamp_row(W3, 240, 140)
     ),
@@ -377,22 +405,22 @@ yard = {
         sky("skyline_near", -74.0, 0.55, 4, 1.0, [0.5, 0.47, 0.55], z=-85),
     ],
     "ground": [
-        ground("dirt", GROUND_Y - 58, 2, -40, W4 + 40, z=-24),
-        ground("curb", GROUND_Y - 26, 1, -40, W4 + 40, z=-23),
-        ground("concrete", GROUND_Y - 10, 6, -40, W4 + 40, alt="dirt", z=-22),
+        ground("dirt", ROAD_TOP, 3, -40, W4 + 40, z=-24),
+        ground("curb", CURB_TOP, 1, -40, W4 + 40, z=-23),
+        ground("concrete", SIDEWALK_TOP, SIDEWALK_ROWS, -40, W4 + 40, z=-22),
     ],
     "scenery": (
         [
-            scenery("warehouse", 20, GROUND_Y - 150, z=-30),
-            scenery("warehouse", 240, GROUND_Y - 150, z=-30, flip=True),
-            scenery("apartment_c", 470, GROUND_Y - 236, z=-30, modulate=[0.78, 0.74, 0.78]),
-            scenery("warehouse", 600, GROUND_Y - 150, z=-30),
-            scenery("warehouse", 820, GROUND_Y - 150, z=-30, flip=True),
-            scenery("apartment_b", 1040, GROUND_Y - 276, z=-30, modulate=[0.76, 0.72, 0.78]),
-            scenery("warehouse", 1180, GROUND_Y - 150, z=-30),
-            scenery("shop_laundry", 1400, GROUND_Y - 206, z=-30),
+            building("warehouse", 20, 150, z=-30),
+            building("warehouse", 240, 150, z=-30, flip=True),
+            building("apartment_c", 470, 236, z=-30, modulate=[0.78, 0.74, 0.78]),
+            building("warehouse", 600, 150, z=-30),
+            building("warehouse", 820, 150, z=-30, flip=True),
+            building("apartment_b", 1040, 276, z=-30, modulate=[0.76, 0.72, 0.78]),
+            building("warehouse", 1180, 150, z=-30),
+            building("shop_laundry", 1400, 206, z=-30),
         ]
-        + [scenery(PROP + "fence", x, GROUND_Y - 66, z=-26) for x in range(150, W4, 64) if not (560 < x < 900)]
+        + [scenery(PROP + "fence", x, CURB_TOP - 38, z=-26) for x in range(150, W4, 64) if not (560 < x < 900)]
         + lamp_row(W4, 260, 180)
     ),
     "props": [
@@ -450,18 +478,18 @@ build("rustpile_yard", W4, yard)
 W5 = 1000
 hideout = {
     "parallax": [
-        {"texture": BG + "laundromat_wall", "y": -140.0, "scroll": 0.75, "repeat": 4, "scale": 1.0, "z": -90},
+        {"texture": _tex_path("laundromat_wall"), "y": -196.0, "scroll": 0.8, "repeat": 5, "scale": 1.0, "z": -90},
     ],
     "ground": [
-        ground("tile_floor", GROUND_Y - 58, 8, -40, W5 + 40, z=-22),
+        ground("tile_floor", SIDEWALK_TOP - 16.0, SIDEWALK_ROWS + 1, -40, W5 + 40, z=-22),
     ],
     "scenery": [
-        scenery(PROP + "locker", 90, GROUND_Y - 108, z=-28),
-        scenery(PROP + "locker", 130, GROUND_Y - 108, z=-28),
-        scenery(PROP + "ac_unit", 400, GROUND_Y - 150, z=-28),
-        scenery(PROP + "sign", 640, GROUND_Y - 118, z=-28),
-        scenery(PROP + "locker", 900, GROUND_Y - 108, z=-28),
-        scenery(PROP + "locker", 940, GROUND_Y - 108, z=-28),
+        scenery(PROP + "locker", 90, BUILD_BASE - 108, z=-28),
+        scenery(PROP + "locker", 130, BUILD_BASE - 108, z=-28),
+        scenery(PROP + "ac_unit", 400, BUILD_BASE - 150, z=-28),
+        scenery(PROP + "sign", 640, BUILD_BASE - 118, z=-28),
+        scenery(PROP + "locker", 900, BUILD_BASE - 108, z=-28),
+        scenery(PROP + "locker", 940, BUILD_BASE - 108, z=-28),
     ],
     "props": [
         prop("bench", 200, LANE_MIN - 2),

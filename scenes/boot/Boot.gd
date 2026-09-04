@@ -19,9 +19,15 @@ func _ready() -> void:
 	await get_tree().process_frame
 	_verify()
 	# Automated QA pass:  godot --headless --path . -- --smoke
-	if "--smoke" in OS.get_cmdline_user_args():
+	var args := OS.get_cmdline_user_args()
+	if "--smoke" in args:
 		var test = load("res://tests/SmokeTest.gd").new()
 		get_tree().root.add_child(test)
+		return
+	# Visual capture pass:  godot --path . -- --shots
+	if "--shots" in args:
+		var shots = load("res://tests/ScreenshotTool.gd").new()
+		get_tree().root.add_child(shots)
 		return
 	await get_tree().create_timer(0.25).timeout
 	SceneManager.goto_title()

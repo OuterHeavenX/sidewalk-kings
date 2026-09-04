@@ -16,6 +16,7 @@ var lane_max: float = 40.0
 var walk_min_x: float = 0.0
 var walk_max_x: float = 800.0
 var ground_y: float = 0.0
+var camera_y: float = 0.0
 
 var director: EnemyDirector = null
 var camera: GameCamera = null
@@ -44,6 +45,7 @@ func build(id: String, cam: GameCamera) -> void:
 	walk_min_x = float(layout.get("walk_min_x", 16.0))
 	walk_max_x = float(layout.get("walk_max_x", 900.0))
 	ground_y = float(layout.get("ground_y", 0.0))
+	camera_y = float(layout.get("camera_y", ground_y - 24.0))
 	actors_root.y_sort_enabled = true
 	_build_parallax()
 	_build_ground()
