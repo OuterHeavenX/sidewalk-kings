@@ -137,6 +137,21 @@ def lighting(ambient, lights, glow=True):
     return {"ambient": list(ambient), "glow": glow, "lights": lights}
 
 
+def lamp_lights(width, spacing=170, start=60, color=(1.0, 0.86, 0.58), energy=1.15, scale=2.0):
+    """A light pool under each street lamp.
+
+    Mirrors lamp_row exactly, so a lamp and its pool cannot drift apart. Hand-placing
+    these was the obvious alternative and would have gone stale the first time a street
+    changed its lamp spacing.
+    """
+    out = []
+    x = start
+    while x < width - 40:
+        out.append(light(x, 34.0, color, energy, scale))
+        x += spacing
+    return out
+
+
 def build(area_id, width, layout):
     layout.setdefault("lane_min", LANE_MIN)
     layout.setdefault("lane_max", LANE_MAX)
@@ -282,6 +297,19 @@ ferry = {
         {"dialogue": "intro_ferry", "if_not_flag": "seen_intro"},
     ],
     "ambient": ambient(drift=litter(count=8, speed=15.0)),
+    # Dusk. The sun is gone but the sky has not caught up, so the ambient is still bluish
+    # while every lamp on the street has just come on warm. That disagreement is the whole
+    # effect: matching them would read as a tint.
+    "lighting": lighting(
+        (0.56, 0.55, 0.68),
+        lamp_lights(W1, 170, 60, (1.0, 0.84, 0.54), 1.15, 2.1)
+        + [
+            light(214, 26.0, (1.0, 0.78, 0.5), 0.7, 1.3, "tight"),   # awning over the shop
+            light(646, 26.0, (1.0, 0.72, 0.46), 0.7, 1.3, "tight"),
+            light(-30, 10.0, (0.5, 0.62, 0.9), 0.8, 2.8, "wide"),    # cold light off the river
+            light(1250, 24.0, (0.55, 0.9, 0.85), 0.5, 1.0, "tight"), # the vending machine
+        ],
+    ),
 }
 build("ferry_row", W1, ferry)
 
@@ -387,6 +415,20 @@ market = {
         {"id": "market_optional", "x": 1440, "width": 60},
     ],
     "ambient": ambient(drift=litter(count=7, speed=-11.0)),
+    # Early evening. Warmer and brighter than Ferry Row because the stalls are still open
+    # and every shopfront is throwing light onto the pavement.
+    "lighting": lighting(
+        (0.66, 0.60, 0.68),
+        lamp_lights(W2, 190, 100, (1.0, 0.87, 0.6), 1.05, 2.0)
+        + [
+            light(250, 24.0, (1.0, 0.76, 0.42), 0.9, 1.5, "tight"),   # Mae's
+            light(410, 24.0, (1.0, 0.82, 0.52), 0.8, 1.4, "tight"),   # corner store
+            light(680, 24.0, (0.95, 0.85, 0.6), 0.8, 1.4, "tight"),   # bookshop
+            light(966, 24.0, (1.0, 0.72, 0.4), 0.9, 1.5, "tight"),    # the dojo
+            light(1040, 22.0, (0.55, 0.9, 0.85), 0.5, 1.0, "tight"),  # vending
+            light(1352, 22.0, (0.5, 0.68, 1.0), 0.7, 1.4, "tight"),   # the metro entrance
+        ],
+    ),
 }
 build("lantern_market", W2, market)
 
@@ -484,6 +526,16 @@ alley = {
         {"id": "alley_boss_fight", "x": 1120, "width": 80},
     ],
     "ambient": ambient(drift=litter(count=9, speed=9.0)),
+    # Night in a back alley. Dark, cold, and lit by almost nothing: two working lamps and
+    # whatever leaks out of Pops' doorway. The gaps between the pools are the point.
+    "lighting": lighting(
+        (0.34, 0.36, 0.48),
+        lamp_lights(W3, 240, 140, (1.0, 0.8, 0.48), 1.3, 2.2)
+        + [
+            light(1030, 24.0, (1.0, 0.74, 0.44), 1.0, 1.6, "tight"),  # Pops' Gear
+            light(620, 20.0, (0.6, 0.75, 1.0), 0.5, 1.2, "tight"),    # the fire escape
+        ],
+    ),
 }
 build("grease_alley", W3, alley)
 
@@ -564,6 +616,16 @@ yard = {
         {"id": "yard_wave_2", "x": 1080, "width": 90},
     ],
     "ambient": ambient(drift=litter(count=6, speed=17.0)),
+    # A yard lit for work rather than for people: a few hard sodium floods, orange enough
+    # that everything under them loses its own colour.
+    "lighting": lighting(
+        (0.40, 0.40, 0.52),
+        lamp_lights(W4, 260, 180, (1.0, 0.66, 0.3), 1.5, 2.6)
+        + [
+            light(120, 20.0, (1.0, 0.62, 0.28), 1.1, 2.2, "wide"),
+            light(W4 - 120, 20.0, (1.0, 0.62, 0.28), 1.1, 2.2, "wide"),
+        ],
+    ),
 }
 build("rustpile_yard", W4, yard)
 
@@ -621,6 +683,16 @@ hideout = {
     ],
     "lane_min": 38.0,
     "lane_max": 76.0,
+    # Interior, and the only bright area in the game. Cold overhead fluorescent, evenly
+    # spaced, no shadows worth the name. A laundromat that is always immaculate should
+    # feel over-lit rather than atmospheric.
+    "lighting": lighting(
+        (0.70, 0.72, 0.78),
+        # Weak lights on an already-bright ambient. At full strength they simply added to
+        # it and the floor went to white, which is not "over-lit", it is missing.
+        [light(x, 30.0, (0.80, 0.90, 1.0), 0.30, 2.0, "wide") for x in range(120, W5, 200)]
+        + [light(160, 24.0, (1.0, 0.9, 0.7), 0.30, 1.1, "tight")],
+    ),
 }
 build("starch_laundromat", W5, hideout)
 
@@ -787,6 +859,26 @@ rooftop = {
     "lane_min": 36.0,
     "lane_max": 74.0,
     "ambient": ambient(drift=litter(count=10, speed=22.0)),
+    # Night, above the streetlights. Almost all of the light here is the city glowing up
+    # from below, so the ambient is cold and the only warm points are an aerial's warning
+    # lamp and the spill from the stairwell.
+    "lighting": lighting(
+        (0.30, 0.34, 0.50),
+        [
+            light(120, -30.0, (1.0, 0.35, 0.35), 0.9, 1.0, "tight"),   # aerial warning light
+            # Stairwells at both ends, which are the only real light sources up here.
+            light(30, 44.0, (1.0, 0.78, 0.46), 1.5, 1.8, "tight"),
+            light(W7 - 30, 44.0, (1.0, 0.78, 0.46), 1.5, 1.8, "tight"),
+            # Skylights and lit vents give the middle of the roof a rhythm. Without them
+            # the floor is one flat expanse and the whole area reads as tinted, not lit.
+            light(230, 42.0, (0.75, 0.86, 1.0), 1.0, 1.6, "tight"),
+            light(430, 40.0, (0.75, 0.86, 1.0), 1.1, 1.7, "tight"),
+            light(640, 44.0, (0.95, 0.82, 0.55), 0.9, 1.5, "tight"),
+            light(800, 38.0, (0.9, 0.8, 0.6), 0.9, 1.5, "tight"),
+            light(1000, 42.0, (0.75, 0.86, 1.0), 1.0, 1.6, "tight"),
+            light(1160, -34.0, (1.0, 0.35, 0.35), 0.9, 1.0, "tight"),  # the far aerial
+        ],
+    ),
 }
 build("rooftop_route", W7, rooftop)
 
@@ -873,6 +965,17 @@ bellwater = {
         {"id": "bellwater_conductor", "x": 1220, "width": 80},
     ],
     "ambient": ambient(drift=litter(count=7, speed=-13.0)),
+    # Night on a residential block. Cool and quiet, with the only real warmth coming from
+    # Nadia's, which is the point of the place: forty flats and one shop that is open.
+    "lighting": lighting(
+        (0.44, 0.46, 0.62),
+        lamp_lights(W8, 200, 110, (1.0, 0.84, 0.56), 1.2, 2.1)
+        + [
+            light(500, 24.0, (1.0, 0.78, 0.46), 1.2, 1.9, "tight"),   # Nadia's Corner
+            light(250, -60.0, (1.0, 0.88, 0.62), 0.4, 1.2, "tight"),  # a lit window
+            light(950, -66.0, (1.0, 0.88, 0.62), 0.4, 1.2, "tight"),
+        ],
+    ),
 }
 build("bellwater_block", W8, bellwater)
 

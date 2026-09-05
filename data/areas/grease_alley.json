@@ -551,6 +551,112 @@
    ]
   }
  },
+ "lighting": {
+  "ambient": [
+   0.34,
+   0.36,
+   0.48
+  ],
+  "glow": true,
+  "lights": [
+   {
+    "x": 140,
+    "y": 34.0,
+    "color": [
+     1.0,
+     0.8,
+     0.48
+    ],
+    "energy": 1.3,
+    "scale": 2.2,
+    "texture": "lamp"
+   },
+   {
+    "x": 380,
+    "y": 34.0,
+    "color": [
+     1.0,
+     0.8,
+     0.48
+    ],
+    "energy": 1.3,
+    "scale": 2.2,
+    "texture": "lamp"
+   },
+   {
+    "x": 620,
+    "y": 34.0,
+    "color": [
+     1.0,
+     0.8,
+     0.48
+    ],
+    "energy": 1.3,
+    "scale": 2.2,
+    "texture": "lamp"
+   },
+   {
+    "x": 860,
+    "y": 34.0,
+    "color": [
+     1.0,
+     0.8,
+     0.48
+    ],
+    "energy": 1.3,
+    "scale": 2.2,
+    "texture": "lamp"
+   },
+   {
+    "x": 1100,
+    "y": 34.0,
+    "color": [
+     1.0,
+     0.8,
+     0.48
+    ],
+    "energy": 1.3,
+    "scale": 2.2,
+    "texture": "lamp"
+   },
+   {
+    "x": 1340,
+    "y": 34.0,
+    "color": [
+     1.0,
+     0.8,
+     0.48
+    ],
+    "energy": 1.3,
+    "scale": 2.2,
+    "texture": "lamp"
+   },
+   {
+    "x": 1030,
+    "y": 24.0,
+    "color": [
+     1.0,
+     0.74,
+     0.44
+    ],
+    "energy": 1.0,
+    "scale": 1.6,
+    "texture": "tight"
+   },
+   {
+    "x": 620,
+    "y": 20.0,
+    "color": [
+     0.6,
+     0.75,
+     1.0
+    ],
+    "energy": 0.5,
+    "scale": 1.2,
+    "texture": "tight"
+   }
+  ]
+ },
  "lane_min": 34.0,
  "lane_max": 74.0,
  "walk_min_x": 20.0,

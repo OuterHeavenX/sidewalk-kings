@@ -1432,15 +1432,20 @@ func test_lighting() -> void:
 		GameManager.current_area.lighting.light_count() > 0,
 		"%d lights" % GameManager.current_area.lighting.light_count())
 
-	# An area with no lighting block at all must be untouched by any of this.
+	# Lighting is opt-in per area. Every shipped area is lit now, so this is checked
+	# against the builder directly rather than against whichever street happened to still
+	# be dark: that made the guarantee depend on content instead of on behaviour, and it
+	# broke the moment the last area was lit.
 	GameManager.lighting_enabled = true
-	await SceneManager.change_area("ferry_row", "start")
-	await seconds(0.5)
-	area = GameManager.current_area
-	check("an unlit area stays unlit", area.lighting != null and not area.lighting.enabled)
-	check("an unlit area has no bloom", not Renderer2D.is_glow_on())
-	check("an unlit area has no overbright sprites", _count_emission(area) == 0,
-		"%d overlays" % _count_emission(area))
+	var probe := AreaLighting.new()
+	add_child(probe)
+	probe.build({})
+	check("a layout with no lighting block builds nothing",
+		not probe.enabled and probe.light_count() == 0)
+	probe.build({"lighting": {"ambient": [0.5, 0.5, 0.6], "lights": []}})
+	check("a layout with a lighting block reports lit", probe.enabled)
+	probe.queue_free()
+	await frames(2)
 
 func _count_emission(node: Node) -> int:
 	var n := 0

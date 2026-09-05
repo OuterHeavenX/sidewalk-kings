@@ -195,6 +195,88 @@
  ],
  "lane_min": 38.0,
  "lane_max": 76.0,
+ "lighting": {
+  "ambient": [
+   0.7,
+   0.72,
+   0.78
+  ],
+  "glow": true,
+  "lights": [
+   {
+    "x": 120,
+    "y": 30.0,
+    "color": [
+     0.8,
+     0.9,
+     1.0
+    ],
+    "energy": 0.3,
+    "scale": 2.0,
+    "texture": "wide"
+   },
+   {
+    "x": 320,
+    "y": 30.0,
+    "color": [
+     0.8,
+     0.9,
+     1.0
+    ],
+    "energy": 0.3,
+    "scale": 2.0,
+    "texture": "wide"
+   },
+   {
+    "x": 520,
+    "y": 30.0,
+    "color": [
+     0.8,
+     0.9,
+     1.0
+    ],
+    "energy": 0.3,
+    "scale": 2.0,
+    "texture": "wide"
+   },
+   {
+    "x": 720,
+    "y": 30.0,
+    "color": [
+     0.8,
+     0.9,
+     1.0
+    ],
+    "energy": 0.3,
+    "scale": 2.0,
+    "texture": "wide"
+   },
+   {
+    "x": 920,
+    "y": 30.0,
+    "color": [
+     0.8,
+     0.9,
+     1.0
+    ],
+    "energy": 0.3,
+    "scale": 2.0,
+    "texture": "wide"
+   },
+   {
+    "x": 160,
+    "y": 24.0,
+    "color": [
+     1.0,
+     0.9,
+     0.7
+    ],
+    "energy": 0.3,
+    "scale": 1.1,
+    "texture": "tight"
+   }
+  ]
+ },
  "walk_min_x": 20.0,
  "walk_max_x": 980.0,
  "ground_y": 2.0,

@@ -348,6 +348,46 @@ An area with no lighting block is untouched. Reloading an area keeps the player 
 
 ---
 
+## Unreleased — the whole city is lit
+
+All eight areas now carry lighting, where before only the Metro Platform did. That
+inconsistency was worse than nothing being lit: walking out of a lit station into a flat
+street drew attention to the flat street.
+
+Each area gets a time of day rather than a generic tint. The ambient colour is the light
+that is **not** coming from a fitting, so it carries the hour; the lights are what argues
+with it. Where the two agree the result reads as tinted rather than lit, which is the
+mistake the first pass at the rooftop made.
+
+| Area | Reading |
+|---|---|
+| Ferry Row | Dusk. Sky still blue, every lamp just switched on warm. |
+| Lantern Market | Early evening, warmer and brighter, shopfronts throwing light on the pavement. |
+| Grease Alley | Night. Two working lamps and Pops' doorway. The gaps between pools are the point. |
+| Rustpile Yard | Sodium floods. Lit for work, not for people. |
+| Starch & Sons | Cold fluorescent, evenly spaced. The only bright area in the game. |
+| Rooftop Route | Night above the streetlights. Skylights and a stairwell, nothing else. |
+| Bellwater Block | Night. Cool, quiet, and the only warmth is Nadia's being open. |
+| Metro Platform | Underground, unchanged from the first pass. |
+
+### Notes
+
+Street lamp pools are generated from the same helper that places the lamps, so a lamp and
+its light cannot drift apart when a street changes its spacing.
+
+Two areas needed a second pass after looking at them. Starch & Sons blew out to white,
+because full-strength lights were being added to an already-bright ambient; "over-lit"
+needs weak lights on a bright base, not strong ones. The Rooftop was a uniform blue wash,
+because two very wide fills covered the whole floor evenly. It has discrete pools now.
+
+### Tests
+
+The check that an unlit area stays untouched used to point at Ferry Row, which broke the
+moment the last area was lit. It now tests the builder directly with an empty layout, so
+the guarantee is about behaviour rather than about which street happens to still be dark.
+
+---
+
 ## Unreleased — the streets move
 
 A still frame reads as dead however well lit it is. This is the cheapest fix for that:
