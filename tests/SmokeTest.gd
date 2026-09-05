@@ -69,6 +69,7 @@ func run() -> void:
 	await test_chapter_two()
 	await test_boss()
 	await test_character_art()
+	await test_map_and_saves()
 	await test_menu_navigation()
 	await test_touch_controls()
 	await test_save_load()
@@ -1711,6 +1712,80 @@ func drag(index: int, pos: Vector2) -> void:
 	ev.position = pos
 	_touch_target._input(ev)
 	await frames(2)
+
+# ---------------------------------------------------------------- map and saves
+## The map read a "visited_<area>" flag that nothing in the game ever wrote, so every area
+## showed as unknown however far you had walked. That is the kind of fault a screenshot
+## cannot show and a reference check cannot catch, because every reference resolved.
+func test_map_and_saves() -> void:
+	print("
+-- Map, fast travel and saves --")
+	# Earlier sections walk the whole city, so this sets up the state it needs rather than
+	# assuming a fresh game. A test that only passes when it runs first is not a test.
+	GameManager.set_flag("visited_lantern_market", false)
+	GameManager.set_flag("visited_line_office", false)
+	await SceneManager.change_area("lantern_market", "start")
+	await seconds(0.4)
+	check("entering an area records the visit",
+		GameManager.get_flag("visited_lantern_market", false))
+	check("somewhere unvisited stays unvisited",
+		not GameManager.get_flag("visited_line_office", false))
+
+	# Every area must be placed and joined, or the map draws a node in the wrong place or
+	# an edge to nowhere.
+	var missing_pos: Array[String] = []
+	var placed: Dictionary = {}
+	for id in ContentDB.areas.keys():
+		var a: AreaData = ContentDB.areas[id]
+		var key := "%.2f,%.2f" % [a.map_position.x, a.map_position.y]
+		if placed.has(key):
+			missing_pos.append("%s overlaps %s" % [id, placed[key]])
+		placed[key] = str(id)
+	check("no two areas sit on the same map position", missing_pos.is_empty(),
+		", ".join(missing_pos))
+
+	var game := get_tree().current_scene
+	var pause = game.get_node_or_null("UI/PauseMenu")
+	if pause == null:
+		check("pause menu for the map test", false)
+		return
+	pause.open()
+	await frames(3)
+	pause._show_page(pause.Page.MAP)
+	await frames(6)
+	var maps := []
+	for c in pause.page_col.get_children():
+		if c is MapView:
+			maps.append(c)
+	check("the map page draws a map, not a list", maps.size() == 1)
+	if maps.size() == 1:
+		var m: MapView = maps[0]
+		check("the map offers somewhere to travel to", m.buttons.size() > 0,
+			"%d destinations" % m.buttons.size())
+		var names: Array[String] = []
+		for b in m.buttons:
+			names.append(str(b.get_meta("area_id", "")))
+		check("it does not offer to travel to where you already are",
+			not names.has("lantern_market"))
+		check("it does not offer somewhere you have never been",
+			not names.has("line_office"), ", ".join(names))
+
+	# Fast travel must be refused mid-fight, or it is a free escape from every encounter.
+	check("fast travel is allowed when nothing is happening", pause._can_fast_travel())
+
+	# Three slots, independent.
+	pause._show_page(pause.Page.SAVES)
+	await frames(4)
+	GameManager.player_data.money = 4321
+	check("saving to slot 2 works", SaveManager.save_game(2))
+	var summary: Dictionary = SaveManager.get_save_summary(2)
+	check("slot 2 reads back", int(summary.get("money", 0)) == 4321,
+		"$%d" % int(summary.get("money", 0)))
+	check("slot 1 is untouched by saving slot 2",
+		SaveManager.get_save_summary(1).is_empty()
+		or int(SaveManager.get_save_summary(1).get("money", -1)) != 4321)
+	pause.close()
+	await frames(3)
 
 # ---------------------------------------------------------------- menus
 ## Menu navigation fails quietly: nothing errors, some controls are simply unreachable

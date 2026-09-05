@@ -116,12 +116,27 @@ has no gap here.
 because a roof has no building behind it. Street placement conventions do not transfer to
 an area with no street. Recorded in [ART_DIRECTION.md](ART_DIRECTION.md).
 
-## Stage 3 — Connective tissue — **not started**
+## Stage 3 — Connective tissue — **done**
 
-- A real map screen that draws the connection graph from `AreaData.connections`, instead of
-  the current list.
-- Fast travel between visited areas.
-- The three save slots exposed in the UI; `SaveManager` already supports them.
+- A real map screen that draws the connection graph from `AreaData.connections` instead of
+  a list of names.
+- Fast travel between visited areas, refused while an encounter is live.
+- The three save slots exposed in the UI; `SaveManager` already supported them.
+
+**What it proved.** Almost none of this was new capability. `AreaData` already carried
+`map_position` and `connections`, and `SaveManager` had taken a slot argument since Phase 1.
+The work was surfacing what already existed, and the one thing genuinely missing was a
+record of where the player had been: the map's "visited" test read a flag that nothing in
+the game ever wrote, so every area would have shown as unvisited forever and the screen
+would have looked plausible while being wrong. That is the shape of failure this project
+keeps meeting, and it is why the check that catches it asserts the flag is written on
+entry rather than asserting the map renders.
+
+The second lesson was a presentation one. The first version put a full labelled button on
+each node, which is the obvious thing to do and does not survive nine areas: the labels
+overlapped into an unreadable pile and hid the graph underneath. Nodes are compact hit
+targets now, and a name is drawn for the current area and whichever node is selected,
+which is the only one you need named.
 
 ## Stage 4 — Chapter two — **done**
 
@@ -183,9 +198,25 @@ the fighting: hitboxes are move data and were never tied to the sprite.
 
 ## What is left in this phase
 
-Only Stage 3. The map screen still draws a list rather than the connection graph, there is
-no fast travel, and the three save slots `SaveManager` already supports are not exposed
-anywhere in the UI.
+Nothing. All seven stages are done and the suite is green at 292 checks.
+
+**What that does not mean.** Phase 2 is complete as specified, and the specification never
+included the things that still worry me most:
+
+- **Performance has never been measured on the Steam Deck or a phone.** It is measured on
+  this desktop only. Lighting, bloom and ambient motion were all added since the last time
+  anything was profiled anywhere.
+- **The PWA has never been launched offline on a real device.** The service worker is
+  installed and the manifest validates; that is not the same as confirming it starts with
+  the network off.
+- **Nobody has played the game end to end.** The door out of the first street was broken
+  until this phase, so a full run was not possible before now. It is possible now and it has
+  not been done.
+- **The economy has never been balanced against real play**, only against the smoke test,
+  which buys things in an order no player would.
+
+These belong in Phase 3, and none of them should be described as done until someone has
+actually sat down with the game.
 
 ---
 

@@ -348,6 +348,53 @@ An area with no lighting block is untouched. Reloading an area keeps the player 
 
 ---
 
+## Unreleased — the map, fast travel, and three save slots
+
+Phase 2's last stage, and the smallest: nearly all of it was surfacing capability the data
+model already had.
+
+### Added
+
+- **A real map of Riverbend.** Nodes come from `AreaData.map_position` and edges from
+  `AreaData.connections`, so the map cannot disagree with the world. Somewhere you have not
+  been is drawn as a hollow node with no name, because knowing a place exists and not
+  knowing what it is is more useful than not knowing it exists.
+- **Fast travel** between visited areas, from the map screen. Refused while an encounter is
+  live: leaving a fight through a menu would strand the director running an encounter with
+  nobody in it, and would hand the player a free escape from every fight in the game.
+- **Three save slots in the pause menu**, each showing level, money, area and playtime.
+  `SaveManager` has taken a slot argument since Phase 1 and nothing had ever passed one
+  other than zero.
+
+### Fixed by the tests
+
+- **Nothing recorded where the player had been.** The map's visited test read
+  `visited_<area>`, a flag no code in the game ever wrote. Every area would have shown as
+  unvisited forever, and the screen would have looked entirely plausible while being wrong.
+  Areas now set the flag on entry. The check asserts the flag is written, not that the map
+  renders, because a map that renders is exactly what the bug produced.
+- **The map took nine frames to become navigable.** Centring each label waited a frame, once
+  per area, so anything arriving sooner than nine frames found an empty panel. Rebuilt in a
+  single pass.
+- **A test that depended on the order the tests ran in.** The map check assumed areas were
+  unvisited, which was true only until an earlier check visited one. It sets its own state
+  now. A test that passes because of what ran before it is not testing anything.
+
+### Changed
+
+- Map nodes are compact hit targets rather than labelled buttons. Nine full-size labels do
+  not fit and overlapped into a pile that hid the graph they described. The current area is
+  named, and so is whichever node you have selected.
+
+### Tests
+
+Suite is **292 checks**, up from 281. The new ones cover visit recording, that no two areas
+share a map position, that the map draws a graph rather than a list, that it offers only
+visited destinations and never the current one, that fast travel is refused mid-encounter,
+and that the three save slots are genuinely independent.
+
+---
+
 ## Unreleased — chapter two, and cutscenes
 
 ### Added

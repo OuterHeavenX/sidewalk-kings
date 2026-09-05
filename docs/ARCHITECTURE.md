@@ -226,6 +226,26 @@ scenes. At a 480×270 design resolution, code-built layout is easier to keep con
 `ShopController` handles every shop type from `ShopData`, so the restaurant, store, dojo,
 bookstore and weapon shop are one scene and one script.
 
+### The map
+
+`MapView` draws nodes from `AreaData.map_position` and edges from `AreaData.connections`.
+Neither is authored for the map specifically, which is the point: the map is a view of the
+world graph and cannot drift out of agreement with it. Adding an area to `gen_data.py` puts
+it on the map with no map work at all.
+
+Whether a place is known is a flag, `visited_<area_id>`, written by `Game.load_area()` on
+entry. Two rules follow from how that went wrong the first time:
+
+- **The flag is written by the thing that moves the player, not by the map.** The map only
+  reads it. When nothing wrote it, every area read as unvisited and the screen looked
+  completely convincing while being completely wrong.
+- **The test asserts entering an area writes the flag**, not that the map renders. The map
+  rendered fine with the bug present. Testing the observable surface would have passed.
+
+Fast travel is refused while an encounter is live. Leaving a fight through a menu strands
+the director running an encounter with no player in it, and would make every fight in the
+game optional.
+
 ---
 
 ## Time effects

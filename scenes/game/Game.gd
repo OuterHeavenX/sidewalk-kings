@@ -83,6 +83,10 @@ func load_area(area_id: String, spawn_id: String = "start") -> void:
 	camera.setup(player, area.walk_min_x - 20.0, area.walk_max_x + 20.0, area.camera_y)
 	camera.snap_to_target()
 
+	# Record the visit. The map has always read this flag and nothing has ever written it,
+	# so every area showed as unknown no matter how far you had walked.
+	GameManager.set_flag("visited_" + area_id, true)
+
 	var meta: AreaData = ContentDB.get_area(area_id)
 	if meta:
 		AudioManager.play_music(meta.music)

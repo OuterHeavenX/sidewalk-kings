@@ -1,7 +1,7 @@
 extends CanvasLayer
 ## Pause menu with Resume, Inventory, Stats, Techniques, Map, Quests, Settings, Save, Title.
 
-enum Page { ROOT, INVENTORY, STATS, TECHNIQUES, MAP, QUESTS, SETTINGS }
+enum Page { ROOT, INVENTORY, STATS, TECHNIQUES, MAP, QUESTS, SAVES, SETTINGS }
 
 var root: Control
 var menu_col: VBoxContainer
@@ -97,7 +97,7 @@ func _build_menu() -> void:
 		["Quests", func(): _show_page(Page.QUESTS)],
 		["Map", func(): _show_page(Page.MAP)],
 		["Settings", func(): _show_page(Page.SETTINGS)],
-		["Save", func(): _save()],
+		["Saves", func(): _show_page(Page.SAVES)],
 		["Title", func(): _to_title()],
 	]
 	for item in items:
@@ -208,15 +208,51 @@ func _show_page(p: Page) -> void:
 					_row("  " + q2.title, "", UITheme.TEXT_DIM)
 		Page.MAP:
 			page_title.text = "Riverbend"
-			var current := pd.current_area
-			for id in ContentDB.areas.keys():
-				var a: AreaData = ContentDB.areas[id]
-				var visited: bool = bool(GameManager.get_flag("visited_" + str(id), false))
-				var mark: String = "> " if str(id) == current else ("  " if visited else "? ")
-				_row(mark + (a.display_name if visited or str(id) == current else "????"),
-					a.district if visited or str(id) == current else "",
-					UITheme.ACCENT_2 if str(id) == current else (UITheme.TEXT if visited else UITheme.TEXT_DIM))
-			_footer_note = "Areas you have visited."
+			var map := MapView.new()
+			map.custom_minimum_size = Vector2(0, 120)
+			map.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			page_col.add_child(map)
+			await root.get_tree().process_frame
+			# Fast travel is refused mid-fight. Walking out of an encounter through a menu
+			# would leave the director running an encounter with nobody in it.
+			var can_travel: bool = _can_fast_travel()
+			await map.build(pd.current_area, can_travel)
+			map.travel_requested.connect(_fast_travel)
+			_footer_note = ("Enter to travel    Back returns to the menu" if can_travel
+				else "You cannot travel in the middle of a fight.")
+			footer.text = _footer_note
+		Page.SAVES:
+			page_title.text = "Saves"
+			for slot in range(3):
+				var summary: Dictionary = SaveManager.get_save_summary(slot)
+				var row := HBoxContainer.new()
+				row.add_theme_constant_override("separation", 3)
+				var label := Label.new()
+				if summary.is_empty():
+					label.text = "Slot %d   empty" % (slot + 1)
+					UITheme.style_label(label, 9, UITheme.TEXT_DIM)
+				else:
+					var mins: int = int(float(summary.get("playtime", 0.0)) / 60.0)
+					label.text = "Slot %d   Lv %d   $%d   %s   %dm" % [
+						slot + 1, int(summary.get("level", 1)), int(summary.get("money", 0)),
+						_area_name(str(summary.get("area", ""))), mins]
+					UITheme.style_label(label, 9)
+				label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+				row.add_child(label)
+				var sl: int = slot
+				var save_b := Button.new()
+				save_b.text = "Save"
+				UITheme.style_button(save_b, 9)
+				save_b.pressed.connect(func() -> void: _save_to(sl))
+				row.add_child(save_b)
+				var load_b := Button.new()
+				load_b.text = "Load"
+				load_b.disabled = summary.is_empty()
+				UITheme.style_button(load_b, 9)
+				load_b.pressed.connect(func() -> void: _load_from(sl))
+				row.add_child(load_b)
+				page_col.add_child(row)
+			_footer_note = "Three slots. Saving overwrites without asking."
 			footer.text = _footer_note
 		Page.SETTINGS:
 			page_title.text = "Settings"
@@ -301,6 +337,47 @@ func _use_item(item_id: String) -> void:
 		return
 	EventBus.item_used.emit(item_id)
 	_show_page(Page.INVENTORY)
+
+func _area_name(id: String) -> String:
+	var a: AreaData = ContentDB.get_area(id)
+	return a.display_name if a else id
+
+## Fast travel is refused while an encounter is live. Leaving through a menu would strand
+## the director running a fight with nobody in it, and hand the player a free escape from
+## every fight in the game.
+func _can_fast_travel() -> bool:
+	var area = GameManager.current_area
+	if area == null or area.director == null:
+		return false
+	return not area.director.is_running()
+
+func _fast_travel(area_id: String) -> void:
+	if area_id == "" or area_id == GameManager.player_data.current_area:
+		return
+	if not _can_fast_travel():
+		AudioManager.play_ui("menu_deny")
+		return
+	AudioManager.play_ui("door")
+	close()
+	SceneManager.change_area(area_id, "start")
+
+func _save_to(slot: int) -> void:
+	if SaveManager.save_game(slot):
+		AudioManager.play_ui("save")
+		_footer_note = "Saved to slot %d." % (slot + 1)
+	else:
+		AudioManager.play_ui("menu_deny")
+		_footer_note = "Could not save: %s" % SaveManager.last_error
+	footer.text = _footer_note
+	_show_page(Page.SAVES)
+
+func _load_from(slot: int) -> void:
+	if not SaveManager.has_save(slot):
+		AudioManager.play_ui("menu_deny")
+		return
+	AudioManager.play_ui("menu_confirm")
+	close()
+	SceneManager.continue_game(slot)
 
 func _save() -> void:
 	if SaveManager.save_game(0):

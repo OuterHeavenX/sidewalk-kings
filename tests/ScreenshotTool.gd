@@ -124,9 +124,15 @@ func run() -> void:
 	game.pause_menu._show_page(game.pause_menu.Page.TECHNIQUES)
 	await seconds(0.3)
 	await shot("pause_techniques")
+	# Visit a few places first, or the map is a page of unknowns.
+	for a in ["ferry_row", "lantern_market", "grease_alley", "metro_platform", "bellwater_block"]:
+		GameManager.set_flag("visited_" + a, true)
 	game.pause_menu._show_page(game.pause_menu.Page.MAP)
-	await seconds(0.3)
+	await seconds(0.6)
 	await shot("pause_map")
+	game.pause_menu._show_page(game.pause_menu.Page.SAVES)
+	await seconds(0.4)
+	await shot("pause_saves")
 	game.pause_menu._show_page(game.pause_menu.Page.SETTINGS)
 	await seconds(0.4)
 	await shot("pause_settings")
