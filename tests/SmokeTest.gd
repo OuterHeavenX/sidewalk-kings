@@ -251,7 +251,16 @@ func test_audio() -> void:
 
 	# The game is installed as an app rather than played in a tab, so the web export has to
 	# actually produce a PWA. These are cheap file-level facts the suite can hold onto.
+	#
+	# They read development-time files that are deliberately not shipped: the export preset
+	# and the HTML shell. Running the suite against a packaged build must not fail on their
+	# absence, which is exactly what it did. The export is verified from source, and in CI,
+	# before it is ever produced.
 	var preset := FileAccess.get_file_as_string("res://export_presets.cfg")
+	var shell_src := FileAccess.get_file_as_string("res://web/shell.html")
+	if preset == "" or shell_src == "":
+		print("   .. export config not in this build, skipping the packaging checks")
+		return
 	check("the web export builds a progressive web app",
 		preset.contains("progressive_web_app/enabled=true"))
 	check("installable icons are declared",
@@ -267,16 +276,15 @@ func test_audio() -> void:
 		ResourceLoader.exists("res://assets/pwa/icon-512-maskable.png"))
 	# Godot injects the manifest link through this placeholder. Without it the manifest is
 	# generated and nothing references it, so no browser offers a real install.
-	var shell := FileAccess.get_file_as_string("res://web/shell.html")
 	check("the html shell has the head-include placeholder",
-		shell.contains("$GODOT_HEAD_INCLUDE"))
+		shell_src.contains("$GODOT_HEAD_INCLUDE"))
 	check("the html shell registers the service worker",
-		shell.contains("installServiceWorker"))
+		shell_src.contains("installServiceWorker"))
 	# Inferring "needs threads" from "has a service worker" was accidentally correct only
 	# while the PWA was off; turning it on made the page refuse to start.
 	check("the shell takes its thread requirement from the exporter",
-		shell.contains("GODOT_THREADS_ENABLED")
-		and not shell.contains("threads: GODOT_CONFIG.serviceWorker"))
+		shell_src.contains("GODOT_THREADS_ENABLED")
+		and not shell_src.contains("threads: GODOT_CONFIG.serviceWorker"))
 
 # ---------------------------------------------------------------- title flow
 ## Start a game the way a player does: title screen, New Game, wait for the street.
