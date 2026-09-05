@@ -348,6 +348,34 @@ An area with no lighting block is untouched. Reloading an area keeps the player 
 
 ---
 
+## Unreleased — the cast has faces
+
+First pass on character art. Nothing about the fighting changed: the poses, frame counts,
+timings and hitboxes are all untouched. These were rendering faults, not art decisions.
+
+### Fixed
+
+- **Every character was faceless.** The eyes were drawn, but as a single dark pixel placed
+  flush against the fringe, so they merged into the hair and the face read as a blank
+  oval. Eyes are two pixels wide now and sit clear of the hairline.
+- **The hair cap reached the middle of the head**, leaving barely seven pixels of face.
+  It is shallower, so there is room for a face at all.
+- **Limbs merged into the torso.** The renderer drew every part's outline and then every
+  part's fill, so a part drawn later erased the outline of the parts before it. The front
+  arm lost its rim exactly where it crossed the torso and the two read as one shapeless
+  mass. Each part now outlines with its own fill.
+- Added a consistent key light from the upper left on heads and torsos, so shapes read as
+  solid rather than flat.
+
+### Fixed (test)
+
+- The menu navigation test nudged a volume slider and never put it back. Those sliders
+  write straight through to the saved settings, so **every smoke run turned the master
+  volume down a notch**, and after enough runs the suite failed because Master was
+  effectively silent. It restores the value now.
+
+---
+
 ## Unreleased — the game was unfinishable
 
 ### Fixed

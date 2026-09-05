@@ -406,6 +406,10 @@ CHARACTERS = {
 # ---------------------------------------------------------------------------
 # Drawing
 # ---------------------------------------------------------------------------
+def light(c, f=1.22):
+    """Lit side of a colour. The scene's key light is up and to the left."""
+    return (min(255, int(c[0] * f)), min(255, int(c[1] * f)), min(255, int(c[2] * f)), 255)
+
 def shade(c, f=0.72):
     return (int(c[0] * f), int(c[1] * f), int(c[2] * f), 255)
 
@@ -458,6 +462,11 @@ def draw_torso(d, pose, sp, outline_pass):
         return
     shirt = rgba(sp["shirt"]); sh2 = rgba(sp["shirt_shade"]); under = rgba(sp["under"])
     d.polygon(poly, fill=shirt)
+    # Shoulder line and the left flank catch the key light; the right flank falls away.
+    d.line([poly[1], poly[2]], fill=sh2)
+    d.line([poly[2], poly[3]], fill=sh2)
+    d.line([poly[0], poly[1]], fill=light(sp["shirt"]))
+    d.line([poly[0], poly[5]], fill=light(sp["shirt"]))
     # shade bottom third
     hip = pose["hip"]; neck = pose["neck"]
     hw = tw / 2.0
@@ -516,18 +525,28 @@ def draw_head(d, pose, sp, outline_pass, r=None, center=None, portrait=False):
     # jaw shade
     d.chord([cx - r, cy - r, cx + r - 1, cy + r - 1], 20, 160, fill=skin2)
     d.ellipse([cx - r, cy - r, cx + r - 1, cy + r - 3], fill=skin)
+    # Key light is up and to the left, so the far cheek catches an edge of it.
+    d.arc([cx - r, cy - r, cx + r - 1, cy + r - 1], 168, 250, fill=light(sp["skin"]))
     _draw_hair(d, cx, cy, r, sp, outline=False, fd=fd)
     # face
     eye = rgba(sp["eye"])
     ex = cx + (2 if fd > 0 else -3) * (1 if r < 9 else 1.4)
     ex = int(ex)
-    ey = cy - 1 if r < 9 else cy - 2
+    # Sit the eyes clear of the fringe. Flush against it they merge into the hair mass and
+    # the face reads as blank, which is what it did before.
+    ey = cy + 1 if r < 9 else cy - 1
     if pose.get("eyes", "open") == "open":
-        rect(d, [ex, ey, ex, ey + 1], fill=eye)
-        if fd > 0 and r >= 9:
-            rect(d, [ex - 5, ey, ex - 5, ey + 1], fill=eye)
-        elif fd > 0 and portrait:
-            rect(d, [ex - 6, ey, ex - 6, ey + 1], fill=eye)
+        # Two pixels wide with a brow above. A single dark pixel is invisible at this size,
+        # which is why the cast read as faceless.
+        rect(d, [ex, ey, ex + 1, ey + 1], fill=eye)
+        far_x = ex - (5 if r >= 9 else 4)
+        if fd > 0:
+            rect(d, [far_x, ey, far_x, ey + 1], fill=eye)
+        # A brow only fits on the larger heads; on a small one it just thickens the fringe.
+        if r >= 9:
+            rect(d, [ex, ey - 2, ex + 1, ey - 2], fill=rgba(sp["hair"]))
+            if fd > 0:
+                rect(d, [far_x, ey - 2, far_x, ey - 2], fill=rgba(sp["hair"]))
     elif pose.get("eyes") == "shut":
         d.line([(ex - 1, ey + 1), (ex + 1, ey + 1)], fill=eye)
     if sp.get("glasses") and pose.get("eyes") != "none":
@@ -576,8 +595,10 @@ def _draw_hair(d, cx, cy, r, sp, outline, fd):
             if not outline:
                 rect(d, [cx - r + 1, top - 4, cx + r - 2, top - 3], fill=shade(sp["hair"], 1.08))
             return
-        d.chord([cx - r - o, top - o, cx + r - 1 + o, cy + r - 1 + o], 180, 360, fill=col)
-        rect(d, [cx - r - o, cy - 1, cx - r + 2 + o, cy + 2 + o], fill=col) if fd > 0 else rect(d, [cx + r - 3 - o, cy - 1, cx + r - 1 + o, cy + 2 + o], fill=col)
+        # The cap used to reach the middle of the head, leaving barely seven pixels of
+        # face and burying the eyes in the fringe. Shallower gives the face room to read.
+        d.chord([cx - r - o, top - o, cx + r - 1 + o, cy + r - 4 + o], 180, 360, fill=col)
+        rect(d, [cx - r - o, cy - 2, cx - r + 2 + o, cy + 1 + o], fill=col) if fd > 0 else rect(d, [cx + r - 3 - o, cy - 2, cx + r - 1 + o, cy + 1 + o], fill=col)
         if style == "spiky":
             for i, sx in enumerate((cx - 4, cx - 1, cx + 2, cx + 5)):
                 d.polygon([(sx - 1 - o, top + 1), (sx + 1 + o, top + 1), (sx + (1 if i % 2 else -1), top - 3 - o)], fill=col)
@@ -638,8 +659,14 @@ def render_pose(pose, sp, size=FRAME):
     if sp["shirt_style"] == "gi":
         arm_cols = (sp["shirt"], sp["shirt"])
     leg_cols = (sp["pants"], sp["pants"])
-    for outline_pass in (True, False):
-        for part in pose["order"]:
+    # Each part draws its own outline immediately before its own fill.
+    #
+    # This used to be two passes: every outline, then every fill. That meant a part drawn
+    # later covered the outline of the parts before it, so the front arm lost its rim
+    # exactly where it crossed the torso and the two read as one shapeless mass. Drawing
+    # them together gives every part a clean edge against whatever is behind it.
+    for part in pose["order"]:
+        for outline_pass in (True, False):
             if part == "torso":
                 draw_torso(d, pose, sp, outline_pass)
             elif part == "head":

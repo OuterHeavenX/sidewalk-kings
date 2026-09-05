@@ -88,6 +88,17 @@ caps, beanies, bandanas and helmets.
 | **Busker** | Navy with a bright scarf, the only colour on the gang. |
 | **The Conductor** | Tallest of the Commuters, peaked cap, long coat, no visible face. |
 
+Every character is drawn from the same renderer: a skeleton of joint positions, capsule
+limbs, a torso polygon and a head circle. Three rules that turned out to matter more than
+any individual design choice:
+
+- **Each part outlines with its own fill.** Outlining everything first and then filling
+  everything lets a later part erase an earlier part's rim, which is what made arms
+  disappear into torsos.
+- **Eyes are two pixels wide and sit clear of the fringe.** One dark pixel is invisible at
+  this size, and an eye flush against the hairline merges into it.
+- **The key light is up and to the left**, on every part, without exception.
+
 The Commuters share one navy palette on purpose. Chapter one's gangs are five different
 looks; the sixth is one look repeated, which is the joke and also how you read them at a
 glance in a crowd.

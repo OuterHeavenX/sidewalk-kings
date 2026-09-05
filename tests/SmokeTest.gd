@@ -66,6 +66,7 @@ func run() -> void:
 	await test_lighting()
 	await test_chapter_two()
 	await test_boss()
+	await test_character_art()
 	await test_menu_navigation()
 	await test_touch_controls()
 	await test_save_load()
@@ -1562,6 +1563,24 @@ func _action_event(action: String) -> InputEventAction:
 	e.pressed = true
 	return e
 
+## The cast read as faceless and their limbs merged into their torsos. Both were quiet
+## rendering faults rather than art decisions, so both are asserted against the generator.
+func test_character_art() -> void:
+	print("
+-- Character art --")
+	var src := FileAccess.get_file_as_string("res://tools/gen_characters.py")
+	if src == "":
+		# Not available from an exported build, where tools/ is excluded. Skip rather than
+		# fail: the export is verified from source before it is ever produced.
+		print("generator source not in this build, skipping")
+		return
+	check("each part outlines with its own fill",
+		src.contains("for part in pose[\"order\"]:"),
+		"two global passes let later parts erase earlier outlines")
+	check("faces have eyes wide enough to read",
+		src.contains("rect(d, [ex, ey, ex + 1, ey + 1], fill=eye)"),
+		"a single dark pixel is invisible at this size")
+
 func test_menu_navigation() -> void:
 	print("\n-- Menu navigation --")
 	var game := get_tree().current_scene
@@ -1632,6 +1651,12 @@ func test_menu_navigation() -> void:
 		check("a focused slider changes with left and right",
 			not is_equal_approx(slider.value, before),
 			"%.2f -> %.2f" % [before, slider.value])
+		# Put it back. These sliders write straight through to the saved settings, so a
+		# test that moves one and walks away quietly turns the player's volume down a
+		# notch on every single run until the game is silent.
+		slider.value = before
+		await frames(1)
+		SaveManager.save_settings()
 
 	# Back steps out of the page instead of closing the whole menu.
 	pause._show_page(pause.Page.SETTINGS)
