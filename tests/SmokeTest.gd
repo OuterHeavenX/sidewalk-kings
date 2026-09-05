@@ -60,6 +60,7 @@ func run() -> void:
 	await test_shops()
 	await test_quests_and_dialogue()
 	await test_area_travel()
+	await test_ambient()
 	await test_parallax()
 	await test_doors()
 	await test_world_graph()
@@ -1056,6 +1057,79 @@ func _check_camera_follows(area_id: String) -> void:
 		if absf(player.global_position.x - cam.x) > half.x - 24.0:
 			worst = "player x=%.0f but camera centre x=%.0f" % [player.global_position.x, cam.x]
 	check("camera frames the player across %s" % area_id, worst == "", worst)
+
+# ---------------------------------------------------------------- ambient
+## Ambient motion is invisible in a screenshot: a still frame of a street with a broken
+## streetlight looks exactly like a still frame of a street. So it is asserted by watching
+## the values change over time, which is the only way to tell it apart from nothing.
+func test_ambient() -> void:
+	print("
+-- Ambient motion --")
+	await SceneManager.change_area("ferry_row", "start")
+	await seconds(0.4)
+	clear_stage()
+	var area = GameManager.current_area
+	check("the area has an ambient node", area.ambient != null)
+	if area.ambient == null:
+		return
+	check("it has something to animate", area.ambient.count() > 0,
+		"%d effects" % area.ambient.count())
+
+	# Sway: a hanging thing should move sideways, and only sideways.
+	var swayed: Node2D = null
+	for entry in area.ambient._sways:
+		swayed = entry["node"]
+		break
+	check("something in the street sways", swayed != null)
+	if swayed:
+		var x0: float = swayed.position.x
+		var y0: float = swayed.position.y
+		var moved_x := false
+		for i in 180:
+			await frames(1)
+			if not is_equal_approx(swayed.position.x, x0):
+				moved_x = true
+		check("a swaying sprite actually moves", moved_x)
+		check("and does not drift off vertically", is_equal_approx(swayed.position.y, y0))
+
+	# Flicker: a lamp's brightness should vary.
+	var lamp: CanvasItem = null
+	for entry in area.ambient._flickers:
+		lamp = entry["node"]
+		break
+	check("a light source flickers", lamp != null)
+	if lamp:
+		var lo := 999.0
+		var hi := -999.0
+		for i in 180:
+			await frames(1)
+			lo = minf(lo, lamp.modulate.r)
+			hi = maxf(hi, lamp.modulate.r)
+		check("a flickering light changes brightness", hi - lo > 0.01,
+			"range %.3f to %.3f" % [lo, hi])
+
+	# Litter: it should travel, and wrap rather than leaving for good.
+	check("litter was placed", area.ambient._drifters.size() > 0,
+		"%d motes" % area.ambient._drifters.size())
+	if area.ambient._drifters.size() > 0:
+		var mote: Node2D = area.ambient._drifters[0]["node"]
+		var mx: float = mote.position.x
+		await frames(60)
+		check("litter drifts along the street", not is_equal_approx(mote.position.x, mx),
+			"%.0f -> %.0f" % [mx, mote.position.x])
+		var out_of_bounds := false
+		for i in 240:
+			await frames(1)
+			if mote.position.x < area.walk_min_x - 200.0 or mote.position.x > area.walk_max_x + 200.0:
+				out_of_bounds = true
+		check("litter wraps instead of leaving the area", not out_of_bounds,
+			"ended at %.0f" % mote.position.x)
+
+	# An interior with no wind should not have any of it.
+	await SceneManager.change_area("starch_laundromat", "start")
+	await seconds(0.4)
+	check("an interior has no wind-blown litter",
+		GameManager.current_area.ambient._drifters.is_empty())
 
 # ---------------------------------------------------------------- parallax
 ## Parallax is computed from the camera's position, so it has to run AFTER the camera has

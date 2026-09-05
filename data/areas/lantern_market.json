@@ -165,28 +165,36 @@
    "x": 194,
    "y": -60.0,
    "z": -28,
-   "scale": 1.0
+   "scale": 1.0,
+   "sway": 1,
+   "sway_speed": 0.9
   },
   {
    "texture": "res://assets/art/props/awning_green.png",
    "x": 354,
    "y": -56.0,
    "z": -28,
-   "scale": 1.0
+   "scale": 1.0,
+   "sway": 1,
+   "sway_speed": 1.1
   },
   {
    "texture": "res://assets/art/props/awning_blue.png",
    "x": 624,
    "y": -56.0,
    "z": -28,
-   "scale": 1.0
+   "scale": 1.0,
+   "sway": 1,
+   "sway_speed": 1.0
   },
   {
    "texture": "res://assets/art/props/awning_green.png",
    "x": 1224,
    "y": -52.0,
    "z": -28,
-   "scale": 1.0
+   "scale": 1.0,
+   "sway": 1,
+   "sway_speed": 1.1
   },
   {
    "texture": "res://assets/art/props/graffiti_b.png",
@@ -221,63 +229,81 @@
    "x": 1368,
    "y": -132.0,
    "z": -27,
-   "scale": 1.0
+   "scale": 1.0,
+   "flicker": 0.08,
+   "flicker_speed": 3.1
   },
   {
    "texture": "res://assets/art/props/streetlight.png",
    "x": 100,
    "y": -78.0,
    "z": -8,
-   "scale": 1.0
+   "scale": 1.0,
+   "flicker": 0.05,
+   "flicker_speed": 1.6
   },
   {
    "texture": "res://assets/art/props/streetlight.png",
    "x": 290,
    "y": -78.0,
    "z": -8,
-   "scale": 1.0
+   "scale": 1.0,
+   "flicker": 0.05,
+   "flicker_speed": 1.6
   },
   {
    "texture": "res://assets/art/props/streetlight.png",
    "x": 480,
    "y": -78.0,
    "z": -8,
-   "scale": 1.0
+   "scale": 1.0,
+   "flicker": 0.05,
+   "flicker_speed": 1.6
   },
   {
    "texture": "res://assets/art/props/streetlight.png",
    "x": 670,
    "y": -78.0,
    "z": -8,
-   "scale": 1.0
+   "scale": 1.0,
+   "flicker": 0.22,
+   "flicker_speed": 5.5
   },
   {
    "texture": "res://assets/art/props/streetlight.png",
    "x": 860,
    "y": -78.0,
    "z": -8,
-   "scale": 1.0
+   "scale": 1.0,
+   "flicker": 0.05,
+   "flicker_speed": 1.6
   },
   {
    "texture": "res://assets/art/props/streetlight.png",
    "x": 1050,
    "y": -78.0,
    "z": -8,
-   "scale": 1.0
+   "scale": 1.0,
+   "flicker": 0.05,
+   "flicker_speed": 1.6
   },
   {
    "texture": "res://assets/art/props/streetlight.png",
    "x": 1240,
    "y": -78.0,
    "z": -8,
-   "scale": 1.0
+   "scale": 1.0,
+   "flicker": 0.05,
+   "flicker_speed": 1.6
   },
   {
    "texture": "res://assets/art/props/streetlight.png",
    "x": 1430,
    "y": -78.0,
    "z": -8,
-   "scale": 1.0
+   "scale": 1.0,
+   "flicker": 0.22,
+   "flicker_speed": 5.5
   }
  ],
  "props": [
@@ -576,6 +602,29 @@
    "width": 60
   }
  ],
+ "ambient": {
+  "drift": {
+   "count": 7,
+   "speed": -11.0,
+   "colors": [
+    [
+     0.82,
+     0.8,
+     0.72
+    ],
+    [
+     0.68,
+     0.66,
+     0.58
+    ],
+    [
+     0.74,
+     0.7,
+     0.55
+    ]
+   ]
+  }
+ },
  "lane_min": 34.0,
  "lane_max": 74.0,
  "walk_min_x": 20.0,

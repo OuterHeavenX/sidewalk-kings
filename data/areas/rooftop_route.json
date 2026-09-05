@@ -79,7 +79,9 @@
    "x": 120,
    "y": -86.0,
    "z": -28,
-   "scale": 1.0
+   "scale": 1.0,
+   "sway": 1,
+   "sway_speed": 2.1
   },
   {
    "texture": "res://assets/art/props/satellite_dish.png",
@@ -93,14 +95,18 @@
    "x": 430,
    "y": -72.0,
    "z": -28,
-   "scale": 1.0
+   "scale": 1.0,
+   "sway": 2,
+   "sway_speed": 0.8
   },
   {
    "texture": "res://assets/art/props/aerial.png",
    "x": 620,
    "y": -86.0,
    "z": -28,
-   "scale": 1.0
+   "scale": 1.0,
+   "sway": 1,
+   "sway_speed": 2.1
   },
   {
    "texture": "res://assets/art/props/ac_unit.png",
@@ -114,7 +120,9 @@
    "x": 900,
    "y": -72.0,
    "z": -28,
-   "scale": 1.0
+   "scale": 1.0,
+   "sway": 2,
+   "sway_speed": 0.8
   },
   {
    "texture": "res://assets/art/props/satellite_dish.png",
@@ -128,7 +136,9 @@
    "x": 1160,
    "y": -86.0,
    "z": -28,
-   "scale": 1.0
+   "scale": 1.0,
+   "sway": 1,
+   "sway_speed": 2.1
   }
  ],
  "props": [
@@ -286,6 +296,29 @@
  ],
  "lane_min": 36.0,
  "lane_max": 74.0,
+ "ambient": {
+  "drift": {
+   "count": 10,
+   "speed": 22.0,
+   "colors": [
+    [
+     0.82,
+     0.8,
+     0.72
+    ],
+    [
+     0.68,
+     0.66,
+     0.58
+    ],
+    [
+     0.74,
+     0.7,
+     0.55
+    ]
+   ]
+  }
+ },
  "walk_min_x": 20.0,
  "walk_max_x": 1180.0,
  "ground_y": 2.0,

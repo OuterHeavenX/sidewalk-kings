@@ -32,6 +32,7 @@ var _encounter_triggers: Array[Dictionary] = []
 var _spawn_points: Dictionary = {}
 var _tile_cache: Dictionary = {}
 var lighting: AreaLighting = null
+var ambient: Ambient = null
 
 func build(id: String, cam: GameCamera) -> void:
 	# Parallax is derived from the camera's position, so this node must process AFTER the
@@ -55,6 +56,7 @@ func build(id: String, cam: GameCamera) -> void:
 	camera_y = float(layout.get("camera_y", ground_y - 24.0))
 	actors_root.y_sort_enabled = true
 	_build_lighting()
+	_build_ambient()
 	_build_parallax()
 	_build_ground()
 	_build_props()
@@ -186,6 +188,22 @@ func _build_lighting() -> void:
 	Emission.enabled = on
 	Renderer2D.apply_area_glow(on)
 
+## Ambient motion is built before the scenery so each sprite can register itself as it is
+## created, rather than the area walking its own children afterwards looking for things to
+## animate by name.
+func _build_ambient() -> void:
+	ambient = Ambient.new()
+	ambient.name = "Ambient"
+	add_child(ambient)
+	ambient.setup(walk_min_x, walk_max_x)
+	var cfg: Dictionary = layout.get("ambient", {})
+	var drift: Dictionary = cfg.get("drift", {})
+	if not drift.is_empty():
+		ambient.add_drift(front_root, int(drift.get("count", 0)),
+			float(drift.get("speed", 14.0)), drift.get("colors", []),
+			float(drift.get("y_min", lane_min - 10.0)),
+			float(drift.get("y_max", lane_max + 10.0)))
+
 func _build_props() -> void:
 	var prop_scene: PackedScene = load("res://world/props/Prop.tscn")
 	for entry in layout.get("scenery", []):
@@ -212,6 +230,11 @@ func _build_props() -> void:
 			var e := Emission.attach(s, asset, s, 1)
 			if e:
 				e.position = Vector2.ZERO
+		if ambient:
+			if int(entry.get("sway", 0)) > 0:
+				ambient.add_sway(s, int(entry["sway"]), float(entry.get("sway_speed", 1.1)))
+			if float(entry.get("flicker", 0.0)) > 0.0:
+				ambient.add_flicker(s, float(entry["flicker"]), float(entry.get("flicker_speed", 3.0)))
 	for entry in layout.get("props", []):
 		var p = prop_scene.instantiate()
 		p.prop_id = str(entry.get("id", "trashcan"))

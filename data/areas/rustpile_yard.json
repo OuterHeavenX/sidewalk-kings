@@ -266,35 +266,45 @@
    "x": 180,
    "y": -78.0,
    "z": -8,
-   "scale": 1.0
+   "scale": 1.0,
+   "flicker": 0.05,
+   "flicker_speed": 1.6
   },
   {
    "texture": "res://assets/art/props/streetlight.png",
    "x": 440,
    "y": -78.0,
    "z": -8,
-   "scale": 1.0
+   "scale": 1.0,
+   "flicker": 0.05,
+   "flicker_speed": 1.6
   },
   {
    "texture": "res://assets/art/props/streetlight.png",
    "x": 700,
    "y": -78.0,
    "z": -8,
-   "scale": 1.0
+   "scale": 1.0,
+   "flicker": 0.05,
+   "flicker_speed": 1.6
   },
   {
    "texture": "res://assets/art/props/streetlight.png",
    "x": 960,
    "y": -78.0,
    "z": -8,
-   "scale": 1.0
+   "scale": 1.0,
+   "flicker": 0.22,
+   "flicker_speed": 5.5
   },
   {
    "texture": "res://assets/art/props/streetlight.png",
    "x": 1220,
    "y": -78.0,
    "z": -8,
-   "scale": 1.0
+   "scale": 1.0,
+   "flicker": 0.05,
+   "flicker_speed": 1.6
   }
  ],
  "props": [
@@ -494,6 +504,29 @@
    "width": 90
   }
  ],
+ "ambient": {
+  "drift": {
+   "count": 6,
+   "speed": 17.0,
+   "colors": [
+    [
+     0.82,
+     0.8,
+     0.72
+    ],
+    [
+     0.68,
+     0.66,
+     0.58
+    ],
+    [
+     0.74,
+     0.7,
+     0.55
+    ]
+   ]
+  }
+ },
  "lane_min": 34.0,
  "lane_max": 74.0,
  "walk_min_x": 20.0,

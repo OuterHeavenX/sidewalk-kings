@@ -65,14 +65,37 @@ def sky(tex, y=-150.0, scroll=0.05, repeat=3, scale=1.0, modulate=None, z=-90):
     return d
 
 
-def scenery(tex, x, y, z=-10, scale=1.0, front=False, flip=False, modulate=None):
+def scenery(tex, x, y, z=-10, scale=1.0, front=False, flip=False, modulate=None, **kw):
+    """A flat decoration. Extra keywords pass straight through to the layout, which is how
+    ambient flags such as sway and flicker reach the engine without a signature change
+    every time one is added."""
     d = {"texture": _tex_path(tex), "x": x, "y": y, "z": z, "scale": scale}
+    d.update(kw)
     if front:
         d["front"] = True
     if flip:
         d["flip"] = True
     if modulate:
         d["modulate"] = modulate
+    return d
+
+
+def ambient(drift=None):
+    """Area-level ambient motion. Currently just wind-blown litter."""
+    out = {}
+    if drift:
+        out["drift"] = drift
+    return out
+
+
+def litter(count=7, speed=13.0, colors=None, y_min=None, y_max=None):
+    """Paper and leaves crossing the street. Negative speed blows the other way."""
+    d = {"count": count, "speed": speed,
+         "colors": colors or [[0.82, 0.80, 0.72], [0.68, 0.66, 0.58], [0.74, 0.70, 0.55]]}
+    if y_min is not None:
+        d["y_min"] = y_min
+    if y_max is not None:
+        d["y_max"] = y_max
     return d
 
 
@@ -157,7 +180,12 @@ def lamp_row(width, spacing=170, start=60):
     out = []
     x = start
     while x < width - 40:
-        out.append(scenery(PROP + "streetlight", x, SIDEWALK_TOP - 96.0, z=-8))
+        # One lamp in four is on the way out. A row of identically steady lamps reads as
+        # wallpaper; one that stutters makes the whole street feel maintained by nobody.
+        failing = (len(out) % 4 == 3)
+        out.append(scenery(PROP + "streetlight", x, SIDEWALK_TOP - 96.0, z=-8,
+                           flicker=0.22 if failing else 0.05,
+                           flicker_speed=5.5 if failing else 1.6))
         x += spacing
     return out
 
@@ -186,8 +214,8 @@ ferry = {
             building("apartment_b", 1060, 266, z=-30, flip=True),
             building("shop_corner", 1230, 196, z=-30, flip=True),
             building("apartment_a", 1370, 246, z=-30),
-            scenery(PROP + "awning_blue", 214, DECO_BASE - 62, z=-28),
-            scenery(PROP + "awning_red", 646, DECO_BASE - 70, z=-28),
+            scenery(PROP + "awning_blue", 214, DECO_BASE - 62, z=-28, sway=1, sway_speed=1.0),
+            scenery(PROP + "awning_red", 646, DECO_BASE - 70, z=-28, sway=1, sway_speed=0.9),
             scenery(PROP + "graffiti_a", 420, DECO_BASE - 60, z=-27),
             scenery(PROP + "graffiti_c", 1130, DECO_BASE - 56, z=-27),
             scenery(PROP + "car_blue", 300, CURB_TOP - 38, z=-21),
@@ -253,6 +281,7 @@ ferry = {
     "on_enter": [
         {"dialogue": "intro_ferry", "if_not_flag": "seen_intro"},
     ],
+    "ambient": ambient(drift=litter(count=8, speed=15.0)),
 }
 build("ferry_row", W1, ferry)
 
@@ -280,15 +309,15 @@ market = {
             building("shop_weapon", 1220, 196, z=-30),
             building("apartment_c", 1370, 226, z=-30, flip=True),
             building("apartment_a", 1500, 246, z=-30),
-            scenery(PROP + "awning_red", 194, DECO_BASE - 70, z=-28),
-            scenery(PROP + "awning_green", 354, DECO_BASE - 66, z=-28),
-            scenery(PROP + "awning_blue", 624, DECO_BASE - 66, z=-28),
-            scenery(PROP + "awning_green", 1224, DECO_BASE - 62, z=-28),
+            scenery(PROP + "awning_red", 194, DECO_BASE - 70, z=-28, sway=1, sway_speed=0.9),
+            scenery(PROP + "awning_green", 354, DECO_BASE - 66, z=-28, sway=1, sway_speed=1.1),
+            scenery(PROP + "awning_blue", 624, DECO_BASE - 66, z=-28, sway=1, sway_speed=1.0),
+            scenery(PROP + "awning_green", 1224, DECO_BASE - 62, z=-28, sway=1, sway_speed=1.1),
             scenery(PROP + "graffiti_b", 830, DECO_BASE - 58, z=-27),
             scenery(PROP + "car_yellow", 540, CURB_TOP - 38, z=-21),
             scenery(PROP + "car_red", 1140, CURB_TOP - 38, z=-21),
             scenery("metro_entrance", 1330, DECO_BASE - 120, z=-29),
-            scenery(PROP + "metro_sign", 1368, DECO_BASE - 142, z=-27),
+            scenery(PROP + "metro_sign", 1368, DECO_BASE - 142, z=-27, flicker=0.08, flicker_speed=3.1),
         ]
         + lamp_row(W2, 190, 100)
     ),
@@ -357,6 +386,7 @@ market = {
         {"id": "market_shakedown", "x": 760, "width": 70},
         {"id": "market_optional", "x": 1440, "width": 60},
     ],
+    "ambient": ambient(drift=litter(count=7, speed=-11.0)),
 }
 build("lantern_market", W2, market)
 
@@ -393,7 +423,7 @@ alley = {
             scenery(PROP + "graffiti_a", 1200, DECO_BASE - 72, z=-27),
             scenery(PROP + "ac_unit", 340, DECO_BASE - 130, z=-28),
             scenery(PROP + "ac_unit", 980, DECO_BASE - 138, z=-28),
-            scenery(PROP + "laundry_line", 640, DECO_BASE - 128, z=-28),
+            scenery(PROP + "laundry_line", 640, DECO_BASE - 128, z=-28, sway=2, sway_speed=0.8),
             scenery(PROP + "fence", 60, CURB_TOP - 38, z=-21),
         ]
         + lamp_row(W3, 240, 140)
@@ -453,6 +483,7 @@ alley = {
         {"id": "alley_ambush", "x": 420, "width": 70},
         {"id": "alley_boss_fight", "x": 1120, "width": 80},
     ],
+    "ambient": ambient(drift=litter(count=9, speed=9.0)),
 }
 build("grease_alley", W3, alley)
 
@@ -532,6 +563,7 @@ yard = {
         {"id": "yard_wave_1", "x": 460, "width": 80},
         {"id": "yard_wave_2", "x": 1080, "width": 90},
     ],
+    "ambient": ambient(drift=litter(count=6, speed=17.0)),
 }
 build("rustpile_yard", W4, yard)
 
@@ -610,10 +642,10 @@ metro = {
         ground("tile_floor", SIDEWALK_TOP - 16.0, SIDEWALK_ROWS + 1, -40, W6 + 40, z=-22),
     ],
     "scenery": [
-        scenery(PROP + "metro_sign", 90, ROAD_TOP - 26, z=-28),
+        scenery(PROP + "metro_sign", 90, ROAD_TOP - 26, z=-28, flicker=0.08, flicker_speed=3.1),
         scenery(PROP + "sign", 560, ROAD_TOP - 44, z=-28),
         scenery(PROP + "ac_unit", 820, ROAD_TOP - 24, z=-28),
-        scenery(PROP + "metro_sign", 1220, ROAD_TOP - 26, z=-28),
+        scenery(PROP + "metro_sign", 1220, ROAD_TOP - 26, z=-28, flicker=0.08, flicker_speed=3.1),
     ],
     "props": [
         prop("turnstile", 130, LANE_MIN - 4, solid=True),
@@ -706,14 +738,14 @@ rooftop = {
     ],
     "scenery": [
         # A roof has no building behind it, so everything stands on the parapet line.
-        scenery(PROP + "aerial", 120, ROAD_TOP - 40, z=-28),
+        scenery(PROP + "aerial", 120, ROAD_TOP - 40, z=-28, sway=1, sway_speed=2.1),
         scenery(PROP + "satellite_dish", 300, ROAD_TOP - 26, z=-28),
-        scenery(PROP + "laundry_line", 430, ROAD_TOP - 26, z=-28),
-        scenery(PROP + "aerial", 620, ROAD_TOP - 40, z=-28),
+        scenery(PROP + "laundry_line", 430, ROAD_TOP - 26, z=-28, sway=2, sway_speed=0.8),
+        scenery(PROP + "aerial", 620, ROAD_TOP - 40, z=-28, sway=1, sway_speed=2.1),
         scenery(PROP + "ac_unit", 780, ROAD_TOP - 24, z=-28),
-        scenery(PROP + "laundry_line", 900, ROAD_TOP - 26, z=-28),
+        scenery(PROP + "laundry_line", 900, ROAD_TOP - 26, z=-28, sway=2, sway_speed=0.8),
         scenery(PROP + "satellite_dish", 1080, ROAD_TOP - 26, z=-28),
-        scenery(PROP + "aerial", 1160, ROAD_TOP - 40, z=-28),
+        scenery(PROP + "aerial", 1160, ROAD_TOP - 40, z=-28, sway=1, sway_speed=2.1),
     ],
     "props": [
         prop("roof_vent", 160, LANE_MIN - 4, solid=True),
@@ -754,6 +786,7 @@ rooftop = {
     ],
     "lane_min": 36.0,
     "lane_max": 74.0,
+    "ambient": ambient(drift=litter(count=10, speed=22.0)),
 }
 build("rooftop_route", W7, rooftop)
 
@@ -780,10 +813,10 @@ bellwater = {
             building("apartment_b", 1010, 276, z=-30, flip=True),
             building("warehouse", 1150, 150, z=-30),
             building("apartment_a", 1360, 256, z=-30),
-            scenery(PROP + "awning_green", 444, DECO_BASE - 66, z=-28),
+            scenery(PROP + "awning_green", 444, DECO_BASE - 66, z=-28, sway=1, sway_speed=1.1),
             scenery(PROP + "graffiti_b", 700, DECO_BASE - 62, z=-27),
-            scenery(PROP + "laundry_line", 250, DECO_BASE - 120, z=-28),
-            scenery(PROP + "laundry_line", 950, DECO_BASE - 126, z=-28),
+            scenery(PROP + "laundry_line", 250, DECO_BASE - 120, z=-28, sway=2, sway_speed=0.8),
+            scenery(PROP + "laundry_line", 950, DECO_BASE - 126, z=-28, sway=2, sway_speed=0.8),
             scenery(PROP + "satellite_dish", 1058, DECO_BASE - 134, z=-28),
             scenery(PROP + "car_blue", 620, CURB_TOP - 38, z=-21),
             scenery(PROP + "fence", 1440, CURB_TOP - 38, z=-21),
@@ -839,6 +872,7 @@ bellwater = {
         {"id": "bellwater_wall", "x": 700, "width": 70},
         {"id": "bellwater_conductor", "x": 1220, "width": 80},
     ],
+    "ambient": ambient(drift=litter(count=7, speed=-13.0)),
 }
 build("bellwater_block", W8, bellwater)
 

@@ -348,6 +348,41 @@ An area with no lighting block is untouched. Reloading an area keeps the player 
 
 ---
 
+## Unreleased — the streets move
+
+A still frame reads as dead however well lit it is. This is the cheapest fix for that:
+a few things in shot that are not holding perfectly still. None of it touches gameplay,
+and none of it has collision or state.
+
+### Added
+
+- **Sway.** Washing lines, awnings and rooftop aerials move with the air, each starting at
+  its own point in the cycle so they do not all lean in step.
+- **Flicker.** Streetlights, the metro sign and lit screens vary in brightness. Modulate is
+  inherited by children, so the emission overlay from the lighting pass rides along and the
+  bloom pulses with the sprite. Roughly one street lamp in four is on the way out and
+  stutters noticeably; a row of identically steady lamps just reads as wallpaper.
+- **Litter.** Paper and leaves cross each outdoor street on the wind, wrapping around
+  rather than leaving. Interiors get none, because there is no weather in a laundromat.
+
+Across the eight areas: 15 swaying items, 38 flickering, 47 pieces of litter. All of it is
+layout data, so a new street opts in the same way it opts into lighting.
+
+### Notes
+
+Everything moves in whole pixels. The project snaps 2D transforms to the pixel grid, so a
+sub-pixel sway does not render smoothly, it judders between two positions at an uneven
+rate. One or two pixels at a slow rate reads as a breeze; anything finer reads as a fault.
+
+### Tests
+
+Motion is invisible in a screenshot, so it is asserted by watching values change over
+time: a swaying sprite moves horizontally and not vertically, a lamp's brightness varies,
+litter travels and wraps instead of escaping, and an interior has none of it. Suite is
+**271 checks**.
+
+---
+
 ## Unreleased — the cast has faces
 
 First pass on character art. Nothing about the fighting changed: the poses, frame counts,
