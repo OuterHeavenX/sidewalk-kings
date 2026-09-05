@@ -22,9 +22,11 @@ SRC = os.path.join(ROOT, "icon.png")
 # output, which also means anything in there cannot be referenced as a res:// path.
 OUT = os.path.join(ROOT, "assets", "pwa")
 
-# The sizes the manifest declares. 512 is what app stores and splash screens use, 180 is
-# the iOS home screen, 144 is the Android legacy launcher.
-SIZES = [144, 180, 512]
+# 192 and 512 are the two Chrome insists on before it will offer to install a site at all.
+# Godot's export only has slots for 144, 180 and 512, so tools/finish_pwa.py adds the 192
+# to the generated manifest afterwards. 180 is the iOS home screen, 144 the older Android
+# launcher.
+SIZES = [144, 180, 192, 512]
 
 
 def render(src: Image.Image, size: int) -> Image.Image:

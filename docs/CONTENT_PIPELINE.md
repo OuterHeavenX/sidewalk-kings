@@ -15,7 +15,8 @@ Only dependency: `pip install pillow`.
 | `gen_characters.py` | Character sprite sheets, `SpriteFrames`, portraits | `assets/art/characters/`, `assets/art/ui/portraits/` |
 | `gen_world.py` | Props, weapons, tiles, buildings, backgrounds, FX, UI, item icons | `assets/art/` |
 | `gen_emission.py` | Glow masks and light textures, derived from the art | `assets/art/emission/`, `assets/art/light/` |
-| `gen_pwa_icons.py` | Installable app icons at 144, 180 and 512 px | `assets/pwa/` |
+| `gen_pwa_icons.py` | Installable app icons at 144, 180, 192 and 512 px | `assets/pwa/` |
+| `finish_pwa.py` | Completes the exported manifest so Chrome will install it | run after the web export |
 | `gen_audio.py` | Music, sound effects, ambience | `assets/audio/` |
 | `gen_data.py` | Moves, enemies, food, books, items, weapons, shops, quests, dialogue, encounters, area metadata | `data/**/*.tres` |
 | `gen_areas.py` | Area layouts | `data/areas/*.json` |

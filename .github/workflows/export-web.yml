@@ -76,6 +76,9 @@ jobs:
           mkdir -p web
           godot --headless --path . --export-release "Web" web/index.html
           rm -f web/*.import
+          # Godot has icon slots for 144, 180 and 512 only. Chrome will not offer to
+          # install a site without a 192, so the manifest is completed after export.
+          python3 tools/finish_pwa.py web
 
       - name: Verify the export
         run: |
@@ -91,6 +94,13 @@ jobs:
           # The custom shell must have survived the export.
           grep -q "SIDEWALK KINGS" web/index.html \
             || { echo "::error::web/index.html is not the custom shell"; exit 1; }
+          # The app must stay installable. Chrome needs a 192 and a 512 in the
+          # manifest, and the page has to reference the manifest for any of it to count.
+          for f in web/index.manifest.json web/index.service.worker.js web/index.offline.html; do
+            [ -s "$f" ] || { echo "::error::Missing PWA file: $f"; exit 1; }
+          done
+          grep -q 'rel="manifest"' web/index.html || { echo "::error::index.html does not link the manifest"; exit 1; }
+          python3 tools/check_pwa.py web
           echo "Web export OK:"
           ls -lh web/
 

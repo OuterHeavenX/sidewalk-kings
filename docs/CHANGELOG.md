@@ -386,12 +386,20 @@ An area with no lighting block is untouched. Reloading an area keeps the player 
   and nothing referenced it, and it never registered the service worker. Both fixed, which
   is what turns "create shortcut" into a real install.
 
-### Not verified
+- **Chrome offered no way to install it.** Godot's web export has icon slots for 144, 180
+  and 512 only, and Chrome will not offer to install a site unless the manifest declares
+  an icon of at least **192** as well as a 512. There is no warning: the manifest is
+  generated, the browser reads it, and the install option simply never appears.
+  `tools/finish_pwa.py` now completes the manifest after export, adding the 192, a
+  maskable icon for Android's circular crop, and the `short_name`, `scope`, `theme_color`
+  and `description` Godot does not write. CI runs it and then fails the build if the
+  manifest is not installable.
 
-Service workers cannot register in the browser available here: a minimal control worker
-fails identically to the game's, so **offline launch is untested**. The manifest, the
-icons, the registration call and the generated worker are all confirmed present and
-correctly served.
+### Verified since
+
+The service worker **does** register on the live site. The earlier failure was the local
+browser, where even a minimal control worker fails to register, so offline caching is
+working after all. Launching with no connection is still worth a real-device check.
 
 ### Tests
 

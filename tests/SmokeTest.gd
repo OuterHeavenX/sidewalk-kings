@@ -252,9 +252,14 @@ func test_audio() -> void:
 	check("installable icons are declared",
 		preset.contains("icon_144x144=\"res://assets/pwa/icon-144.png\"")
 		and preset.contains("icon_512x512=\"res://assets/pwa/icon-512.png\""))
-	for size in [144, 180, 512]:
+	# 192 and 512 are the two Chrome requires before it offers to install anything. Godot
+	# has no 192 slot, so tools/finish_pwa.py adds it to the manifest after export; the
+	# source icon still has to exist for that to work.
+	for size in [144, 180, 192, 512]:
 		check("app icon %dpx exists" % size,
 			ResourceLoader.exists("res://assets/pwa/icon-%d.png" % size))
+	check("a maskable icon exists for Android's circular crop",
+		ResourceLoader.exists("res://assets/pwa/icon-512-maskable.png"))
 	# Godot injects the manifest link through this placeholder. Without it the manifest is
 	# generated and nothing references it, so no browser offers a real install.
 	var shell := FileAccess.get_file_as_string("res://web/shell.html")
