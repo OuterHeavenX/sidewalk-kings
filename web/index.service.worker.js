@@ -4,7 +4,7 @@
 // Incrementing CACHE_VERSION will kick off the install event and force
 // previously cached resources to be updated from the network.
 /** @type {string} */
-const CACHE_VERSION = '1788632010|3269305';
+const CACHE_VERSION = '1788633152|3250936';
 /** @type {string} */
 const CACHE_PREFIX = 'Sidewalk Kings-sw-cache-';
 const CACHE_NAME = CACHE_PREFIX + CACHE_VERSION;
