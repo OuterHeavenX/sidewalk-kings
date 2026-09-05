@@ -60,6 +60,7 @@ func run() -> void:
 	await test_shops()
 	await test_quests_and_dialogue()
 	await test_area_travel()
+	await test_cutscenes()
 	await test_ambient()
 	await test_parallax()
 	await test_doors()
@@ -808,7 +809,13 @@ func test_crowd_ai() -> void:
 	check("the wind-up runs before the hitbox is live",
 		heavy.combat.current != null and heavy.combat.phase == 1 and p().hp == before,
 		"phase=%d" % heavy.combat.phase)
-	await frames(int(boss_move.startup) + 4)
+	# Wait for the condition, not a fixed frame count. The startup is measured in physics
+	# frames, but start_move happened part way through one, so a fixed wait lands a frame
+	# early roughly one run in ten and fails a system that is working perfectly.
+	var spin := 0
+	while heavy.combat.current != null and heavy.combat.phase < 2 and spin < int(boss_move.startup) + 20:
+		await frames(1)
+		spin += 1
 	check("the hitbox goes live after the wind-up", heavy.combat.phase >= 2,
 		"phase=%d" % heavy.combat.phase)
 	await clear_stage(700.0)
@@ -1057,6 +1064,73 @@ func _check_camera_follows(area_id: String) -> void:
 		if absf(player.global_position.x - cam.x) > half.x - 24.0:
 			worst = "player x=%.0f but camera centre x=%.0f" % [player.global_position.x, cam.x]
 	check("camera frames the player across %s" % area_id, worst == "", worst)
+
+# ---------------------------------------------------------------- cutscenes
+## A cutscene takes control of the player and gives it back. The failure that matters is
+## not that it looks wrong, it is that it ends without handing control back, or that it is
+## skipped and leaves the story half-advanced. Both strand the player in a game that no
+## longer responds, so both are asserted.
+func test_cutscenes() -> void:
+	print("
+-- Cutscenes --")
+	var ids: Array[String] = []
+	var d := DirAccess.open(CutsceneManager.DIR)
+	if d:
+		for f in d.get_files():
+			if f.ends_with(".json"):
+				ids.append(f.substr(0, f.length() - 5))
+	check("cutscenes are present", not ids.is_empty(), ", ".join(ids))
+	if ids.is_empty():
+		return
+
+	# Every dialogue and actor a scene names has to exist, or the step silently does
+	# nothing and the scene plays with a hole in it.
+	var bad: Array[String] = []
+	for id in ids:
+		for step in CutsceneManager.load_steps(id):
+			var kind := str(step.get("do", ""))
+			if kind == "say" and not ContentDB.dialogues.has(str(step.get("dialogue", ""))):
+				bad.append("%s -> dialogue %s" % [id, step.get("dialogue", "")])
+			if kind == "music" and AudioManager._resolve(AudioManager.MUSIC_DIR, str(step.get("id", ""))) == null:
+				bad.append("%s -> music %s" % [id, step.get("id", "")])
+			if kind == "quest":
+				for key in ["start", "complete"]:
+					if step.has(key) and ContentDB.get_quest(str(step[key])) == null:
+						bad.append("%s -> quest %s" % [id, step[key]])
+	check("every cutscene reference resolves", bad.is_empty(), ", ".join(bad))
+
+	# Play one for real, in the area it belongs to.
+	GameManager.set_flag("bellwater_cleared", true)
+	GameManager.set_flag("seen_line_office", false)
+	GameManager.set_flag("chapter_2_done", false)
+	await SceneManager.change_area("line_office", "start")
+	await seconds(0.6)
+	check("the office builds", GameManager.player_data.current_area == "line_office")
+
+	var started := {"hit": false}
+	CutsceneManager.cutscene_started.connect(func(_i): started["hit"] = true, CONNECT_ONE_SHOT)
+	CutsceneManager.play("line_office_arrival")
+	await frames(6)
+	check("playing a cutscene takes control",
+		CutsceneManager.is_playing() and GameManager.state == GameManager.State.CUTSCENE)
+	check("it announces itself", started["hit"])
+
+	# Skip it, which is the path a player who has seen it once will take.
+	CutsceneManager.abort()
+	var guard := 0
+	while CutsceneManager.is_playing() and guard < 900:
+		if DialogueManager.is_active():
+			DialogueManager._finish()
+		await frames(1)
+		guard += 1
+	check("a skipped cutscene ends", not CutsceneManager.is_playing(), "%d frames" % guard)
+	check("and hands control back", GameManager.state == GameManager.State.PLAYING)
+	check("and releases the camera",
+		GameManager.current_area.camera != null and not GameManager.current_area.camera.scripted)
+	# The whole point of applying flags on skip: the story must not desync.
+	check("a skipped cutscene still advances the story",
+		GameManager.get_flag("chapter_2_done"),
+		"skipping must not strand the chapter half-finished")
 
 # ---------------------------------------------------------------- ambient
 ## Ambient motion is invisible in a screenshot: a still frame of a street with a broken

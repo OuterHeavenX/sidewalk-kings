@@ -348,6 +348,59 @@ An area with no lighting block is untouched. Reloading an area keeps the player 
 
 ---
 
+## Unreleased — chapter two, and cutscenes
+
+### Added
+
+- **A cutscene system.** Scripted camera moves, actor blocking, dialogue and the flags
+  they set, as a list of steps in `data/cutscenes/<id>.json`. Same shape as an area
+  layout and for the same reason: it is a sequence of instructions rather than a set of
+  properties, and it changes far more often than the code that runs it.
+- Taking control is nearly free: the player already gates its own input on the PLAYING
+  state, so switching to CUTSCENE stops the player, the enemy director and the encounter
+  triggers without any of them needing to know why. The state existed in the enum from the
+  start and had never been used.
+- `GameCamera` gains a scripted mode, deliberately separate from `lock_to`: locking
+  clamps the player-following camera, scripting replaces it.
+- **The Line Office**, a ninth area behind the Metro Platform, opening once the Conductor
+  is beaten.
+
+### The answer
+
+Chapter one ended with Big Starch paying four gangs to be *tidy*. Chapter two asks who
+paid him, and the answer is nobody. Line 4 was never formally closed, only suspended,
+because closing it is a decision and a decision needs a name on it. A suspended line still
+draws a budget, a budget has to be spent or it gets reduced, and a reduced budget is
+somebody noticing. So a form arrives every Tuesday and a man signs it, and the money goes
+to community liaison, which is to say to five gangs, to keep the streets quiet enough that
+nobody asks why a closed line is closed.
+
+There is nobody to hit. That is the point, and Dez says so.
+
+### Fixed by the tests
+
+- **A skipped cutscene left the chapter unfinishable.** The flag that ends chapter two was
+  set by the last line of dialogue, so skipping the scene skipped the flag. The runner
+  applies flag and quest steps even when aborted, precisely so this cannot happen, but the
+  content was not using it: story-critical state belongs on a step, not inside dialogue a
+  skip bypasses.
+- **A flaky combat check.** The telegraph test waited a fixed number of frames for a
+  wind-up that is measured in physics frames and starts part way through one, so it failed
+  about one run in ten on a system that was working. It waits for the condition now. A test
+  that fails at random is worse than no test, because it teaches you to ignore failures.
+- **An engine error on every scene teardown.** A dialogue callback outlived its object;
+  `Callable.is_valid()` stays true in that case, and asking for the object to check it is
+  itself what printed the error. The object id is checked instead, which never
+  dereferences anything.
+
+### Tests
+
+Suite is **281 checks**. The cutscene ones assert what actually strands a player: that
+playing takes control, that skipping ends, that control and the camera come back, and that
+a skipped scene still advances the story.
+
+---
+
 ## Unreleased — the whole city is lit
 
 All eight areas now carry lighting, where before only the Metro Platform did. That

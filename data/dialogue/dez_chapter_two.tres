@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DialogueData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/DialogueData.gd" id="1_dez_chapter_two"]
+
+[resource]
+script = ExtResource("1_dez_chapter_two")
+id = "dez_chapter_two"
+lines = Array[Dictionary]([{"name": "Kip", "text": "It is a form.", "portrait": "kip"}, {"name": "Dez", "text": "A form.", "portrait": "dez"}, {"name": "Kip", "text": "A line that was never closed, a budget that has to be spent, and a man who signs it because it arrives.", "portrait": "kip"}, {"name": "Dez", "text": "So there is nobody to hit.", "portrait": "dez"}, {"name": "Kip", "text": "There is nobody to hit.", "portrait": "kip"}, {"name": "Dez", "text": "Kip. That is so much worse.", "portrait": "dez", "set_flag": "told_dez_ch2", "end": true}])
+pause_game = true
+once_flag = ""

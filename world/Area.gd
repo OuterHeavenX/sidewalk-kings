@@ -386,7 +386,11 @@ func run_entry_events() -> void:
 			continue
 		if entry.has("if_not_flag") and GameManager.get_flag(str(entry["if_not_flag"])):
 			continue
-		if entry.has("dialogue"):
+		if entry.has("cutscene"):
+			# Not awaited: run_entry_events is called during area setup, and blocking here
+			# would hold the fade open until the scene finished.
+			CutsceneManager.play(str(entry["cutscene"]))
+		elif entry.has("dialogue"):
 			DialogueManager.start(str(entry["dialogue"]))
 		if entry.has("set_flag"):
 			GameManager.set_flag(str(entry["set_flag"]), true)

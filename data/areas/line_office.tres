@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="AreaData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/AreaData.gd" id="1_line_office"]
+
+[resource]
+script = ExtResource("1_line_office")
+id = "line_office"
+display_name = "Line Office"
+district = "Metro Line"
+music = "shop"
+ambience = "interior"
+gang = ""
+map_position = Vector2(0.6, 1.8)
+connections = Array[String](["metro_platform"])
+description = "A desk, four filing cabinets, and eleven years of Tuesdays."

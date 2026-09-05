@@ -36,6 +36,7 @@ QuestManager="*res://systems/QuestManager.gd"
 DialogueManager="*res://systems/DialogueManager.gd"
 ShopManager="*res://systems/ShopManager.gd"
 Renderer2D="*res://autoload/Renderer2D.gd"
+CutsceneManager="*res://systems/CutsceneManager.gd"
 
 [debug]
 

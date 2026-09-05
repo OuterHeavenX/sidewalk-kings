@@ -407,6 +407,13 @@ CHARACTERS = {
     "train_guard": spec(skin=(196, 148, 116), hair=(40, 36, 34), hair_style="helmet", hat_color=(40, 54, 80),
                         shirt=(46, 60, 88), shirt_shade=(30, 40, 62), shirt_style="vest", under=(214, 198, 90),
                         pants=(44, 46, 56), shoes=(50, 44, 40), shoe_shade=(28, 24, 22), anims=NPC_SET, torso_w=14),
+    # Chapter two. Deliberately the least threatening person in the game: a mild, tidy man
+    # in a grey shirt and a clip-on tie. The point of him is that he is not a villain.
+    "line_manager": spec(skin=(226, 194, 168), hair=(140, 132, 124), hair_style="slick",
+                         shirt=(158, 162, 172), shirt_shade=(116, 120, 132), shirt_style="shirt",
+                         under=(210, 214, 222), pants=(64, 66, 76), pants_shade=(44, 46, 54),
+                         shoes=(52, 46, 44), shoe_shade=(30, 26, 24), anims=NPC_SET,
+                         glasses=True, torso_w=11, head_r=7),
     "laundry_lady": spec(skin=(240, 205, 180), hair=(80, 50, 40), hair_style="bun", shirt=(200, 220, 240), shirt_shade=(150, 170, 200), shirt_style="shirt", under=(200, 220, 240),
                          pants=(60, 60, 80), shoes=(120, 90, 80), shoe_shade=(80, 60, 50), anims=NPC_SET, apron=(250, 250, 250)),
 }

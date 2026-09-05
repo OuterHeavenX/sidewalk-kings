@@ -264,6 +264,7 @@ ferry = {
     "npcs": [
         {"id": "dez", "name": "Dez", "character": "dez", "x": 150, "y": LANE_MIN + 4,
          "conditional": [
+             {"dialogue": "dez_chapter_two", "if_flag": "chapter_2_done", "if_not_flag": "told_dez_ch2"},
              {"dialogue": "dez_metro", "if_flag": "chapter_1_done", "if_not_flag": "metro_open"},
              {"dialogue": "dez_finale", "if_flag": "hideout_cleared"},
              {"dialogue": "dez_alley", "if_flag": "market_cleared"},
@@ -717,6 +718,7 @@ metro = {
         scenery(PROP + "metro_sign", 90, ROAD_TOP - 26, z=-28, flicker=0.08, flicker_speed=3.1),
         scenery(PROP + "sign", 560, ROAD_TOP - 44, z=-28),
         scenery(PROP + "ac_unit", 820, ROAD_TOP - 24, z=-28),
+        scenery(PROP + "sign", 1104, ROAD_TOP - 44, z=-28),
         scenery(PROP + "metro_sign", 1220, ROAD_TOP - 26, z=-28, flicker=0.08, flicker_speed=3.1),
     ],
     "props": [
@@ -754,6 +756,9 @@ metro = {
          "y": LANE_MAX - 16, "label": "Lantern Market", "auto": True, "w": 22, "h": 46},
         {"id": "to_bellwater", "to": "bellwater_block", "spawn": "from_metro", "x": W6 - 24,
          "y": LANE_MAX - 16, "label": "Bellwater Block", "auto": True, "w": 22, "h": 46},
+        {"id": "to_office", "to": "line_office", "spawn": "from_metro", "x": 1120,
+         "y": LANE_MIN - 2, "label": "Line Office", "required_flag": "bellwater_cleared",
+         "locked": "LINE OFFICE. The handle turns; the door does not.", "w": 24, "h": 40},
         {"id": "bex_dojo_door", "shop": "bex_dojo", "x": 690, "y": LANE_MIN - 2,
          "label": "Metro Line School", "required_flag": "met_bex",
          "locked": "Bex has not invited you in yet."},
@@ -762,6 +767,7 @@ metro = {
         {"id": "start", "x": 80, "y": 58},
         {"id": "from_market", "x": 90, "y": 58},
         {"id": "from_bellwater", "x": W6 - 70, "y": 58},
+        {"id": "from_office", "x": 1110, "y": 60},
     ],
     "encounters": [
         {"id": "metro_platform_1", "x": 380, "width": 70},
@@ -979,4 +985,64 @@ bellwater = {
 }
 build("bellwater_block", W8, bellwater)
 
-print("8 area layouts written to data/areas/")
+# ===========================================================================
+# AREA 9 - LINE OFFICE : chapter two's answer. No enemies, no shop, one desk.
+# ===========================================================================
+W9 = 700
+office = {
+    "parallax": [
+        {"texture": _tex_path("interior_wall"), "y": -370.0, "scroll": 0.8, "repeat": 4,
+         "scale": 2.0, "z": -90},
+    ],
+    "ground": [
+        fill((0.30, 0.28, 0.26), SIDEWALK_TOP - 16.0, 460, -40, W9 + 40),
+        ground("wood_floor", SIDEWALK_TOP - 16.0, SIDEWALK_ROWS + 1, -40, W9 + 40, z=-22),
+    ],
+    "scenery": [
+        scenery(PROP + "filing_cabinet", 90, ROAD_TOP - 44, z=-28),
+        scenery(PROP + "filing_cabinet", 118, ROAD_TOP - 44, z=-28),
+        scenery(PROP + "filing_cabinet", 146, ROAD_TOP - 44, z=-28),
+        scenery(PROP + "filing_cabinet", 174, ROAD_TOP - 44, z=-28),
+        scenery(PROP + "sign", 300, ROAD_TOP - 44, z=-28),
+        scenery(PROP + "ac_unit", 470, ROAD_TOP - 24, z=-28),
+        scenery(PROP + "flyer", 560, ROAD_TOP - 20, z=-27),
+    ],
+    "props": [
+        prop("desk", 430, LANE_MIN - 6, solid=True, searchable=True,
+             dialogue="metro_poster", prompt="Read the notice"),
+        prop("bench", 210, LANE_MIN - 2),
+        prop("trashcan", 620, breakable=True, hp=10, money=18),
+        prop("crate", 120, LANE_MAX - 6, breakable=True, hp=8, contains="lost_sandwich"),
+    ],
+    "weapons": [],
+    "npcs": [
+        {"id": "line_manager", "name": "Line Manager", "character": "line_manager",
+         "x": 470, "y": LANE_MIN + 2,
+         "conditional": [{"dialogue": "manager_after", "if_flag": "chapter_2_done"}],
+         "dialogue": "manager_reveal"},
+    ],
+    "doors": [
+        {"id": "to_metro", "to": "metro_platform", "spawn": "from_office", "x": 16,
+         "y": LANE_MAX - 16, "label": "Back to the platform", "auto": True, "w": 22, "h": 46},
+    ],
+    "spawns": [
+        {"id": "start", "x": 80, "y": 58},
+        {"id": "from_metro", "x": 80, "y": 58},
+    ],
+    "encounters": [],
+    "on_enter": [
+        {"cutscene": "line_office_arrival", "if_not_flag": "seen_line_office"},
+    ],
+    "lane_min": 38.0,
+    "lane_max": 76.0,
+    # Strip lighting and a desk lamp. Warmer and smaller than the platform outside, which
+    # is the point: this is the one room on the line where somebody actually works.
+    "lighting": lighting(
+        (0.60, 0.58, 0.62),
+        [light(x, 34.0, (1.0, 0.92, 0.74), 0.55, 2.0, "wide") for x in range(120, W9, 220)]
+        + [light(455, 26.0, (1.0, 0.84, 0.5), 0.8, 1.3, "tight")],
+    ),
+}
+build("line_office", W9, office)
+
+print("9 area layouts written to data/areas/")

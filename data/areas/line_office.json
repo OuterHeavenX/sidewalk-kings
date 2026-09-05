@@ -1,0 +1,230 @@
+{
+ "parallax": [
+  {
+   "texture": "res://assets/art/backgrounds/interior_wall.png",
+   "y": -370.0,
+   "scroll": 0.8,
+   "repeat": 4,
+   "scale": 2.0,
+   "z": -90
+  }
+ ],
+ "ground": [
+  {
+   "color": [
+    0.3,
+    0.28,
+    0.26
+   ],
+   "y": 2.0,
+   "height": 460,
+   "z": -26,
+   "x": -40,
+   "x2": 740
+  },
+  {
+   "tile": "wood_floor",
+   "y": 2.0,
+   "height": 10,
+   "z": -22,
+   "x": -40,
+   "x2": 740
+  }
+ ],
+ "scenery": [
+  {
+   "texture": "res://assets/art/props/filing_cabinet.png",
+   "x": 90,
+   "y": -90.0,
+   "z": -28,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/props/filing_cabinet.png",
+   "x": 118,
+   "y": -90.0,
+   "z": -28,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/props/filing_cabinet.png",
+   "x": 146,
+   "y": -90.0,
+   "z": -28,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/props/filing_cabinet.png",
+   "x": 174,
+   "y": -90.0,
+   "z": -28,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/props/sign.png",
+   "x": 300,
+   "y": -90.0,
+   "z": -28,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/props/ac_unit.png",
+   "x": 470,
+   "y": -70.0,
+   "z": -28,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/props/flyer.png",
+   "x": 560,
+   "y": -66.0,
+   "z": -27,
+   "scale": 1.0
+  }
+ ],
+ "props": [
+  {
+   "id": "desk",
+   "x": 430,
+   "y": 28.0,
+   "solid": true,
+   "searchable": true,
+   "dialogue": "metro_poster",
+   "prompt": "Read the notice"
+  },
+  {
+   "id": "bench",
+   "x": 210,
+   "y": 32.0
+  },
+  {
+   "id": "trashcan",
+   "x": 620,
+   "y": 76.0,
+   "breakable": true,
+   "hp": 10,
+   "money": 18
+  },
+  {
+   "id": "crate",
+   "x": 120,
+   "y": 68.0,
+   "breakable": true,
+   "hp": 8,
+   "contains": "lost_sandwich"
+  }
+ ],
+ "weapons": [],
+ "npcs": [
+  {
+   "id": "line_manager",
+   "name": "Line Manager",
+   "character": "line_manager",
+   "x": 470,
+   "y": 36.0,
+   "conditional": [
+    {
+     "dialogue": "manager_after",
+     "if_flag": "chapter_2_done"
+    }
+   ],
+   "dialogue": "manager_reveal"
+  }
+ ],
+ "doors": [
+  {
+   "id": "to_metro",
+   "to": "metro_platform",
+   "spawn": "from_office",
+   "x": 16,
+   "y": 58.0,
+   "label": "Back to the platform",
+   "auto": true,
+   "w": 22,
+   "h": 46
+  }
+ ],
+ "spawns": [
+  {
+   "id": "start",
+   "x": 80,
+   "y": 58
+  },
+  {
+   "id": "from_metro",
+   "x": 80,
+   "y": 58
+  }
+ ],
+ "encounters": [],
+ "on_enter": [
+  {
+   "cutscene": "line_office_arrival",
+   "if_not_flag": "seen_line_office"
+  }
+ ],
+ "lane_min": 38.0,
+ "lane_max": 76.0,
+ "lighting": {
+  "ambient": [
+   0.6,
+   0.58,
+   0.62
+  ],
+  "glow": true,
+  "lights": [
+   {
+    "x": 120,
+    "y": 34.0,
+    "color": [
+     1.0,
+     0.92,
+     0.74
+    ],
+    "energy": 0.55,
+    "scale": 2.0,
+    "texture": "wide"
+   },
+   {
+    "x": 340,
+    "y": 34.0,
+    "color": [
+     1.0,
+     0.92,
+     0.74
+    ],
+    "energy": 0.55,
+    "scale": 2.0,
+    "texture": "wide"
+   },
+   {
+    "x": 560,
+    "y": 34.0,
+    "color": [
+     1.0,
+     0.92,
+     0.74
+    ],
+    "energy": 0.55,
+    "scale": 2.0,
+    "texture": "wide"
+   },
+   {
+    "x": 455,
+    "y": 26.0,
+    "color": [
+     1.0,
+     0.84,
+     0.5
+    ],
+    "energy": 0.8,
+    "scale": 1.3,
+    "texture": "tight"
+   }
+  ]
+ },
+ "walk_min_x": 20.0,
+ "walk_max_x": 680.0,
+ "ground_y": 2.0,
+ "camera_y": -12.0
+}

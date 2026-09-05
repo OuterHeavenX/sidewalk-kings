@@ -123,7 +123,21 @@ an area with no street. Recorded in [ART_DIRECTION.md](ART_DIRECTION.md).
 - Fast travel between visited areas.
 - The three save slots exposed in the UI; `SaveManager` already supports them.
 
-## Stage 4 — Chapter two
+## Stage 4 — Chapter two — **done**
+
+The cutscene system and the Line Office. See the changelog for the story; the short version
+is that the money comes from a line that was never formally closed, and there is nobody to
+hit.
+
+**What it proved.** The one genuinely new system in the phase turned out to be small,
+because the game state machine already had a `CUTSCENE` state and every system already
+gated on `PLAYING`. The expensive part was not taking control, it was giving it back
+safely: a scene that ends without restoring control, or that is skipped and leaves a flag
+unset, strands the player in a game that no longer responds or no longer progresses.
+
+---
+
+## Stage 4 — Chapter two, original plan
 
 - Who sends the money, and why a laundromat.
 - Light cutscene support: scripted camera moves and actor blocking. The one genuinely new

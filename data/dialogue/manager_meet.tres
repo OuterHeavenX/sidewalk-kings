@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DialogueData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/DialogueData.gd" id="1_manager_meet"]
+
+[resource]
+script = ExtResource("1_manager_meet")
+id = "manager_meet"
+lines = Array[Dictionary]([{"name": "Manager", "text": "You are not the cleaner.", "portrait": "line_manager"}, {"name": "Kip", "text": "No.", "portrait": "kip"}, {"name": "Manager", "text": "Then you will have to come back. I only see the cleaner.", "portrait": "line_manager"}, {"name": "Kip", "text": "Somebody on this line is paying four gangs to sit still.", "portrait": "kip"}, {"name": "Manager", "text": "Five.", "portrait": "line_manager"}, {"name": "Kip", "text": "...five.", "portrait": "kip"}, {"name": "Manager", "text": "The Bellwater lot were added in March. There was room in the line.", "portrait": "line_manager", "end": true}])
+pause_game = true
+once_flag = ""

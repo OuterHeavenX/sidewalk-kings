@@ -998,6 +998,66 @@ DIALOGUES = {
     L("", "TUESDAYS: NO STOPPING SERVICE. THIS IS NORMAL AND CORRECT."),
     L("Kip", "Somebody laminated that.", "kip", end=True),
 ]),
+# ---------------- Chapter two: the Line Office ----------------
+"office_locked": dict(lines=[
+    L("", "A door marked LINE OFFICE. The handle turns; the door does not."),
+    L("Kip", "Later, then.", "kip", end=True),
+]),
+"manager_meet": dict(lines=[
+    L("Manager", "You are not the cleaner.", "line_manager"),
+    L("Kip", "No.", "kip"),
+    L("Manager", "Then you will have to come back. I only see the cleaner.", "line_manager"),
+    L("Kip", "Somebody on this line is paying four gangs to sit still.", "kip"),
+    L("Manager", "Five.", "line_manager"),
+    L("Kip", "...five.", "kip"),
+    L("Manager", "The Bellwater lot were added in March. There was room in the line.", "line_manager", end=True),
+]),
+"manager_reveal": dict(lines=[
+    L("Kip", "Who tells you to do it?", "kip"),
+    L("Manager", "Nobody tells me. The form arrives. I sign the form.", "line_manager"),
+    L("Kip", "What form?", "kip"),
+    L("Manager", "Community liaison. Line 4. It has arrived every Tuesday for eleven years.", "line_manager"),
+    L("Kip", "Line 4 is closed.", "kip"),
+    L("Manager", "Line 4 is *suspended*. Nobody has ever closed it. A closed line is a decision "
+                 "and a decision needs a name on it.", "line_manager"),
+    L("Kip", "So it still gets money.", "kip"),
+    L("Manager", "It still gets a budget. A budget has to be spent or it is reduced, and a "
+                 "reduced budget is somebody noticing.", "line_manager"),
+    L("Kip", "And the money goes to gangs.", "kip"),
+    L("Manager", "The money goes to community liaison. Quiet streets. No complaints about a "
+                 "line that does not run. It has worked perfectly.", "line_manager"),
+    L("Kip", "You paid people to hurt each other so nobody would ask a question.", "kip"),
+    L("Manager", "I paid people to be quiet. What they did with quiet was their own business.", "line_manager", end=True),
+]),
+"manager_end": dict(lines=[
+    L("Kip", "So who do I hit?", "kip"),
+    L("Manager", "That is the difficulty, isn't it.", "line_manager"),
+    L("", "He turns the form around so Kip can see it. There is no name at the top. There is "
+          "a box for one, and it is empty, and it has been empty for eleven years."),
+    L("Manager", "You could hit me. I would be replaced by the person who signs when I am on "
+                 "leave, and the forms would continue.", "line_manager"),
+    L("Kip", "Then stop signing.", "kip"),
+    L("Manager", "And then what arrives on Tuesday? Nothing. And then Bellwater has nothing "
+                 "either, and Nadia's is shut inside a month.", "line_manager"),
+    L("Kip", "...", "kip"),
+    L("Manager", "I am not asking you to approve. I am telling you it is load-bearing.", "line_manager",
+      set_flag="chapter_2_done", end=True),
+]),
+"manager_after": dict(lines=[
+    L("Manager", "Tuesday again shortly.", "line_manager"),
+    L("Kip", "I know.", "kip"),
+    L("Manager", "You could take the form. I would not stop you. I would simply be unable to "
+                 "tell anyone where it went.", "line_manager", end=True),
+]),
+"dez_chapter_two": dict(lines=[
+    L("Kip", "It is a form.", "kip"),
+    L("Dez", "A form.", "dez"),
+    L("Kip", "A line that was never closed, a budget that has to be spent, and a man who signs "
+             "it because it arrives.", "kip"),
+    L("Dez", "So there is nobody to hit.", "dez"),
+    L("Kip", "There is nobody to hit.", "kip"),
+    L("Dez", "Kip. That is so much worse.", "dez", set_flag="told_dez_ch2", end=True),
+]),
 }
 
 # ===========================================================================
@@ -1085,7 +1145,7 @@ AREAS = [
          description="Always open. Always empty. Always immaculate."),
     dict(id="metro_platform", display_name="Metro Platform", district="Metro Line", music="metro",
          ambience="interior", gang="commuters", map_position=(1.0, 1.2),
-         connections=["lantern_market", "bellwater_block"],
+         connections=["lantern_market", "bellwater_block", "line_office"],
          description="A station that is always open, never busy, and mopped by somebody."),
     dict(id="rooftop_route", display_name="Rooftop Route", district="Above Riverbend", music="market",
          ambience="city", gang="commuters", map_position=(2.6, -0.8),
@@ -1095,6 +1155,10 @@ AREAS = [
          ambience="city", gang="commuters", map_position=(2.0, 1.6),
          connections=["metro_platform", "rooftop_route"],
          description="Forty flats and one shop. The Commuters sit on the wall outside it."),
+    dict(id="line_office", display_name="Line Office", district="Metro Line", music="shop",
+         ambience="interior", gang="", map_position=(0.6, 1.8),
+         connections=["metro_platform"],
+         description="A desk, four filing cabinets, and eleven years of Tuesdays."),
 ]
 
 # ===========================================================================

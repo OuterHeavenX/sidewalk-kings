@@ -410,6 +410,11 @@
    "y": 38.0,
    "conditional": [
     {
+     "dialogue": "dez_chapter_two",
+     "if_flag": "chapter_2_done",
+     "if_not_flag": "told_dez_ch2"
+    },
+    {
      "dialogue": "dez_metro",
      "if_flag": "chapter_1_done",
      "if_not_flag": "metro_open"

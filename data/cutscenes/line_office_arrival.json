@@ -1,0 +1,84 @@
+{
+ "id": "line_office_arrival",
+ "steps": [
+  {
+   "do": "flag",
+   "name": "seen_line_office",
+   "value": true
+  },
+  {
+   "do": "music",
+   "id": "shop"
+  },
+  {
+   "do": "camera",
+   "x": 200.0,
+   "y": -12.0,
+   "time": 0.1
+  },
+  {
+   "do": "wait",
+   "time": 0.6
+  },
+  {
+   "do": "camera",
+   "x": 560.0,
+   "y": -12.0,
+   "time": 2.4
+  },
+  {
+   "do": "move",
+   "actor": "player",
+   "x": 300.0,
+   "time": 1.6
+  },
+  {
+   "do": "wait",
+   "time": 0.4
+  },
+  {
+   "do": "say",
+   "dialogue": "manager_meet"
+  },
+  {
+   "do": "face",
+   "actor": "player",
+   "dir": 1
+  },
+  {
+   "do": "move",
+   "actor": "player",
+   "x": 400.0,
+   "time": 0.9
+  },
+  {
+   "do": "wait",
+   "time": 0.3
+  },
+  {
+   "do": "say",
+   "dialogue": "manager_reveal"
+  },
+  {
+   "do": "wait",
+   "time": 0.4
+  },
+  {
+   "do": "say",
+   "dialogue": "manager_end"
+  },
+  {
+   "do": "flag",
+   "name": "chapter_2_done",
+   "value": true
+  },
+  {
+   "do": "camera",
+   "follow": true
+  },
+  {
+   "do": "wait",
+   "time": 0.3
+  }
+ ]
+}

@@ -34,7 +34,35 @@ func setup(t: Node2D, min_x: float, max_x: float, base_y: float) -> void:
 		global_position = Vector2(t.global_position.x, base_y)
 		_desired = global_position
 
+## Scripted control, for cutscenes. While this is set the camera ignores the player and
+## eases toward a point a script chose instead. It is deliberately separate from lock_to,
+## which clamps the player-following camera rather than replacing it.
+var scripted: bool = false
+var _scripted_to: Vector2 = Vector2.ZERO
+var _scripted_speed: float = 2.5
+
+func focus(pos: Vector2, seconds: float = 1.0) -> void:
+	scripted = true
+	_scripted_to = pos
+	_scripted_speed = 1.0 / maxf(0.05, seconds)
+
+func release() -> void:
+	scripted = false
+
+func at_focus(tolerance: float = 2.0) -> bool:
+	return global_position.distance_to(_scripted_to) <= tolerance
+
 func _process(delta: float) -> void:
+	if scripted:
+		# Eased, not linear: a cutscene pan that starts and stops abruptly reads as a cut.
+		var t: float = clampf(delta * _scripted_speed * 3.0, 0.0, 1.0)
+		global_position = global_position.lerp(_scripted_to, t)
+		if trauma > 0.0:
+			trauma = maxf(0.0, trauma - delta * 3.4)
+			offset = Vector2(randf_range(-1, 1), randf_range(-1, 1)) * trauma * 5.0
+		else:
+			offset = offset.lerp(Vector2.ZERO, 0.4)
+		return
 	if not is_instance_valid(target):
 		return
 	var tp := target.global_position

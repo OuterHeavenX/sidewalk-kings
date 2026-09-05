@@ -177,7 +177,12 @@ func _finish() -> void:
 	if _context_npc != "":
 		QuestManager.notify_talked_to(_context_npc)
 	_context_npc = ""
-	if cb.is_valid():
+	# is_valid() stays true for a callable whose object has since been freed, which is what
+	# happens when a scene is torn down mid-dialogue. Asking for the object to check it is
+	# itself the thing that prints the error, so the id is checked instead: that never
+	# dereferences anything.
+	var cb_obj_id := cb.get_object_id()
+	if cb.is_valid() and (cb_obj_id == 0 or is_instance_id_valid(cb_obj_id)):
 		cb.call()
 	if _pending_shop != "":
 		var s := _pending_shop

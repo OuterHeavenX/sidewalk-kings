@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DialogueData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/DialogueData.gd" id="1_manager_end"]
+
+[resource]
+script = ExtResource("1_manager_end")
+id = "manager_end"
+lines = Array[Dictionary]([{"name": "Kip", "text": "So who do I hit?", "portrait": "kip"}, {"name": "Manager", "text": "That is the difficulty, isn't it.", "portrait": "line_manager"}, {"name": "", "text": "He turns the form around so Kip can see it. There is no name at the top. There is a box for one, and it is empty, and it has been empty for eleven years."}, {"name": "Manager", "text": "You could hit me. I would be replaced by the person who signs when I am on leave, and the forms would continue.", "portrait": "line_manager"}, {"name": "Kip", "text": "Then stop signing.", "portrait": "kip"}, {"name": "Manager", "text": "And then what arrives on Tuesday? Nothing. And then Bellwater has nothing either, and Nadia's is shut inside a month.", "portrait": "line_manager"}, {"name": "Kip", "text": "...", "portrait": "kip"}, {"name": "Manager", "text": "I am not asking you to approve. I am telling you it is load-bearing.", "portrait": "line_manager", "set_flag": "chapter_2_done", "end": true}])
+pause_game = true
+once_flag = ""

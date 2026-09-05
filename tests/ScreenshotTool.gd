@@ -148,8 +148,10 @@ func run() -> void:
 
 	# --- Every area ---
 	GameManager.set_flag("metro_open", true)
+	GameManager.set_flag("bellwater_cleared", true)
+	GameManager.set_flag("seen_line_office", true)   # skip the cutscene for a clean shot
 	for area_id in ["lantern_market", "grease_alley", "rustpile_yard",
-			"metro_platform", "rooftop_route", "bellwater_block"]:
+			"metro_platform", "rooftop_route", "bellwater_block", "line_office"]:
 		await SceneManager.change_area(area_id, "start")
 		await seconds(0.8)
 		GameManager.player.global_position.x += 320.0

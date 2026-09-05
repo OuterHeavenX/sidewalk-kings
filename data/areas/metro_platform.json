@@ -84,6 +84,13 @@
    "scale": 1.0
   },
   {
+   "texture": "res://assets/art/props/sign.png",
+   "x": 1104,
+   "y": -90.0,
+   "z": -28,
+   "scale": 1.0
+  },
+  {
    "texture": "res://assets/art/props/metro_sign.png",
    "x": 1220,
    "y": -72.0,
@@ -254,6 +261,18 @@
    "h": 46
   },
   {
+   "id": "to_office",
+   "to": "line_office",
+   "spawn": "from_metro",
+   "x": 1120,
+   "y": 32.0,
+   "label": "Line Office",
+   "required_flag": "bellwater_cleared",
+   "locked": "LINE OFFICE. The handle turns; the door does not.",
+   "w": 24,
+   "h": 40
+  },
+  {
    "id": "bex_dojo_door",
    "shop": "bex_dojo",
    "x": 690,
@@ -278,6 +297,11 @@
    "id": "from_bellwater",
    "x": 1230,
    "y": 58
+  },
+  {
+   "id": "from_office",
+   "x": 1110,
+   "y": 60
   }
  ],
  "encounters": [

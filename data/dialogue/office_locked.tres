@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DialogueData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/DialogueData.gd" id="1_office_locked"]
+
+[resource]
+script = ExtResource("1_office_locked")
+id = "office_locked"
+lines = Array[Dictionary]([{"name": "", "text": "A door marked LINE OFFICE. The handle turns; the door does not."}, {"name": "Kip", "text": "Later, then.", "portrait": "kip", "end": true}])
+pause_game = true
+once_flag = ""

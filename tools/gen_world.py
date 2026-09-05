@@ -378,6 +378,35 @@ def prop_ac_unit():
     return outline_alpha(im)
 
 
+def prop_desk():
+    im = Image.new("RGBA", (40, 26), (0, 0, 0, 0))
+    d = ImageDraw.Draw(im)
+    top = (150, 118, 84)
+    d.rectangle([0, 4, 39, 10], fill=top)
+    d.rectangle([0, 4, 39, 5], fill=shade(top, 1.18))
+    d.rectangle([2, 11, 8, 25], fill=shade(top, 0.72))
+    d.rectangle([31, 11, 37, 25], fill=shade(top, 0.72))
+    d.rectangle([9, 11, 30, 18], fill=shade(top, 0.62))
+    for i in range(3):
+        d.rectangle([12, 12 + i * 2, 27, 12 + i * 2], fill=shade(top, 0.5))
+    d.rectangle([14, 0, 30, 4], fill=(238, 236, 228))
+    d.line([(15, 1), (28, 1)], fill=(180, 178, 170))
+    d.line([(15, 3), (26, 3)], fill=(180, 178, 170))
+    return outline_alpha(noise(im, 4, 91))
+
+def prop_filing_cabinet():
+    im = Image.new("RGBA", (24, 44), (0, 0, 0, 0))
+    d = ImageDraw.Draw(im)
+    c = (120, 124, 132)
+    d.rectangle([1, 1, 22, 42], fill=c)
+    d.rectangle([1, 1, 4, 42], fill=shade(c, 1.2))
+    d.rectangle([19, 1, 22, 42], fill=shade(c, 0.74))
+    for i in range(4):
+        y = 4 + i * 10
+        d.rectangle([4, y, 19, y + 8], fill=shade(c, 0.86))
+        d.rectangle([9, y + 3, 14, y + 4], fill=shade(c, 0.55))
+    return outline_alpha(noise(im, 4, 92))
+
 def prop_turnstile():
     im = Image.new("RGBA", (26, 34), (0, 0, 0, 0))
     d = ImageDraw.Draw(im)
@@ -483,6 +512,7 @@ PROPS = {
     "ac_unit": prop_ac_unit, "turnstile": prop_turnstile, "ticket_machine": prop_ticket_machine,
     "metro_sign": prop_metro_sign, "roof_vent": prop_roof_vent, "aerial": prop_aerial,
     "satellite_dish": prop_satellite_dish, "planter": prop_planter,
+    "desk": prop_desk, "filing_cabinet": prop_filing_cabinet,
     "laundry_line": lambda: prop_laundry_line(56),
     "fence": lambda: prop_fence(64),
     "graffiti_a": lambda: prop_graffiti(1), "graffiti_b": lambda: prop_graffiti(5), "graffiti_c": lambda: prop_graffiti(9),

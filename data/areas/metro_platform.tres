@@ -11,5 +11,5 @@ music = "metro"
 ambience = "interior"
 gang = "commuters"
 map_position = Vector2(1.0, 1.2)
-connections = Array[String](["lantern_market", "bellwater_block"])
+connections = Array[String](["lantern_market", "bellwater_block", "line_office"])
 description = "A station that is always open, never busy, and mopped by somebody."

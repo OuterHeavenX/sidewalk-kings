@@ -56,6 +56,7 @@ Nothing below the autoload layer reaches upward by node path. Systems talk throu
 | `DialogueManager` | Interprets `DialogueData` and drives the dialogue box. |
 | `ShopManager` | Builds shop entries and applies purchases for every shop type. |
 | `Renderer2D` | Owns the single `WorldEnvironment` and its bloom settings, and keeps HDR 2D on. |
+| `CutsceneManager` | Runs scripted scenes from `data/cutscenes/*.json`: camera, blocking, dialogue, flags. |
 
 ### Two audio rules that must not be broken
 
@@ -154,6 +155,24 @@ This is the main lever for cheap expansion: a new neighbourhood is one JSON layo
 `AreaData` resource, and whatever new content it references.
 
 The vertical bands of a street are documented in `tools/gen_areas.py`.
+
+### Cutscenes
+
+A cutscene is a list of steps in `data/cutscenes/<id>.json`. `CutsceneManager` sets the
+game state to `CUTSCENE`, which is all that is needed to stop the player, the enemy
+director and the encounter triggers, because each of them already gates on the game being
+in `PLAYING`.
+
+Two rules, both learned the hard way:
+
+- **Story-critical flags go on a cutscene step, never only inside its dialogue.** A player
+  who skips the scene skips the dialogue with it. `abort()` applies every remaining flag
+  and quest step before returning for exactly this reason, but that only helps if the
+  content puts the flag on a step. A skipped scene that leaves a chapter unfinishable is
+  the worst failure this system can have, and it is silent.
+- **Scripted camera is separate from `lock_to`.** Locking clamps the camera that is
+  following the player; scripting replaces the follow entirely. Conflating them means a
+  cutscene pan fights the player's position.
 
 ### Ambient motion
 
