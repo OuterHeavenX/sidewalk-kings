@@ -345,3 +345,48 @@ An area with no lighting block is untouched. Reloading an area keeps the player 
 - The other seven areas have no lighting block and are unchanged.
 - No normal maps, so light pools are flat rather than shaped by the art.
 - No ambient motion, no particles. A still frame still reads as still.
+
+---
+
+## Unreleased — the web build was silent
+
+### Fixed
+
+- **The browser build produced no audio at all.** Not quiet, not the wrong track:
+  literal digital zero, measured with an independent analyser tapped onto the page's
+  audio output rather than by asking the engine.
+
+  The cause was **creating audio buses at runtime**. `AudioManager` built its five buses
+  with `AudioServer.add_bus()` at startup, which is fine on desktop and silences a web
+  export completely. Bisected in a minimal project down to that single call:
+
+  | | Peak | Polls with signal |
+  |---|---|---|
+  | No `add_bus`, player on Master | 1.1537 | 149 / 149 |
+  | `add_bus` x4, player on Master | 0.0000 | 0 / 111 |
+
+  Nothing errors. Buses report correct names, sends, volumes and mute state; players
+  report playing with positions advancing; the output is zero. That is why this survived
+  three rounds of "the audio is fixed": every check asked the engine whether it thought
+  it was playing, and it always thought so.
+
+  Buses now come from `default_bus_layout.tres`, loaded before the audio driver starts.
+
+- **The first track of a session parked at its fade floor.** With the buses fixed the
+  build made sound, but around -40 dB, audible only as a drone. `play_music` started
+  every track at -40 dB and relied on a tween to raise it. Fades are now stepped by hand
+  in `_process`, as `SceneManager`'s screen fade already is, and a track with nothing to
+  cross-fade from starts at full volume. The worst a stalled fade can now do is skip a
+  transition.
+
+  Measured on the real web build: **0.0000** before, **0.0072** after the bus fix alone,
+  **0.7207** with both, against the track's own peak of 0.78.
+
+### Changed
+
+- `AudioCheck` now ends by asking the meter instead of the engine: is there signal on the
+  Master bus, and did the fade finish. It **fails** on the Dummy driver rather than
+  reporting AUDIO OK, because a headless run cannot hear anything.
+- The smoke suite guards the two failures structurally, since it cannot measure signal
+  headlessly: no `add_bus`, no tweened fades, the layout resource exists, every bus is
+  present at startup. Suite is **227 checks**.

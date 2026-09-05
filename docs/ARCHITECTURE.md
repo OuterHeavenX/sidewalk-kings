@@ -57,6 +57,23 @@ Nothing below the autoload layer reaches upward by node path. Systems talk throu
 | `ShopManager` | Builds shop entries and applies purchases for every shop type. |
 | `Renderer2D` | Owns the single `WorldEnvironment` and its bloom settings, and keeps HDR 2D on. |
 
+### Two audio rules that must not be broken
+
+Both of these silence the game with no error of any kind, and both have shipped:
+
+- **Never create audio buses at runtime.** `AudioServer.add_bus()` silences a web export
+  completely. Buses come from `default_bus_layout.tres`, which loads before the audio
+  driver starts. `AudioManager` verifies them and never creates them.
+- **Never fade audio with a `Tween`.** A tween that does not advance leaves the volume at
+  its starting value, and for music that value was -40 dB, which reads as a hum rather
+  than as a bug. Fades are stepped in `_process`, like `SceneManager`'s screen fade. A
+  track with nothing to cross-fade from starts at full volume, so a stalled fade can only
+  cost a transition.
+
+The smoke suite asserts both against the source, because a headless run uses the Dummy
+audio driver and cannot hear anything. `AudioCheck`, run with a real driver, asserts that
+signal actually reaches the Master bus.
+
 `PlayerState` is a plain `RefCounted` holding all persistent player data with
 `to_dict()` / `from_dict()`. Keeping it out of the node tree is what makes saving,
 loading and resetting a single assignment.
