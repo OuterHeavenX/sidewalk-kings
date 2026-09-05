@@ -116,7 +116,7 @@ has no gap here.
 because a roof has no building behind it. Street placement conventions do not transfer to
 an area with no street. Recorded in [ART_DIRECTION.md](ART_DIRECTION.md).
 
-## Stage 3 — Connective tissue
+## Stage 3 — Connective tissue — **not started**
 
 - A real map screen that draws the connection graph from `AreaData.connections`, instead of
   the current list.
@@ -137,7 +137,7 @@ unset, strands the player in a game that no longer responds or no longer progres
 
 ---
 
-## Stage 4 — Chapter two, original plan
+### Stage 4, as originally planned
 
 - Who sends the money, and why a laundromat.
 - Light cutscene support: scripted camera moves and actor blocking. The one genuinely new
@@ -145,10 +145,11 @@ unset, strands the player in a game that no longer responds or no longer progres
 
 ---
 
-## Stage 3 — Lighting and bloom — **first pass done**
+## Stage 5 — Lighting and bloom — **done**
 
-Prototyped on the Metro Platform. Ambient tint plus light pools from layout data, and
-selective bloom driven by emission masks the art generator derives from the art itself.
+All eight areas, each with its own time of day. Ambient tint plus light pools from layout
+data, and selective bloom driven by emission masks the art generator derives from the art
+itself. Prototyped on the Metro Platform, then rolled out once the approach held up.
 
 **What it proved.** The full 2D polish toolkit works on the Compatibility renderer in a
 browser: canvas lights, screen-reading shaders, and `WorldEnvironment` glow. Glow in
@@ -159,8 +160,32 @@ true now. Nothing about shipping to the web blocks this.
 art clamps and cannot bloom, and only deliberately overbright emission does. That is what
 makes bloom safe on a 480x270 frame instead of a smear.
 
-**Still open:** the other seven areas, normal maps so light pools are shaped by the art
-rather than flat, and a fill-rate measurement on a phone and a Steam Deck.
+**Still open:** normal maps so light pools are shaped by the art rather than flat, and a
+fill-rate measurement on a phone and a Steam Deck.
+
+---
+
+## Stage 6 — Ambient motion — **done**
+
+Sway on hanging scenery, flicker on light sources, wind-blown litter on the outdoor
+streets. Not in the original plan; added because a perfectly lit still frame still reads
+as dead.
+
+---
+
+## Stage 7 — Character art — **done**
+
+Not in the original plan either. Faces, per-part outlines, per-archetype silhouettes,
+arms that read as arms, and garments with necklines. Four passes, none of which touched
+the fighting: hitboxes are move data and were never tied to the sprite.
+
+---
+
+## What is left in this phase
+
+Only Stage 3. The map screen still draws a list rather than the connection graph, there is
+no fast travel, and the three save slots `SaveManager` already supports are not exposed
+anywhere in the UI.
 
 ---
 
