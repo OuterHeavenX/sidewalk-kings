@@ -12,6 +12,8 @@ var footer: Label
 var page: Page = Page.ROOT
 var buttons: Array[Button] = []
 var index: int = 0
+## A one-off message like "Game saved." outranks the navigation hint until the page changes.
+var _footer_note: String = ""
 
 func _ready() -> void:
 	layer = 50
@@ -107,6 +109,7 @@ func _build_menu() -> void:
 			AudioManager.play_ui("menu_confirm")
 			cb.call())
 		menu_col.add_child(b)
+		MenuNav.hover_selects(b)
 		buttons.append(b)
 	index = 0
 	if not buttons.is_empty():
@@ -132,6 +135,7 @@ func _row(text: String, value: String = "", color: Color = UITheme.TEXT) -> void
 
 func _show_page(p: Page) -> void:
 	page = p
+	_footer_note = ""
 	_clear_page()
 	footer.text = ""
 	var pd := GameManager.player_data
@@ -172,7 +176,8 @@ func _show_page(p: Page) -> void:
 				for id in pd.key_items:
 					var res2 := ContentDB.get_item(str(id))
 					_row(str(res2.get("display_name")) if res2 and res2.get("display_name") != null else str(id), "", UITheme.TEXT_DIM)
-			footer.text = "Select an item to use it."
+			_footer_note = "Select an item to use it."
+			footer.text = _footer_note
 		Page.TECHNIQUES:
 			page_title.text = "Techniques"
 			for mid in pd.known_moves:
@@ -211,7 +216,8 @@ func _show_page(p: Page) -> void:
 				_row(mark + (a.display_name if visited or str(id) == current else "????"),
 					a.district if visited or str(id) == current else "",
 					UITheme.ACCENT_2 if str(id) == current else (UITheme.TEXT if visited else UITheme.TEXT_DIM))
-			footer.text = "Areas you have visited."
+			_footer_note = "Areas you have visited."
+			footer.text = _footer_note
 		Page.SETTINGS:
 			page_title.text = "Settings"
 			for bus: String in AudioManager.BUSES:
@@ -232,6 +238,7 @@ func _show_page(p: Page) -> void:
 				sl.value_changed.connect(func(v):
 					AudioManager.set_volume(bus_name, v)
 					SaveManager.save_settings())
+				UITheme.style_slider(sl, h)
 				h.add_child(sl)
 				page_col.add_child(h)
 			page_col.add_child(HSeparator.new())
@@ -257,6 +264,11 @@ func _show_page(p: Page) -> void:
 				_show_page(Page.SETTINGS))
 			page_col.add_child(lb)
 			_row("Version", GameManager.version, UITheme.TEXT_DIM)
+	# Newly built page controls need hover-to-select too, or the mouse and the keyboard
+	# start disagreeing again the moment the page changes.
+	await root.get_tree().process_frame
+	MenuNav.hover_selects_all(page_col)
+	_update_footer()
 	_show_root_focus()
 
 func _show_root_focus() -> void:
@@ -293,28 +305,115 @@ func _use_item(item_id: String) -> void:
 func _save() -> void:
 	if SaveManager.save_game(0):
 		AudioManager.play_ui("save")
-		footer.text = "Game saved."
+		_footer_note = "Game saved."
+		footer.text = _footer_note
 
 func _to_title() -> void:
 	get_tree().paused = false
 	visible = false
 	SceneManager.goto_title()
 
+## Two columns: the menu list on the left, the current page's own controls on the right.
+##
+## The page column used to be unreachable. Navigation only ever moved through the left
+## column, so the volume sliders and the toggles on the Settings page could be operated
+## with a mouse and by nothing else. On a controller, which is how this is played on a
+## Steam Deck, the settings simply could not be changed.
+func _menu_items() -> Array[Control]:
+	return MenuNav.focusables(menu_col)
+
+func _page_items() -> Array[Control]:
+	return MenuNav.focusables(page_col)
+
+func _focused() -> Control:
+	return root.get_viewport().gui_get_focus_owner()
+
+func _in_page() -> bool:
+	var f := _focused()
+	return f != null and page_col.is_ancestor_of(f)
+
+func _enter_page() -> bool:
+	if MenuNav.focus_first(_page_items()):
+		AudioManager.play_ui("menu_move")
+		_update_footer()
+		return true
+	return false
+
+func _leave_page() -> void:
+	var items := _menu_items()
+	var target: Control = items[index] if index < items.size() else null
+	if target:
+		target.grab_focus()
+	else:
+		MenuNav.focus_first(items)
+	AudioManager.play_ui("menu_back")
+	_update_footer()
+
 func _input(event: InputEvent) -> void:
 	if not visible:
 		return
-	if event.is_action_pressed("pause") or event.is_action_pressed("menu_back"):
+	var focused := _focused()
+	var in_page := _in_page()
+
+	# Back steps out one level at a time instead of always quitting the menu. Closing the
+	# whole thing from deep inside a page was the other half of this feeling awkward.
+	if event.is_action_pressed("pause"):
 		close()
 		get_viewport().set_input_as_handled()
-	elif event.is_action_pressed("move_down") or event.is_action_pressed("move_up"):
-		if buttons.is_empty():
-			return
+		return
+	if event.is_action_pressed("menu_back"):
+		if in_page:
+			_leave_page()
+		else:
+			close()
+		get_viewport().set_input_as_handled()
+		return
+
+	if event.is_action_pressed("move_down") or event.is_action_pressed("move_up"):
 		var dir := 1 if event.is_action_pressed("move_down") else -1
-		index = wrapi(index + dir, 0, buttons.size())
-		buttons[index].grab_focus()
-		AudioManager.play_ui("menu_move")
+		var list := _page_items() if in_page else _menu_items()
+		if MenuNav.step(list, dir, focused):
+			AudioManager.play_ui("menu_move")
+			if not in_page:
+				index = maxi(0, _menu_items().find(_focused()))
+			_update_footer()
 		get_viewport().set_input_as_handled()
-	elif event.is_action_pressed("menu_confirm"):
-		if not buttons.is_empty():
-			buttons[index].emit_signal("pressed")
+		return
+
+	if event.is_action_pressed("move_right") or event.is_action_pressed("move_left"):
+		var dir2 := 1 if event.is_action_pressed("move_right") else -1
+		# A focused slider owns left and right, so it can be adjusted at all. Leaving the
+		# page is then done with Back, which the footer spells out.
+		if in_page and MenuNav.takes_horizontal(focused):
+			MenuNav.nudge(focused, dir2)
+			AudioManager.play_ui("menu_move")
+		elif in_page and dir2 < 0:
+			_leave_page()
+		elif not in_page and dir2 > 0:
+			_enter_page()
 		get_viewport().set_input_as_handled()
+		return
+
+	if event.is_action_pressed("menu_confirm"):
+		# Acts on what is actually focused, not on a remembered index that a mouse click
+		# may have left pointing somewhere else.
+		if MenuNav.activate(focused):
+			pass
+		elif not in_page:
+			_enter_page()
+		get_viewport().set_input_as_handled()
+
+## The controls change meaning depending on which column you are in, so say so.
+func _update_footer() -> void:
+	if _footer_note != "":
+		return
+	if _in_page():
+		var f := _focused()
+		if f != null and MenuNav.takes_horizontal(f):
+			footer.text = "Left/Right adjust    Back returns to the menu"
+		else:
+			footer.text = "Up/Down select    Enter use    Back returns to the menu"
+	elif _page_items().is_empty():
+		footer.text = "Up/Down select    Enter choose    Esc resume"
+	else:
+		footer.text = "Up/Down select    Right enters the panel    Esc resume"

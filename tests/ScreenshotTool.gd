@@ -127,6 +127,15 @@ func run() -> void:
 	game.pause_menu._show_page(game.pause_menu.Page.MAP)
 	await seconds(0.3)
 	await shot("pause_map")
+	game.pause_menu._show_page(game.pause_menu.Page.SETTINGS)
+	await seconds(0.4)
+	await shot("pause_settings")
+	# Focused inside the panel, which is the state that used to be unreachable.
+	game.pause_menu.buttons[0].grab_focus()
+	await frames(2)
+	game.pause_menu._enter_page()
+	await seconds(0.3)
+	await shot("pause_settings_focused")
 	game.pause_menu.close()
 	await frames(6)
 

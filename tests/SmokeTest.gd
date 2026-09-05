@@ -64,6 +64,7 @@ func run() -> void:
 	await test_lighting()
 	await test_chapter_two()
 	await test_boss()
+	await test_menu_navigation()
 	await test_touch_controls()
 	await test_save_load()
 
@@ -1420,6 +1421,141 @@ func drag(index: int, pos: Vector2) -> void:
 	ev.position = pos
 	_touch_target._input(ev)
 	await frames(2)
+
+# ---------------------------------------------------------------- menus
+## Menu navigation fails quietly: nothing errors, some controls are simply unreachable
+## unless you have a mouse, and the item Enter activates is not always the item that looks
+## selected. Both were true here, and on a controller the settings could not be changed
+## at all, which is how this game is played on a Steam Deck.
+## A real action event, so tests drive the same path a keypress does.
+func _action_event(action: String) -> InputEventAction:
+	var e := InputEventAction.new()
+	e.action = action
+	e.pressed = true
+	return e
+
+func test_menu_navigation() -> void:
+	print("\n-- Menu navigation --")
+	var game := get_tree().current_scene
+	var pause = game.get_node_or_null("UI/PauseMenu")
+	check("the pause menu exists", pause != null)
+	if pause == null:
+		return
+
+	pause.open()
+	await frames(3)
+	check("opening the pause menu focuses something",
+		get_viewport().gui_get_focus_owner() != null)
+
+	# Every page's own controls must be reachable without a mouse.
+	var unreachable: Array[String] = []
+	var page_names := {
+		pause.Page.STATS: "Stats", pause.Page.INVENTORY: "Inventory",
+		pause.Page.TECHNIQUES: "Techniques", pause.Page.QUESTS: "Quests",
+		pause.Page.MAP: "Map", pause.Page.SETTINGS: "Settings",
+	}
+	for pg in page_names.keys():
+		pause._show_page(pg)
+		await frames(3)
+		var items: Array[Control] = pause._page_items()
+		if items.is_empty():
+			continue
+		# Walk in from the menu column exactly as Right would.
+		pause.buttons[0].grab_focus()
+		await frames(1)
+		var entered: bool = pause._enter_page()
+		await frames(1)
+		if not entered or not pause._in_page():
+			unreachable.append(str(page_names[pg]))
+	check("every page's controls are reachable from the menu column",
+		unreachable.is_empty(), ", ".join(unreachable))
+
+	# The settings page is the one that matters most: sliders and toggles, no mouse.
+	pause._show_page(pause.Page.SETTINGS)
+	await frames(3)
+	var settings_items: Array[Control] = pause._page_items()
+	var sliders := 0
+	var toggles := 0
+	for c in settings_items:
+		if c is Range:
+			sliders += 1
+		elif c is BaseButton:
+			toggles += 1
+	check("the settings page exposes its sliders and buttons",
+		sliders > 0 and toggles > 0, "%d sliders, %d buttons" % [sliders, toggles])
+
+	# A focused slider must respond to left and right, or volume cannot be set at all.
+	pause.buttons[0].grab_focus()
+	await frames(1)
+	pause._enter_page()
+	await frames(1)
+	var slider: Range = null
+	for c in pause._page_items():
+		if c is Range:
+			slider = c
+			break
+	check("a volume slider can be focused", slider != null)
+	if slider:
+		slider.grab_focus()
+		await frames(1)
+		var before: float = slider.value
+		MenuNav.nudge(slider, -1 if before > slider.min_value else 1)
+		await frames(1)
+		check("a focused slider changes with left and right",
+			not is_equal_approx(slider.value, before),
+			"%.2f -> %.2f" % [before, slider.value])
+
+	# Back steps out of the page instead of closing the whole menu.
+	pause._show_page(pause.Page.SETTINGS)
+	await frames(2)
+	pause.buttons[0].grab_focus()
+	await frames(1)
+	pause._input(_action_event("move_right"))
+	await frames(2)
+	var was_in_page: bool = pause._in_page()
+	check("right moves into the page panel", was_in_page)
+	pause._input(_action_event("menu_back"))
+	await frames(2)
+	check("back leaves the page rather than closing the menu",
+		was_in_page and not pause._in_page() and pause.visible)
+	pause._input(_action_event("menu_back"))
+	await frames(2)
+	check("back again from the menu column closes it", not pause.visible)
+	pause.open()
+	await frames(3)
+
+	# Confirm must act on what is focused, not on a remembered index.
+	pause._show_page(pause.Page.STATS)
+	await frames(2)
+	var menu_items: Array[Control] = pause._menu_items()
+	check("the menu column is focusable", menu_items.size() > 1, "%d items" % menu_items.size())
+	if menu_items.size() > 2:
+		# Simulate a mouse click landing somewhere other than the remembered index.
+		pause.index = 0
+		menu_items[2].grab_focus()
+		await frames(1)
+		var fired := {"which": ""}
+		var target := menu_items[2] as BaseButton
+		target.pressed.connect(func() -> void: fired["which"] = target.text, CONNECT_ONE_SHOT)
+		# Through the real handler, not the helper: the bug was in how the menu decided
+		# what to act on, so that decision is what has to be exercised.
+		pause._input(_action_event("menu_confirm"))
+		await frames(2)
+		check("confirm activates the focused item, not a stale index",
+			fired["which"] == target.text, "fired '%s'" % fired["which"])
+
+	# Hovering must move the selection, or mouse and keyboard drift apart again.
+	var hover_target := menu_items[1] as Control
+	menu_items[0].grab_focus()
+	await frames(1)
+	hover_target.mouse_entered.emit()
+	await frames(1)
+	check("hovering an item selects it",
+		get_viewport().gui_get_focus_owner() == hover_target)
+
+	pause.close()
+	await frames(3)
+	check("the pause menu closes and unpauses", not pause.visible and not get_tree().paused)
 
 func test_touch_controls() -> void:
 	log_line("

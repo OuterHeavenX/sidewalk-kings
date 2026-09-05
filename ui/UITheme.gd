@@ -42,6 +42,19 @@ static func style_label(l: Label, size: int = 10, color: Color = TEXT, outline: 
 	l.add_theme_color_override("font_outline_color", Color(0.04, 0.03, 0.07, 1.0))
 	l.add_theme_constant_override("outline_size", outline)
 
+## Sliders had no focus state at all, so on a keyboard or a controller you could move onto
+## a volume slider and get no indication whatsoever that it was the thing you were about to
+## change. Buttons already highlight on focus; this gives sliders the same courtesy.
+static func style_slider(sl: Range, row: Control = null) -> void:
+	var target: Control = row if row != null else sl
+	target.modulate = Color(1, 1, 1, 1)
+	sl.focus_entered.connect(func() -> void:
+		if is_instance_valid(target):
+			target.modulate = ACCENT_2)
+	sl.focus_exited.connect(func() -> void:
+		if is_instance_valid(target):
+			target.modulate = Color(1, 1, 1, 1))
+
 static func style_button(b: Button, size: int = 12) -> void:
 	b.add_theme_font_size_override("font_size", size)
 	b.add_theme_color_override("font_color", TEXT)

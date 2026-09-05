@@ -117,6 +117,7 @@ func _add_button(text: String, cb: Callable, disabled: bool = false) -> void:
 		AudioManager.play_ui("menu_confirm")
 		cb.call())
 	panel_col.add_child(b)
+	MenuNav.hover_selects(b)
 	if not disabled:
 		buttons.append(b)
 
@@ -150,6 +151,7 @@ func _confirm_overwrite() -> void:
 		if not buttons.is_empty():
 			buttons[index].grab_focus())
 	info_col.add_child(no)
+	MenuNav.hover_selects_all(info_col)
 	yes.grab_focus()
 
 func _show_settings() -> void:
@@ -174,6 +176,7 @@ func _show_settings() -> void:
 		sl.value_changed.connect(func(v):
 			AudioManager.set_volume(bus_name, v)
 			SaveManager.save_settings())
+		UITheme.style_slider(sl, h)
 		h.add_child(sl)
 		info_col.add_child(h)
 	var close := Button.new()
@@ -184,6 +187,8 @@ func _show_settings() -> void:
 		if not buttons.is_empty():
 			buttons[index].grab_focus())
 	info_col.add_child(close)
+	MenuNav.hover_selects_all(info_col)
+	close.grab_focus()
 
 func _show_credits() -> void:
 	info_panel.visible = true
@@ -202,18 +207,64 @@ func _show_credits() -> void:
 		if not buttons.is_empty():
 			buttons[index].grab_focus())
 	info_col.add_child(close)
+	MenuNav.hover_selects_all(info_col)
+	close.grab_focus()
+
+## The settings and credits panels used to fall through this handler entirely, so the game's
+## own movement and confirm keys stopped working the moment one opened and only the arrow
+## keys kept going. Both layers now navigate identically, and Back closes a panel instead
+## of doing nothing.
+func _active_list() -> Array[Control]:
+	if info_panel and info_panel.visible:
+		return MenuNav.focusables(info_col)
+	var out: Array[Control] = []
+	for b in buttons:
+		if is_instance_valid(b) and not b.disabled:
+			out.append(b)
+	return out
+
+func _close_panel() -> void:
+	info_panel.visible = false
+	var list := _active_list()
+	if index < list.size():
+		list[index].grab_focus()
+	else:
+		MenuNav.focus_first(list)
+	AudioManager.play_ui("menu_back")
 
 func _input(event: InputEvent) -> void:
-	if info_panel and info_panel.visible:
+	var in_panel: bool = info_panel != null and info_panel.visible
+	var focused: Control = get_viewport().gui_get_focus_owner()
+	var list := _active_list()
+	if list.is_empty():
 		return
-	if buttons.is_empty():
+
+	if event.is_action_pressed("menu_back"):
+		if in_panel:
+			_close_panel()
+			get_viewport().set_input_as_handled()
 		return
+
 	if event.is_action_pressed("move_down") or event.is_action_pressed("move_up"):
 		var dir := 1 if event.is_action_pressed("move_down") else -1
-		index = wrapi(index + dir, 0, buttons.size())
-		buttons[index].grab_focus()
-		AudioManager.play_ui("menu_move")
+		if MenuNav.step(list, dir, focused):
+			AudioManager.play_ui("menu_move")
+			if not in_panel:
+				index = maxi(0, list.find(get_viewport().gui_get_focus_owner()))
 		get_viewport().set_input_as_handled()
-	elif event.is_action_pressed("menu_confirm"):
-		buttons[index].emit_signal("pressed")
+		return
+
+	# A focused volume slider owns left and right so it can actually be adjusted.
+	if event.is_action_pressed("move_left") or event.is_action_pressed("move_right"):
+		if MenuNav.takes_horizontal(focused):
+			MenuNav.nudge(focused, 1 if event.is_action_pressed("move_right") else -1)
+			AudioManager.play_ui("menu_move")
+			get_viewport().set_input_as_handled()
+		return
+
+	if event.is_action_pressed("menu_confirm"):
+		# Acts on what is focused rather than on a remembered index, which a mouse click
+		# could leave pointing at a different button than the one that looks selected.
+		if not MenuNav.activate(focused):
+			MenuNav.focus_first(list)
 		get_viewport().set_input_as_handled()
