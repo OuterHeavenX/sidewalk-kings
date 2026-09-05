@@ -348,6 +348,58 @@ An area with no lighting block is untouched. Reloading an area keeps the player 
 
 ---
 
+## Unreleased — installable app, and menus you can navigate
+
+### Added
+
+- **The web export is now a real progressive web app.** It is played as an installed app
+  on desktop and fused into SteamOS on a Steam Deck rather than opened in a tab, so it
+  ships a manifest, an offline page, a service worker and proper icons at 144, 180 and
+  512 px, generated from `icon.png` by `tools/gen_pwa_icons.py`. Display is standalone and
+  orientation is landscape.
+- Pixel art does not survive an arbitrary resize, so each icon is nearest-neighbour scaled
+  to a whole multiple first and only then area-averaged down to the exact size. There is
+  also a maskable variant with a 20% safe-area inset for Android's circular crop.
+
+### Fixed
+
+- **Menu navigation could not reach the settings without a mouse.** Navigation only ever
+  moved through the left-hand menu column, so the volume sliders and the toggles on the
+  Settings page were mouse-only. On a controller, which is how this is played on a Deck,
+  they could not be changed at all.
+- **Selection and focus were two different things.** Each menu kept its own index
+  alongside Godot's focus and any mouse click desynced them, so the item that looked
+  selected and the item Enter activated could be different ones. Focus is now the single
+  source of truth and hovering moves focus, so the two can never disagree.
+- **Back always quit the whole menu**, even from deep inside a page. It now steps out one
+  level: page, then menu column, then closed.
+- The title screen's settings and credits panels fell through the input handler entirely,
+  so the game's own movement and confirm keys stopped working the moment one opened and
+  only the arrow keys carried on. Both layers navigate identically now.
+- **Sliders had no focus state at all**, so there was no way to tell which one was about
+  to change. They now highlight with their label.
+- **The HTML shell inferred "needs threads" from "has a service worker".** That was
+  accidentally correct only while the PWA export was off. Turning it on made the page
+  demand SharedArrayBuffer this build does not use, and refuse to start with a browser
+  compatibility error. It now reads the exporter's own thread flag.
+- The shell was missing Godot's head-include placeholder, so the manifest was generated
+  and nothing referenced it, and it never registered the service worker. Both fixed, which
+  is what turns "create shortcut" into a real install.
+
+### Not verified
+
+Service workers cannot register in the browser available here: a minimal control worker
+fails identically to the game's, so **offline launch is untested**. The manifest, the
+icons, the registration call and the generated worker are all confirmed present and
+correctly served.
+
+### Tests
+
+Suite is **249 checks**, including menu navigation driven through the real input handler
+and file-level guards on the PWA export configuration.
+
+---
+
 ## Unreleased — the web build was silent
 
 ### Fixed

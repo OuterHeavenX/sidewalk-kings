@@ -8,6 +8,10 @@
 	<meta name="theme-color" content="#16131f" />
 	<meta name="description" content="Sidewalk Kings - an original 2D side-scrolling beat-'em-up RPG." />
 	<title>$GODOT_PROJECT_NAME</title>
+	<!-- Godot injects the web manifest link here when the PWA export is enabled. Without
+	     this placeholder the manifest is generated but nothing references it, so browsers
+	     never offer a real install and the icons and orientation are ignored. -->
+	$GODOT_HEAD_INCLUDE
 	<style>
 		:root { color-scheme: dark; }
 		html, body {
@@ -132,6 +136,11 @@
 	(function () {
 		"use strict";
 		const GODOT_CONFIG = $GODOT_CONFIG;
+		// Set by the exporter from the preset's thread_support option. This shell used to
+		// infer it from whether a service worker existed, which was accidentally correct
+		// only while the PWA export was switched off: turning the PWA on made the page
+		// demand SharedArrayBuffer that this build does not use, and refuse to start.
+		const GODOT_THREADS_ENABLED = $GODOT_THREADS_ENABLED;
 		const canvasEl = document.getElementById("canvas");
 
 		// Keep the drawing buffer in step with the visual size. Mobile browsers change the
@@ -183,7 +192,7 @@
 			return;
 		}
 
-		const missing = Engine.getMissingFeatures({ threads: GODOT_CONFIG.serviceWorker !== undefined });
+		const missing = Engine.getMissingFeatures({ threads: GODOT_THREADS_ENABLED });
 		if (missing.length !== 0) {
 			showError("This browser is missing features the game needs:\n\n- " + missing.join("\n- ") + "\n\nTry the latest Chrome, Edge, Firefox or Safari.");
 			return;
@@ -206,6 +215,13 @@
 			boot.classList.add("hidden");
 			setTimeout(function () { boot.style.display = "none"; }, 500);
 			canvas.focus();
+			// Offline support. The game is installed as an app on desktop and on a Steam
+			// Deck, where it may well be launched with no connection at all.
+			if (GODOT_CONFIG.serviceWorker && "serviceWorker" in navigator) {
+				engine.installServiceWorker().catch(function (e) {
+					console.warn("service worker registration failed:", e);
+				});
+			}
 		}).catch(function (err) {
 			showError(String(err && err.message ? err.message : err));
 		});

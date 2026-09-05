@@ -244,6 +244,30 @@ func test_audio() -> void:
 	for b in AudioManager.BUSES:
 		check("bus '%s' exists at startup" % b, AudioServer.get_bus_index(b) != -1)
 
+	# The game is installed as an app rather than played in a tab, so the web export has to
+	# actually produce a PWA. These are cheap file-level facts the suite can hold onto.
+	var preset := FileAccess.get_file_as_string("res://export_presets.cfg")
+	check("the web export builds a progressive web app",
+		preset.contains("progressive_web_app/enabled=true"))
+	check("installable icons are declared",
+		preset.contains("icon_144x144=\"res://assets/pwa/icon-144.png\"")
+		and preset.contains("icon_512x512=\"res://assets/pwa/icon-512.png\""))
+	for size in [144, 180, 512]:
+		check("app icon %dpx exists" % size,
+			ResourceLoader.exists("res://assets/pwa/icon-%d.png" % size))
+	# Godot injects the manifest link through this placeholder. Without it the manifest is
+	# generated and nothing references it, so no browser offers a real install.
+	var shell := FileAccess.get_file_as_string("res://web/shell.html")
+	check("the html shell has the head-include placeholder",
+		shell.contains("$GODOT_HEAD_INCLUDE"))
+	check("the html shell registers the service worker",
+		shell.contains("installServiceWorker"))
+	# Inferring "needs threads" from "has a service worker" was accidentally correct only
+	# while the PWA was off; turning it on made the page refuse to start.
+	check("the shell takes its thread requirement from the exporter",
+		shell.contains("GODOT_THREADS_ENABLED")
+		and not shell.contains("threads: GODOT_CONFIG.serviceWorker"))
+
 # ---------------------------------------------------------------- title flow
 ## Start a game the way a player does: title screen, New Game, wait for the street.
 ## This is the path that leaves the screen black if a transition fade ever stalls.
