@@ -99,6 +99,11 @@ any individual design choice:
   this size, and an eye flush against the hairline merges into it.
 - **The key light is up and to the left**, on every part, without exception.
 
+**A garment needs a neckline.** At this size the collar is the most identifying part of
+what someone is wearing, more than colour or cut. Every style has its own: notched lapels,
+a hood, a crew neck, lapels and a tie. Sleeves are set in with a shoulder seam, which is
+what stops the chest and the arm reading as one slab, and open garments carry a hem.
+
 **A limb needs a joint.** A uniform-width capsule in one flat tone reads as a slab, not a
 limb, and the bigger the character the worse it gets. Forearms are slimmer than upper
 arms, and every limb is broken at the elbow even when there is no sleeve to justify it.

@@ -373,6 +373,12 @@ timings and hitboxes are all untouched. These were rendering faults, not art dec
   rusher had the same silhouette and only the palette told them apart. Torso width, limb
   thickness, head size, overall scale, stance width and hunch now vary by role, and you
   can tell what is coming at you from the outline alone.
+- **Clothes read as clothes.** Every top met the neck with the straight edge of the torso
+  polygon, so a jacket, a sweater and a suit were the same block in different colours.
+  Garments now have a neckline: notched lapels on a jacket, a hood bunched behind the
+  neck, a crew neck on a sweater, lapels and a tie on a suit. Sleeves are set in with a
+  shoulder seam, and open garments have a hem so they end rather than stopping at the
+  waist.
 - **Arms read as arms.** They were uniform-width capsules hanging across the chest in one
   flat tone, which looked like a blob of skin stuck to the torso. The forearm is now
   slimmer than the upper arm, every limb breaks at the elbow whether or not a sleeve ends

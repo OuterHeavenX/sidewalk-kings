@@ -523,6 +523,43 @@ def draw_torso(d, pose, sp, outline_pass):
         d.line([(cx + 4, neck[1]), (cx - 1, hip[1] - 2)], fill=sh2)
     elif style == "shirt":
         d.line([(cx, neck[1] + 1), (cx, neck[1] + 4)], fill=sh2)
+    # ---- collar, seams, hem -------------------------------------------------
+    #
+    # Every top used to meet the neck with the straight edge of the torso polygon, so a
+    # jacket, a sweater and a suit were the same coloured block in different colours. At
+    # this size the neckline is the most identifying part of a garment, and the shoulder
+    # seam is what stops the chest and the sleeve reading as one slab.
+    dark = shade(sp["shirt"], 0.60)
+    ny = neck[1]
+    if style in ("jacket", "vest"):
+        # notched lapels falling either side of the opening
+        d.line([(cx - 3, ny), (cx - 1, ny + 3)], fill=dark)
+        d.line([(cx + 3, ny), (cx + 1, ny + 3)], fill=dark)
+    elif style == "hoodie":
+        # the hood itself, bunched behind the neck. Drawn on the torso so the head, which
+        # comes later in the draw order, sits in front of it.
+        d.chord([cx - 5, ny - 3, cx + 5, ny + 4], 180, 360, fill=dark)
+    elif style == "suit":
+        d.line([(cx - 4, ny), (cx - 1, ny + 5)], fill=dark)
+        d.line([(cx + 4, ny), (cx + 1, ny + 5)], fill=dark)
+    elif style == "overalls":
+        pass                      # the bib already reads as its own shape
+    elif style == "gi":
+        pass                      # the wrap is the neckline
+    else:
+        # crew neck
+        d.arc([cx - 4, ny - 1, cx + 4, ny + 4], 200, 340, fill=dark)
+
+    # Shoulder seams, where a sleeve is set into the body.
+    if sp["sleeves"] and style != "vest":
+        seam = hw * 0.74
+        d.line([(neck[0] - seam, ny), (neck[0] - seam, ny + 3)], fill=dark)
+        d.line([(neck[0] + seam, ny), (neck[0] + seam, ny + 3)], fill=dark)
+
+    # A hem, so an open garment ends rather than simply stopping at the waist.
+    if style in ("jacket", "hoodie", "vest"):
+        d.line([(hip[0] - ww + 1, hip[1] - 2), (hip[0] + ww - 1, hip[1] - 2)], fill=dark)
+
     if sp.get("apron"):
         ap = rgba(sp["apron"])
         ay = neck[1] + 6
