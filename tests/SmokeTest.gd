@@ -1131,20 +1131,30 @@ func test_lighting() -> void:
 		get_viewport().use_hdr_2d)
 
 	# Emission masks must line up with real art, or an asset silently stops glowing.
+	# Driven by gains.json rather than by listing the directory: in an exported build the
+	# source .png files are not there to list, only their imported form, so a directory
+	# walk finds nothing and the check fails on the shipped game while passing from source.
 	var orphans: Array[String] = []
-	var d := DirAccess.open(Emission.DIR)
+	var missing_mask: Array[String] = []
 	var mask_count := 0
-	if d:
-		for f in d.get_files():
-			if not f.ends_with("_e.png"):
-				continue
-			mask_count += 1
-			var stem := f.substr(0, f.length() - 6)
-			var in_props := ResourceLoader.exists("res://assets/art/props/%s.png" % stem)
-			var in_bg := ResourceLoader.exists("res://assets/art/backgrounds/%s.png" % stem)
-			if not (in_props or in_bg):
-				orphans.append(stem)
+	var gains: Dictionary = {}
+	if FileAccess.file_exists(Emission.GAINS_PATH):
+		var gf := FileAccess.open(Emission.GAINS_PATH, FileAccess.READ)
+		var parsed = JSON.parse_string(gf.get_as_text())
+		gf.close()
+		if parsed is Dictionary:
+			gains = parsed
+	for stem_v in gains.keys():
+		var stem := str(stem_v)
+		mask_count += 1
+		if not ResourceLoader.exists(Emission.DIR + stem + "_e.png"):
+			missing_mask.append(stem)
+		var in_props := ResourceLoader.exists("res://assets/art/props/%s.png" % stem)
+		var in_bg := ResourceLoader.exists("res://assets/art/backgrounds/%s.png" % stem)
+		if not (in_props or in_bg):
+			orphans.append(stem)
 	check("emission masks all have source art", orphans.is_empty(), ", ".join(orphans))
+	check("every declared emission mask exists", missing_mask.is_empty(), ", ".join(missing_mask))
 	check("emission masks were generated", mask_count > 0, "%d masks" % mask_count)
 
 	# Every light texture a layout asks for must exist, or that light silently vanishes.
