@@ -242,6 +242,20 @@ func _show_page(p: Page) -> void:
 				InputManager.set_touch_mode(not InputManager.is_touch())
 				_show_page(Page.SETTINGS))
 			page_col.add_child(tb)
+			# Lights and bloom cost fill rate. The weakest target here is a phone, so
+			# this has to be something a player can turn off rather than a fixed cost.
+			var lb := Button.new()
+			lb.text = "Lighting: %s" % ("ON" if GameManager.lighting_enabled else "OFF")
+			UITheme.style_button(lb, 9)
+			lb.pressed.connect(func():
+				GameManager.lighting_enabled = not GameManager.lighting_enabled
+				SaveManager.save_settings()
+				# Rebuild so the change is visible immediately rather than at the next door.
+				var here: String = GameManager.player_data.current_area
+				if here != "":
+					SceneManager.reload_area()
+				_show_page(Page.SETTINGS))
+			page_col.add_child(lb)
 			_row("Version", GameManager.version, UITheme.TEXT_DIM)
 	_show_root_focus()
 

@@ -61,6 +61,7 @@ func run() -> void:
 	await test_quests_and_dialogue()
 	await test_area_travel()
 	await test_world_graph()
+	await test_lighting()
 	await test_chapter_two()
 	await test_boss()
 	await test_touch_controls()
@@ -1080,6 +1081,129 @@ func test_world_graph() -> void:
 		if not seen.has(id):
 			unreachable.append(id)
 	check("every area is reachable from ferry_row", unreachable.is_empty(), ", ".join(unreachable))
+
+# ---------------------------------------------------------------- lighting
+## Lighting fails quietly in both directions. Turned off it does nothing visible, which
+## looks the same as it not existing. Turned on in the wrong place it blows emissive art
+## out to white. Neither raises an error, so both need asserting.
+func test_lighting() -> void:
+	print("\n-- Lighting and bloom --")
+	check("the glow environment exists", Renderer2D.env != null)
+	if Renderer2D.env:
+		# The threshold is load-bearing. At 1.0, with HDR 2D on, ordinary art clamps at
+		# 1.0 and can never bloom; only deliberately overbright emission does. Drop the
+		# threshold below 1.0 and every white sneaker in the game starts to smear.
+		check("bloom threshold keeps ordinary art out of the glow",
+			is_equal_approx(Renderer2D.env.glow_hdr_threshold, 1.0),
+			"%.2f" % Renderer2D.env.glow_hdr_threshold)
+	check("HDR 2D is on, which is what makes that threshold mean anything",
+		get_viewport().use_hdr_2d)
+
+	# Emission masks must line up with real art, or an asset silently stops glowing.
+	var orphans: Array[String] = []
+	var d := DirAccess.open(Emission.DIR)
+	var mask_count := 0
+	if d:
+		for f in d.get_files():
+			if not f.ends_with("_e.png"):
+				continue
+			mask_count += 1
+			var stem := f.substr(0, f.length() - 6)
+			var in_props := ResourceLoader.exists("res://assets/art/props/%s.png" % stem)
+			var in_bg := ResourceLoader.exists("res://assets/art/backgrounds/%s.png" % stem)
+			if not (in_props or in_bg):
+				orphans.append(stem)
+	check("emission masks all have source art", orphans.is_empty(), ", ".join(orphans))
+	check("emission masks were generated", mask_count > 0, "%d masks" % mask_count)
+
+	# Every light texture a layout asks for must exist, or that light silently vanishes.
+	var missing_tex: Array[String] = []
+	var lit_areas: Array[String] = []
+	for id in ContentDB.areas.keys():
+		var path := "res://data/areas/%s.json" % id
+		if not FileAccess.file_exists(path):
+			continue
+		var f := FileAccess.open(path, FileAccess.READ)
+		var parsed = JSON.parse_string(f.get_as_text())
+		f.close()
+		if not (parsed is Dictionary):
+			continue
+		var cfg: Dictionary = parsed.get("lighting", {})
+		if cfg.is_empty():
+			continue
+		lit_areas.append(str(id))
+		for l in cfg.get("lights", []):
+			var t := str(l.get("texture", "lamp"))
+			if not ResourceLoader.exists("res://assets/art/light/%s.png" % t):
+				missing_tex.append("%s -> %s" % [id, t])
+	check("every light texture a layout names exists", missing_tex.is_empty(), ", ".join(missing_tex))
+	check("at least one area is lit", not lit_areas.is_empty(), ", ".join(lit_areas))
+
+	# A lit area, with the quality setting on.
+	GameManager.lighting_enabled = true
+	await SceneManager.change_area("metro_platform", "start")
+	await seconds(0.5)
+	var area = GameManager.current_area
+	check("the lit area reports lighting", area.lighting != null and area.lighting.enabled)
+	if area.lighting:
+		check("its lights were built", area.lighting.light_count() > 0,
+			"%d lights" % area.lighting.light_count())
+		check("an ambient tint is applied",
+			area.lighting.ambient != Color.WHITE, str(area.lighting.ambient))
+	check("bloom is on in a lit area", Renderer2D.is_glow_on())
+	check("emission overlays are allowed", Emission.enabled)
+	var lit_overlays := _count_emission(area)
+	check("emissive props got their overlay", lit_overlays > 0, "%d overlays" % lit_overlays)
+	# Under a dark ambient every canvas item is multiplied down, emission included, so the
+	# gain has to be compensated or the lamps stop clearing the bloom threshold.
+	check("emission gain is compensated for the ambient", Emission.boost > 1.0,
+		"boost %.2f" % Emission.boost)
+
+	# The same area with the quality setting off must look exactly like it did before
+	# lighting existed: no tint, no lights, no overbright sprites.
+	GameManager.lighting_enabled = false
+	await SceneManager.change_area("metro_platform", "start")
+	await seconds(0.5)
+	area = GameManager.current_area
+	check("lighting off builds no lights", area.lighting.light_count() == 0)
+	check("lighting off disables bloom", not Renderer2D.is_glow_on())
+	check("lighting off attaches no emission overlays", _count_emission(area) == 0,
+		"%d overlays" % _count_emission(area))
+
+	# Toggling the setting rebuilds the area in place. If it dumped the player back at the
+	# street entrance, changing a graphics option mid-street would lose your place.
+	GameManager.lighting_enabled = true
+	await SceneManager.change_area("metro_platform", "start")
+	await seconds(0.4)
+	var stand := Vector2(760.0, 60.0)
+	p().global_position = stand
+	await frames(2)
+	await SceneManager.reload_area()
+	await seconds(0.4)
+	check("reloading an area keeps the player where they stood",
+		p().global_position.distance_to(stand) < 4.0,
+		"%.0f,%.0f -> %.0f,%.0f" % [stand.x, stand.y, p().global_position.x, p().global_position.y])
+	check("reloading rebuilds the lighting",
+		GameManager.current_area.lighting.light_count() > 0,
+		"%d lights" % GameManager.current_area.lighting.light_count())
+
+	# An area with no lighting block at all must be untouched by any of this.
+	GameManager.lighting_enabled = true
+	await SceneManager.change_area("ferry_row", "start")
+	await seconds(0.5)
+	area = GameManager.current_area
+	check("an unlit area stays unlit", area.lighting != null and not area.lighting.enabled)
+	check("an unlit area has no bloom", not Renderer2D.is_glow_on())
+	check("an unlit area has no overbright sprites", _count_emission(area) == 0,
+		"%d overlays" % _count_emission(area))
+
+func _count_emission(node: Node) -> int:
+	var n := 0
+	for c in node.get_children():
+		if c.name == "Emission":
+			n += 1
+		n += _count_emission(c)
+	return n
 
 # ---------------------------------------------------------------- chapter two
 ## The Metro Line opens off a flag. If the gate never unlocks, three areas, two shops,

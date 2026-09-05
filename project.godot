@@ -31,6 +31,7 @@ ContentDB="*res://autoload/ContentDB.gd"
 QuestManager="*res://systems/QuestManager.gd"
 DialogueManager="*res://systems/DialogueManager.gd"
 ShopManager="*res://systems/ShopManager.gd"
+Renderer2D="*res://autoload/Renderer2D.gd"
 
 [debug]
 
@@ -72,6 +73,7 @@ theme/default_font_subpixel_positioning=0
 [rendering]
 
 textures/canvas_textures/default_texture_filter=0
+viewport/hdr_2d=true
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
 textures/vram_compression/import_etc2_astc=true

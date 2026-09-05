@@ -89,6 +89,7 @@ func save_settings() -> void:
 		"audio": AudioManager.settings_to_dict(),
 		"touch_controls": InputManager.touch_mode,
 		"screen_shake": GameManager.get("screen_shake_scale") if GameManager.get("screen_shake_scale") != null else 1.0,
+		"lighting": GameManager.lighting_enabled,
 	}
 	_write_json(SETTINGS_PATH, payload)
 
@@ -98,6 +99,8 @@ func load_settings() -> void:
 		return
 	if data.has("audio"):
 		AudioManager.settings_from_dict(data["audio"])
+	if data.has("lighting"):
+		GameManager.lighting_enabled = bool(data["lighting"])
 
 # ---------------- IO ----------------
 func _write_json(path: String, data: Dictionary) -> bool:

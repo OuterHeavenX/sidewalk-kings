@@ -31,6 +31,7 @@ var _parallax_layers: Array[Dictionary] = []
 var _encounter_triggers: Array[Dictionary] = []
 var _spawn_points: Dictionary = {}
 var _tile_cache: Dictionary = {}
+var lighting: AreaLighting = null
 
 func build(id: String, cam: GameCamera) -> void:
 	area_id = id
@@ -47,6 +48,7 @@ func build(id: String, cam: GameCamera) -> void:
 	ground_y = float(layout.get("ground_y", 0.0))
 	camera_y = float(layout.get("camera_y", ground_y - 24.0))
 	actors_root.y_sort_enabled = true
+	_build_lighting()
 	_build_parallax()
 	_build_ground()
 	_build_props()
@@ -165,6 +167,19 @@ func _tile_index(name: String) -> Vector2:
 		return Vector2(-1, -1)
 	return Vector2(i % 8, i / 8)
 
+## Lighting must exist before anything emissive is built: it sets the gain compensation
+## that keeps lamps above the bloom threshold under a dark ambient tint.
+func _build_lighting() -> void:
+	Emission.boost = 1.0
+	Emission.enabled = false
+	lighting = AreaLighting.new()
+	lighting.name = "Lighting"
+	add_child(lighting)
+	lighting.build(layout)
+	var on: bool = lighting.enabled and lighting.glow_wanted and AreaLighting.quality_enabled()
+	Emission.enabled = on
+	Renderer2D.apply_area_glow(on)
+
 func _build_props() -> void:
 	var prop_scene: PackedScene = load("res://world/props/Prop.tscn")
 	for entry in layout.get("scenery", []):
@@ -185,6 +200,12 @@ func _build_props() -> void:
 			var m: Array = entry["modulate"]
 			s.modulate = Color(m[0], m[1], m[2], m[3] if m.size() > 3 else 1.0)
 		(front_root if bool(entry.get("front", false)) else ground_root).add_child(s)
+		# Buildings, signs and lit windows carry emission masks; most scenery does not.
+		var asset := str(entry.get("texture", "")).get_file().get_basename()
+		if Emission.has_mask(asset):
+			var e := Emission.attach(s, asset, s, 1)
+			if e:
+				e.position = Vector2.ZERO
 	for entry in layout.get("props", []):
 		var p = prop_scene.instantiate()
 		p.prop_id = str(entry.get("id", "trashcan"))

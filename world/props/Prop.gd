@@ -47,6 +47,8 @@ func _load_texture() -> void:
 		push_warning("[Prop] missing texture for '%s'" % prop_id)
 		return
 	sprite.texture = tex
+	# A vending machine, a lit ticket screen or a lamp head glows; the rest do not.
+	Emission.attach(sprite, prop_id, sprite, 1)
 	# Anchor the sprite so its base sits on the prop's ground position.
 	sprite.offset.y = -float(tex.get_height()) * 0.5
 

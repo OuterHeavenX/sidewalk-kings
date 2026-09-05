@@ -10,6 +10,9 @@ var player: Node = null
 var current_area: Node = null
 var debug_enabled: bool = false
 var difficulty: float = 1.0
+## Lights and bloom cost fill rate, and the weakest target here is a phone. Off makes
+## every area build unlit, which is exactly how the game looked before lighting existed.
+var lighting_enabled: bool = true
 
 var _hitstop_until_ms: int = 0
 var _slowmo_until_ms: int = 0

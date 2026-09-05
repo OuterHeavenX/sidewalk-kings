@@ -89,6 +89,17 @@ def ground(tile, y, height=1, x=None, x2=None, alt=None, z=-20):
     return d
 
 
+def light(x, y, color=(1.0, 0.86, 0.6), energy=1.15, scale=1.0, texture="lamp"):
+    """One light pool. y is lane depth, same as everything else in a layout."""
+    return {"x": x, "y": y, "color": list(color), "energy": energy,
+            "scale": scale, "texture": texture}
+
+
+def lighting(ambient, lights, glow=True):
+    """Ambient tint is the time of day; the lights are what argues with it."""
+    return {"ambient": list(ambient), "glow": glow, "lights": lights}
+
+
 def build(area_id, width, layout):
     layout.setdefault("lane_min", LANE_MIN)
     layout.setdefault("lane_max", LANE_MAX)
@@ -632,6 +643,23 @@ metro = {
     ],
     "lane_min": 38.0,
     "lane_max": 76.0,
+    # Underground: no sky, so every photon here comes from a fitting somebody installed.
+    # The ambient is cool and low, and the platform lights are warm, which is what makes
+    # the pools read as pools rather than as brighter floor.
+    "lighting": lighting(
+        (0.34, 0.37, 0.52),
+        [light(x, 30.0, (1.0, 0.84, 0.56), 1.35, 2.3) for x in range(90, W6, 210)]
+        + [
+            # Tunnel mouths at either end, cold and dim, so the exits read as depth.
+            light(-10, -30.0, (0.45, 0.62, 0.95), 0.9, 2.6, "wide"),
+            light(W6 + 10, -30.0, (0.45, 0.62, 0.95), 0.9, 2.6, "wide"),
+            # The ticket machine and the sign throw a little of their own colour.
+            light(236, 22.0, (0.5, 0.95, 0.9), 0.55, 0.9, "tight"),
+            light(1226, 8.0, (0.45, 0.7, 1.0), 0.6, 1.0, "tight"),
+            # Bex's doorway, so the dojo reads as somewhere you can go in.
+            light(700, 26.0, (1.0, 0.72, 0.42), 0.8, 1.3, "tight"),
+        ],
+    ),
 }
 build("metro_platform", W6, metro)
 

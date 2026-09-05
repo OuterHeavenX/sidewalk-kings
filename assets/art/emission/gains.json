@@ -1,0 +1,19 @@
+{
+ "apartment_a": 1.4,
+ "apartment_b": 1.4,
+ "apartment_c": 1.4,
+ "metro_entrance": 1.4,
+ "metro_sign": 1.7,
+ "phonebooth": 1.4,
+ "shop_books": 1.4,
+ "shop_corner": 1.4,
+ "shop_dojo": 1.4,
+ "shop_laundry": 1.4,
+ "shop_noodle": 1.4,
+ "shop_weapon": 1.4,
+ "skyline_near": 1.35,
+ "streetlight": 2.9,
+ "ticket_machine": 1.45,
+ "vending": 1.5,
+ "warehouse": 1.4
+}

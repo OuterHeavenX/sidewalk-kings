@@ -838,13 +838,23 @@ def tile_metal(c=(96, 104, 112)):
     return noise(im, 5, 600)
 
 def tile_tile_floor():
+    """Station floor. The two tones are deliberately close together.
+
+    They used to differ by about 40%, which reads as a chessboard rather than a floor and
+    became the loudest thing on screen once area lighting arrived. Tiling now reads from
+    the grout line instead of from value contrast, which survives being lit.
+    """
     im = Image.new("RGBA", (TILE, TILE), (0, 0, 0, 0))
     d = ImageDraw.Draw(im)
     for i in range(2):
         for j in range(2):
-            c = (206, 196, 176) if (i + j) % 2 == 0 else (146, 138, 126)
+            c = (188, 180, 166) if (i + j) % 2 == 0 else (176, 168, 154)
             d.rectangle([i * 8, j * 8, i * 8 + 7, j * 8 + 7], fill=c)
-    return noise(im, 4, 700)
+    grout = (150, 143, 132)
+    for k in (0, 8):
+        d.line([(k, 0), (k, TILE - 1)], fill=grout)
+        d.line([(0, k), (TILE - 1, k)], fill=grout)
+    return noise(im, 3, 700)
 
 def tile_dirt():
     im = Image.new("RGBA", (TILE, TILE), (0, 0, 0, 0))
@@ -917,7 +927,7 @@ def building(w, h, wall, roof=None, windows=(3, 3), win_col=(120, 180, 210), doo
                 if y + 14 > h - 22:
                     continue
                 lit = rnd.random() < 0.45
-                wc = win_col if not lit else (250, 226, 150)
+                wc = win_col if not lit else WINDOW_LIT
                 d.rectangle([x - 1, y - 1, x + 15, y + 13], fill=shade(wall, 0.72))
                 d.rectangle([x, y, x + 14, y + 12], fill=wc)
                 d.rectangle([x, y, x + 6, y + 5], fill=shade(wc, 1.22))
@@ -954,31 +964,40 @@ def building(w, h, wall, roof=None, windows=(3, 3), win_col=(120, 180, 210), doo
                 cx += 5
                 continue
             bw = rnd2.choice((4, 5, 6))
-            d.rectangle([cx, sy + 3, cx + bw, sy + 9], fill=(250, 248, 240))
+            d.rectangle([cx, sy + 3, cx + bw, sy + 9], fill=SIGN_TEXT)
             cx += bw + 2
             if cx > sx + sw - 6:
                 break
     return im
 
+# Emissive palette. These exact colours are what gen_emission.py keys on to build the
+# glow masks, so they are constants rather than literals buried in the drawing code.
+WINDOW_LIT = (250, 226, 150)
+SIGN_TEXT = (250, 248, 240)
+
+# Building specs live at module scope so the emission generator can read each building's
+# sign colour instead of keeping a second copy that silently drifts out of date.
+BUILDING_SPECS = {
+    "shop_noodle": dict(w=120, h=150, wall=(186, 92, 74), windows=(3, 3), sign="NOODLE", sign_col=(228, 168, 60), style="brick", seed=2),
+    "shop_corner": dict(w=110, h=140, wall=(120, 150, 178), windows=(3, 3), sign="MART", sign_col=(70, 170, 120), style="panel", seed=3),
+    "shop_dojo": dict(w=126, h=156, wall=(140, 120, 96), windows=(3, 2), sign="DOJO", sign_col=(190, 60, 60), style="stucco", seed=4),
+    "shop_books": dict(w=104, h=146, wall=(96, 116, 92), windows=(3, 3), sign="BOOKS", sign_col=(90, 110, 190), style="brick", seed=5),
+    "shop_weapon": dict(w=112, h=140, wall=(110, 100, 120), windows=(3, 2), sign="GEAR", sign_col=(200, 130, 60), style="panel", seed=6),
+    "shop_laundry": dict(w=130, h=150, wall=(190, 200, 214), windows=(4, 2), sign="WASH", sign_col=(90, 160, 220), style="panel", seed=7),
+    "apartment_a": dict(w=100, h=190, wall=(158, 108, 84), windows=(3, 5), door=False, style="brick", seed=8),
+    "apartment_b": dict(w=118, h=210, wall=(126, 122, 132), windows=(4, 6), door=False, style="panel", seed=9),
+    "apartment_c": dict(w=92, h=170, wall=(172, 148, 110), windows=(3, 4), door=False, style="brick", seed=10),
+    "warehouse": dict(w=180, h=140, wall=(122, 128, 134), windows=(5, 1), door=False, style="metal", seed=11),
+    "metro_entrance": dict(w=120, h=120, wall=(96, 92, 104), windows=(0, 0), door=True, sign="METRO", sign_col=(60, 130, 200), style="stucco", seed=12),
+}
+
+
 def build_buildings():
     out = ensure("art", "backgrounds")
-    specs = {
-        "shop_noodle": dict(w=120, h=150, wall=(186, 92, 74), windows=(3, 3), sign="NOODLE", sign_col=(228, 168, 60), style="brick", seed=2),
-        "shop_corner": dict(w=110, h=140, wall=(120, 150, 178), windows=(3, 3), sign="MART", sign_col=(70, 170, 120), style="panel", seed=3),
-        "shop_dojo": dict(w=126, h=156, wall=(140, 120, 96), windows=(3, 2), sign="DOJO", sign_col=(190, 60, 60), style="stucco", seed=4),
-        "shop_books": dict(w=104, h=146, wall=(96, 116, 92), windows=(3, 3), sign="BOOKS", sign_col=(90, 110, 190), style="brick", seed=5),
-        "shop_weapon": dict(w=112, h=140, wall=(110, 100, 120), windows=(3, 2), sign="GEAR", sign_col=(200, 130, 60), style="panel", seed=6),
-        "shop_laundry": dict(w=130, h=150, wall=(190, 200, 214), windows=(4, 2), sign="WASH", sign_col=(90, 160, 220), style="panel", seed=7),
-        "apartment_a": dict(w=100, h=190, wall=(158, 108, 84), windows=(3, 5), door=False, style="brick", seed=8),
-        "apartment_b": dict(w=118, h=210, wall=(126, 122, 132), windows=(4, 6), door=False, style="panel", seed=9),
-        "apartment_c": dict(w=92, h=170, wall=(172, 148, 110), windows=(3, 4), door=False, style="brick", seed=10),
-        "warehouse": dict(w=180, h=140, wall=(122, 128, 134), windows=(5, 1), door=False, style="metal", seed=11),
-        "metro_entrance": dict(w=120, h=120, wall=(96, 92, 104), windows=(0, 0), door=True, sign="METRO", sign_col=(60, 130, 200), style="stucco", seed=12),
-    }
-    for name, kw in specs.items():
+    for name, kw in BUILDING_SPECS.items():
         im = building(**kw)
         im.save(os.path.join(out, f"{name}.png"))
-    return list(specs.keys())
+    return list(BUILDING_SPECS.keys())
 
 def skyline(w=480, h=120, base=(52, 44, 72), far=True, seed=1):
     im = Image.new("RGBA", (w, h), (0, 0, 0, 0))
@@ -997,7 +1016,7 @@ def skyline(w=480, h=120, base=(52, 44, 72), far=True, seed=1):
                 for wx in range(x + 4, x + bw - 4, 7):
                     if rnd.random() < 0.35:
                         lit = rnd.random() < 0.5
-                        d.rectangle([wx, wy, wx + 3, wy + 4], fill=(250, 226, 150) if lit else shade(c, 0.7))
+                        d.rectangle([wx, wy, wx + 3, wy + 4], fill=WINDOW_LIT if lit else shade(c, 0.7))
         x += bw + rnd.randint(2, 8)
     return im
 

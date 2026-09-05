@@ -111,5 +111,28 @@ func change_area(area_id: String, spawn_id: String = "start") -> void:
 	await fade_in(0.3)
 	_busy = false
 
+## Rebuild the current area in place, keeping the player where they were standing.
+## Used when a setting changes what an area is made of, such as lighting, so the change is
+## visible immediately without dumping the player back at the street entrance.
+func reload_area() -> void:
+	var area_id: String = GameManager.player_data.current_area
+	if area_id == "" or _busy or game_root == null:
+		return
+	var keep := Vector2.ZERO
+	var had_player := is_instance_valid(GameManager.player)
+	if had_player:
+		keep = GameManager.player.global_position
+	_busy = true
+	GameManager.clear_time_effects()
+	await fade_out(0.2)
+	await game_root.load_area(area_id, "start")
+	if had_player and is_instance_valid(GameManager.player):
+		GameManager.player.global_position = keep
+		var area = GameManager.current_area
+		if area and area.camera:
+			area.camera.snap_to_target()
+	await fade_in(0.2)
+	_busy = false
+
 func area_scene_path(area_id: String) -> String:
 	return AREA_DIR + area_id + ".tscn"
