@@ -266,3 +266,82 @@ a second dojo, a second general store, and the opening of chapter two.
   scenery is, it floated in open sky, because a roof has no building behind it.
 - The interior floors dropped their alternating tile, which was reading as a loud
   checkerboard rather than a floor.
+
+---
+
+## Unreleased — Phase 2, Stage 3: lighting and bloom
+
+Every pixel in the game was a flat, unlit sprite. There were no lights, no shaders, no
+particles and no post-processing anywhere in the codebase; the streetlights were pictures
+of lamps that emitted nothing. This is the first pass at that, prototyped on one area.
+
+### Added
+
+**Lighting**
+- Area layouts gain an optional `lighting` block: an ambient tint and a list of light
+  pools. An area without one builds exactly as it did before, so this rolls out one
+  street at a time rather than all eight at once.
+- **Metro Platform** is the first lit area: cool underground ambient, warm platform
+  lights, cold tunnel mouths, and a little colour thrown by the ticket machine and the
+  door of Bex's dojo.
+- `AreaLighting` builds the `CanvasModulate` and the `PointLight2D` pools; `Renderer2D`
+  owns the single `WorldEnvironment` and its bloom settings.
+
+**Bloom, and why it does not smear**
+- HDR 2D is on and the glow threshold is exactly **1.0**. Ordinary art clamps at 1.0 and
+  therefore cannot bloom however pale it is. Only sprites deliberately pushed above 1.0
+  bleed. Without that separation the threshold becomes a fight against every white
+  sneaker and lit window in the art, and the result is the vaseline look that gives
+  pixel-art bloom its bad name.
+- Verified on the Compatibility renderer in a real browser, which is the only renderer
+  this game ships. Glow is unsupported on Compatibility before Godot 4.3.
+
+**Emission masks out of the generators**
+- `tools/gen_emission.py` derives a mask of just the light-emitting pixels from the art
+  itself: lamp glass, ticket screens, vending fronts, metro signs, shop signage, lit
+  windows and the near skyline. Seventeen masks, plus four radial light textures.
+- Hand-painting these across the art set would be miserable. Deriving them is a loop,
+  which is the whole reason this pipeline is generated.
+- A declared colour that matches no pixels **fails the build**. Otherwise an art change
+  would quietly stop something glowing, with no error anywhere.
+
+**Setting**
+- Lighting is a player setting on the pause menu, persisted, and off restores exactly the
+  previous look. Toggling it rebuilds the area in place and keeps the player standing
+  where they were rather than dumping them back at the street entrance.
+
+### Fixed
+
+- **Emission overlays attached even when lighting was off**, rendering at their raw gain
+  and clamping to white. The metro sign became a white rectangle. They are now gated on
+  the area actually being lit, which would otherwise have hit all seven unlit areas.
+- **The station floor tile had two tones about 40% apart**, which read as a chessboard
+  rather than a floor and became the loudest thing on screen once lit. Tiling now reads
+  from a grout line instead of from value contrast.
+
+### Measured
+
+Frame cost on an RTX 5080 with vsync disabled, standing in the middle of the platform:
+
+| | Frame time | Draw calls |
+|---|---|---|
+| Lighting off | 0.44 ms | 26 |
+| Lighting on | 0.54 ms | 27 |
+
+A tenth of a millisecond against a 16.7 ms budget here. It is fill rate, though, which
+scales with resolution and is far dearer on a phone or a Steam Deck. **Not yet measured on
+either**, which is why the setting exists.
+
+### Tests
+
+Twenty-two checks, suite now **219**. The threshold is 1.0 and HDR 2D is on, because if
+either drifts every bright pixel in the game silently starts to smear. Every emission mask
+has source art and every light texture a layout names exists. A lit area gets its tint,
+lights and overlays with the gain compensated for ambient. Lighting off builds none of it.
+An area with no lighting block is untouched. Reloading an area keeps the player in place.
+
+### Not done yet
+
+- The other seven areas have no lighting block and are unchanged.
+- No normal maps, so light pools are flat rather than shaped by the art.
+- No ambient motion, no particles. A still frame still reads as still.

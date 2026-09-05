@@ -14,6 +14,7 @@ Only dependency: `pip install pillow`.
 |---|---|---|
 | `gen_characters.py` | Character sprite sheets, `SpriteFrames`, portraits | `assets/art/characters/`, `assets/art/ui/portraits/` |
 | `gen_world.py` | Props, weapons, tiles, buildings, backgrounds, FX, UI, item icons | `assets/art/` |
+| `gen_emission.py` | Glow masks and light textures, derived from the art | `assets/art/emission/`, `assets/art/light/` |
 | `gen_audio.py` | Music, sound effects, ambience | `assets/audio/` |
 | `gen_data.py` | Moves, enemies, food, books, items, weapons, shops, quests, dialogue, encounters, area metadata | `data/**/*.tres` |
 | `gen_areas.py` | Area layouts | `data/areas/*.json` |
@@ -25,6 +26,7 @@ before data (which references textures), and data before areas.
 ```bash
 python tools/gen_characters.py
 python tools/gen_world.py
+python tools/gen_emission.py   # after gen_world: it reads the art gen_world just wrote
 python tools/gen_audio.py
 python tools/gen_data.py
 python tools/gen_areas.py

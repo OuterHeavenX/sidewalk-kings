@@ -55,6 +55,7 @@ Nothing below the autoload layer reaches upward by node path. Systems talk throu
 | `QuestManager` | Quest state, objective tracking, turn-ins. |
 | `DialogueManager` | Interprets `DialogueData` and drives the dialogue box. |
 | `ShopManager` | Builds shop entries and applies purchases for every shop type. |
+| `Renderer2D` | Owns the single `WorldEnvironment` and its bloom settings, and keeps HDR 2D on. |
 
 `PlayerState` is a plain `RefCounted` holding all persistent player data with
 `to_dict()` / `from_dict()`. Keeping it out of the node tree is what makes saving,
@@ -136,6 +137,27 @@ This is the main lever for cheap expansion: a new neighbourhood is one JSON layo
 `AreaData` resource, and whatever new content it references.
 
 The vertical bands of a street are documented in `tools/gen_areas.py`.
+
+### Lighting
+
+A layout may carry an optional `lighting` block. `AreaLighting` reads it and builds a
+`CanvasModulate` for the ambient tint plus a `PointLight2D` per declared pool. An area
+without the block builds nothing and renders exactly as it did before lighting existed,
+which is what lets it roll out one street at a time.
+
+`Emission` attaches glow overlays. A sprite whose asset has a mask under
+`assets/art/emission/` gets a second sprite on top of it, holding only the emissive pixels
+at a gain above 1.0. With HDR 2D on and the bloom threshold at 1.0, ordinary art clamps
+and cannot bloom, so only those overlays do.
+
+Two coupling rules matter and are both asserted in the smoke suite:
+
+- Lighting is built **before** props, because it computes the ambient compensation that
+  the overlays need. A dark area multiplies emission down along with everything else, so
+  without compensation a lamp stops blooming exactly when the scene gets dark enough to
+  need it.
+- Overlays only attach when the area is actually lit. Attached anywhere else they render
+  at raw gain, clamp to white, and blow the asset out.
 
 ---
 

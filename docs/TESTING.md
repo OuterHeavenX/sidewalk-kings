@@ -11,7 +11,7 @@ other captures how it looks.
 godot --headless --path . -- --smoke
 ```
 
-Boots the game, starts a session and drives it through 197 checks. Exit code is 0 if
+Boots the game, starts a session and drives it through 219 checks. Exit code is 0 if
 everything passes, 1 otherwise, so it works in CI. Results print to stdout and are also
 flushed line by line to `user://smoke_test.log`, which means a hang or crash still leaves a
 record of exactly how far it got.
@@ -34,6 +34,7 @@ in the user arguments.
 | **Shops** | Every shop has stock and sells something; the dojo teaches moves; food heals and grants permanent stats; books are recorded. |
 | **Quests and dialogue** | A quest starts, progresses, completes and turns in at its giver; an item quest tracks a pickup; a conversation runs to its end; every dialogue resource is structurally valid. |
 | **Travel** | Every area in `ContentDB` loads and builds, and the camera can frame the player at both ends of each. The list is not hand-written, so a new area is covered the day it is added. |
+| **Lighting** | The bloom threshold is 1.0 and HDR 2D is on, which is what stops ordinary art blooming. Every emission mask has source art; every light texture a layout names exists. A lit area gets its ambient tint, its lights and its emission overlays, with the gain compensated for the ambient. With the setting off it builds no lights, no bloom and no overlays. An area with no lighting block is untouched. Reloading an area keeps the player where they stood. |
 | **World graph** | Every area has a layout; every door lands on a spawn point that exists; every door has a return door; the map screen's connections match the real doors; every area is reachable on foot from Ferry Row. |
 | **Chapter two** | The metro gate is shut before the story opens it. Each Metro Line area builds, each spawn puts the player at the correct end of the street, the camera frames them, the locker carrying the quest flag is searchable, and a Commuter takes damage. |
 | **Boss** | The intro plays and closes; the boss spawns with boss-scale health; phase one blocks grabs; it enters phase two below half health and becomes grabbable; invulnerability expires; it can be defeated, is recorded, and pays out. |

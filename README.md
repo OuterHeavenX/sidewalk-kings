@@ -197,10 +197,11 @@ Details, including deployment to GitHub Pages and Cloudflare Pages, are in
 godot --headless --path . -- --smoke
 ```
 
-Runs 197 automated checks against a real session: content integrity, movement, every
+Runs 219 automated checks against a real session: content integrity, movement, every
 attack, the combo chain, grabs and throws, enemy AI, weapons and durability, pickups,
 levelling, every shop, quests, dialogue, travel between all eight areas, the door graph, camera framing,
-the boss fight through both phases, and save/load with migration. Exit code is non-zero
+the boss fight through both phases, area lighting and bloom, and save/load with
+migration. Exit code is non-zero
 if anything fails, and a flushed log is written to `user://smoke_test.log`.
 
 To capture screenshots of every screen:

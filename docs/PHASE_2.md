@@ -131,6 +131,25 @@ an area with no street. Recorded in [ART_DIRECTION.md](ART_DIRECTION.md).
 
 ---
 
+## Stage 3 — Lighting and bloom — **first pass done**
+
+Prototyped on the Metro Platform. Ambient tint plus light pools from layout data, and
+selective bloom driven by emission masks the art generator derives from the art itself.
+
+**What it proved.** The full 2D polish toolkit works on the Compatibility renderer in a
+browser: canvas lights, screen-reading shaders, and `WorldEnvironment` glow. Glow in
+particular had been assumed unavailable, which was true on Godot 4.0 to 4.2 and is not
+true now. Nothing about shipping to the web blocks this.
+
+**The load-bearing trick** is HDR 2D with the glow threshold at exactly 1.0, so ordinary
+art clamps and cannot bloom, and only deliberately overbright emission does. That is what
+makes bloom safe on a 480x270 frame instead of a smear.
+
+**Still open:** the other seven areas, normal maps so light pools are shaped by the art
+rather than flat, and a fill-rate measurement on a phone and a Steam Deck.
+
+---
+
 ## Night lighting
 
 Wanted: streets, shopfronts and the metro lit by real light sources rather than painted-in

@@ -125,7 +125,34 @@ because at the 2x scale a street sky uses, one tunnel mouth fills the whole scre
 
 **Alternating floor tiles are for outdoors.** The `alt` tile option reads as paving
 variation on a sidewalk and as a chessboard indoors. Both interior floors use a single
-tile.
+tile. The station floor's own two tones were pulled close together for the same reason:
+under area lighting a 40% value split stopped reading as a floor and started reading as a
+chessboard. Tiling reads from the grout line now.
+
+---
+
+## Light
+
+Areas are lit by data, not by painting. An area layout may carry a `lighting` block with
+an ambient tint and a set of light pools; an area without one is drawn flat, exactly as
+everything was before lighting existed.
+
+**Ambient is the time of day.** It is a `CanvasModulate`, so it multiplies everything.
+The Metro Platform is underground, so its ambient is cool and low and every warm pixel in
+the frame is something somebody installed.
+
+**What glows is decided by the generator, not by the renderer.** `gen_emission.py` derives
+a mask of the light-emitting pixels of each asset, and the engine draws that mask again on
+top at a gain above 1.0. With HDR 2D on and the bloom threshold at exactly 1.0, ordinary
+art can never bloom, so a white sneaker stays a white sneaker and only a lamp glows.
+
+**Gains are per asset and deliberately unequal.** A lamp head is a light source and runs
+hot. A ticket screen or a shop sign is a lit surface, not a lamp, and runs about half as
+hard; at lamp gain they clamped into featureless white blobs.
+
+**Emission is compensated for ambient.** A dark area multiplies emission down along with
+everything else, so a lamp would stop clearing the bloom threshold exactly when the scene
+got dark enough to need it. The gain is divided by the ambient luminance.
 
 ---
 
