@@ -36,7 +36,9 @@ static func bar_style(color: Color) -> StyleBoxFlat:
 	sb.set_corner_radius_all(1)
 	return sb
 
-static func style_label(l: Label, size: int = 10, color: Color = TEXT, outline: int = 4) -> void:
+## A 4px outline on a 9px glyph is nearly half its height: it closes the counters and
+## turns small text into a dark smudge. 2 is enough to keep text legible over the street.
+static func style_label(l: Label, size: int = 10, color: Color = TEXT, outline: int = 2) -> void:
 	l.add_theme_font_size_override("font_size", size)
 	l.add_theme_color_override("font_color", color)
 	l.add_theme_color_override("font_outline_color", Color(0.04, 0.03, 0.07, 1.0))
@@ -62,7 +64,7 @@ static func style_button(b: Button, size: int = 12) -> void:
 	b.add_theme_color_override("font_focus_color", ACCENT_2)
 	b.add_theme_color_override("font_pressed_color", ACCENT)
 	b.add_theme_color_override("font_outline_color", Color(0.04, 0.03, 0.07, 1.0))
-	b.add_theme_constant_override("outline_size", 4)
+	b.add_theme_constant_override("outline_size", 2)
 	var normal := panel_style(Color(0.15, 0.13, 0.21, 0.9), Color(0.35, 0.3, 0.45))
 	var hover := panel_style(Color(0.26, 0.2, 0.34, 0.96), ACCENT_2)
 	var pressed := panel_style(Color(0.34, 0.17, 0.22, 0.98), ACCENT)

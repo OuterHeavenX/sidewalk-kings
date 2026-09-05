@@ -35,42 +35,42 @@
   {
    "texture": "res://assets/art/props/locker.png",
    "x": 90,
-   "y": -106.0,
+   "y": -98.0,
    "z": -28,
    "scale": 1.0
   },
   {
    "texture": "res://assets/art/props/locker.png",
    "x": 130,
-   "y": -106.0,
+   "y": -98.0,
    "z": -28,
    "scale": 1.0
   },
   {
    "texture": "res://assets/art/props/ac_unit.png",
    "x": 400,
-   "y": -148.0,
+   "y": -140.0,
    "z": -28,
    "scale": 1.0
   },
   {
    "texture": "res://assets/art/props/sign.png",
    "x": 640,
-   "y": -116.0,
+   "y": -108.0,
    "z": -28,
    "scale": 1.0
   },
   {
    "texture": "res://assets/art/props/locker.png",
    "x": 900,
-   "y": -106.0,
+   "y": -98.0,
    "z": -28,
    "scale": 1.0
   },
   {
    "texture": "res://assets/art/props/locker.png",
    "x": 940,
-   "y": -106.0,
+   "y": -98.0,
    "z": -28,
    "scale": 1.0
   }

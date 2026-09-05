@@ -34,6 +34,12 @@ var _tile_cache: Dictionary = {}
 var lighting: AreaLighting = null
 
 func build(id: String, cam: GameCamera) -> void:
+	# Parallax is derived from the camera's position, so this node must process AFTER the
+	# camera has moved. It sits before the Camera in the scene tree, so by default it ran
+	# first and placed the background using the previous frame's camera position. Standing
+	# still that is invisible; walking, the background lags the foreground by a frame and
+	# then catches up, which reads as the buildings sliding around loose.
+	process_priority = 10
 	area_id = id
 	camera = cam
 	meta = ContentDB.get_area(id)

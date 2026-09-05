@@ -92,42 +92,42 @@
   {
    "texture": "res://assets/art/backgrounds/apartment_a.png",
    "x": 60,
-   "y": -244.0,
+   "y": -236.0,
    "z": -30,
    "scale": 1.0
   },
   {
    "texture": "res://assets/art/backgrounds/shop_corner.png",
    "x": 210,
-   "y": -194.0,
+   "y": -186.0,
    "z": -30,
    "scale": 1.0
   },
   {
    "texture": "res://assets/art/backgrounds/apartment_c.png",
    "x": 350,
-   "y": -224.0,
+   "y": -216.0,
    "z": -30,
    "scale": 1.0
   },
   {
    "texture": "res://assets/art/backgrounds/apartment_b.png",
    "x": 470,
-   "y": -264.0,
+   "y": -256.0,
    "z": -30,
    "scale": 1.0
   },
   {
    "texture": "res://assets/art/backgrounds/shop_noodle.png",
    "x": 640,
-   "y": -204.0,
+   "y": -196.0,
    "z": -30,
    "scale": 1.0
   },
   {
    "texture": "res://assets/art/backgrounds/apartment_a.png",
    "x": 790,
-   "y": -244.0,
+   "y": -236.0,
    "z": -30,
    "scale": 1.0,
    "flip": true
@@ -135,14 +135,14 @@
   {
    "texture": "res://assets/art/backgrounds/apartment_c.png",
    "x": 930,
-   "y": -224.0,
+   "y": -216.0,
    "z": -30,
    "scale": 1.0
   },
   {
    "texture": "res://assets/art/backgrounds/apartment_b.png",
    "x": 1060,
-   "y": -264.0,
+   "y": -256.0,
    "z": -30,
    "scale": 1.0,
    "flip": true
@@ -150,7 +150,7 @@
   {
    "texture": "res://assets/art/backgrounds/shop_corner.png",
    "x": 1230,
-   "y": -194.0,
+   "y": -186.0,
    "z": -30,
    "scale": 1.0,
    "flip": true
@@ -158,35 +158,35 @@
   {
    "texture": "res://assets/art/backgrounds/apartment_a.png",
    "x": 1370,
-   "y": -244.0,
+   "y": -236.0,
    "z": -30,
    "scale": 1.0
   },
   {
    "texture": "res://assets/art/props/awning_blue.png",
    "x": 214,
-   "y": -60.0,
+   "y": -52.0,
    "z": -28,
    "scale": 1.0
   },
   {
    "texture": "res://assets/art/props/awning_red.png",
    "x": 646,
-   "y": -68.0,
+   "y": -60.0,
    "z": -28,
    "scale": 1.0
   },
   {
    "texture": "res://assets/art/props/graffiti_a.png",
    "x": 420,
-   "y": -58.0,
+   "y": -50.0,
    "z": -27,
    "scale": 1.0
   },
   {
    "texture": "res://assets/art/props/graffiti_c.png",
    "x": 1130,
-   "y": -54.0,
+   "y": -46.0,
    "z": -27,
    "scale": 1.0
   },

@@ -53,9 +53,9 @@ window/handheld/orientation=4
 
 [gui]
 
-theme/default_font_antialiasing=0
+theme/default_font_antialiasing=1
 theme/default_font_hinting=0
-theme/default_font_subpixel_positioning=0
+theme/default_font_subpixel_positioning=1
 
 [layer_names]
 

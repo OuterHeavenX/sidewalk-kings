@@ -348,6 +348,43 @@ An area with no lighting block is untouched. Reloading an area keeps the player 
 
 ---
 
+## Unreleased — the game was unfinishable
+
+### Fixed
+
+- **You could not leave the first street.** Automatic street-edge doors never fired, so
+  the game could not be finished, or really started. The door detects the player with
+  `body_entered`, which only reports physics bodies, but its collision mask covered the
+  player's *hurtbox* layer. A hurtbox is an Area, not a body, so the two could never
+  match. Nothing errored, and every other test travelled by calling `SceneManager`
+  directly, which bypasses the door entirely. There is now a test that walks the player
+  into a door and waits for the area to change.
+- While fixing it, a second trap: **`.tscn` has no comment syntax.** A `#` line added to
+  explain the mask did not annotate the scene, it broke parsing of every property after
+  it, and the mask silently reverted to the default. The explanation lives in the
+  generator now.
+- **Parallax ran a frame behind the camera.** The Area sits before the Camera in the
+  scene tree and neither set a process priority, so the background was placed every frame
+  using the *previous* frame's camera position. Standing still it looks perfect; walking,
+  the background lags and catches up, which reads as the buildings sliding around loose.
+  Measured at up to 1.4 px of error even in a headless run, now 0.00.
+- **Buildings floated above the road.** Their heights were written by hand in the layouts
+  and did not match the art, so every facade was placed 8 px short, leaving a gap with the
+  distant skyline showing through underneath. Buildings are now placed from the same spec
+  table the art is drawn from, so the two cannot drift apart, and they stand on the road's
+  far edge instead of having their shopfronts hidden behind it.
+
+### Changed
+
+- **Text was rendered without antialiasing while the canvas is scaled by a fractional
+  amount**, which gave uneven stroke widths, some two screen pixels and some three. That
+  is what read as blurry. The UI font is a smooth proportional typeface, not pixel art, so
+  antialiasing and subpixel positioning are now on.
+- The text outline dropped from 4 px to 2. At a 9 px font a 4 px outline is nearly half the
+  glyph height: it closes the counters and turns small text into a dark smudge.
+
+---
+
 ## Unreleased — installable app, and menus you can navigate
 
 ### Added

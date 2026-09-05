@@ -298,6 +298,13 @@ visible = false
 '''
 
 # ---------------------------------------------------------------- Door
+# The door's Area2D must mask the player's BODY layer, not the hurtbox layer. It detects
+# with body_entered, which only reports PhysicsBody2D nodes, and a hurtbox is an Area, so
+# masking the hurtbox meant an automatic street-edge door could never fire at all. The
+# game was unfinishable from the first street and nothing errored.
+#
+# Note also: .tscn has no comment syntax. A '#' line here does not document the scene, it
+# breaks parsing of every property after it and the value silently falls back to default.
 SCENES["world/doors/Door.tscn"] = f'''
 [gd_scene load_steps=3 format=3]
 
@@ -311,7 +318,7 @@ script = ExtResource("1")
 
 [node name="Area" type="Area2D" parent="."]
 collision_layer = {L_DOOR}
-collision_mask = 1
+collision_mask = {L_PLAYER_BODY}
 monitoring = true
 
 [node name="Shape" type="CollisionShape2D" parent="Area"]

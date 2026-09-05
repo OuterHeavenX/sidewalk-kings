@@ -60,6 +60,8 @@ func run() -> void:
 	await test_shops()
 	await test_quests_and_dialogue()
 	await test_area_travel()
+	await test_parallax()
+	await test_doors()
 	await test_world_graph()
 	await test_lighting()
 	await test_chapter_two()
@@ -1053,6 +1055,103 @@ func _check_camera_follows(area_id: String) -> void:
 		if absf(player.global_position.x - cam.x) > half.x - 24.0:
 			worst = "player x=%.0f but camera centre x=%.0f" % [player.global_position.x, cam.x]
 	check("camera frames the player across %s" % area_id, worst == "", worst)
+
+# ---------------------------------------------------------------- parallax
+## Parallax is computed from the camera's position, so it has to run AFTER the camera has
+## moved. The Area sits before the Camera in the scene tree and neither set a process
+## priority, so every frame the background was placed using last frame's camera position.
+## Standing still it looks perfect. Walking, the background lags the foreground by a frame
+## and then catches up, which reads as the buildings sliding around loose.
+func test_parallax() -> void:
+	print("
+-- Parallax --")
+	await SceneManager.change_area("ferry_row", "start")
+	await seconds(0.5)
+	clear_stage()
+	await frames(2)
+	var area = GameManager.current_area
+	check("the area has parallax layers", area._parallax_layers.size() > 0,
+		"%d layers" % area._parallax_layers.size())
+	if area._parallax_layers.is_empty():
+		return
+
+	# Run, so any lag is as large as it ever gets.
+	var player := p()
+	player.global_position.x = 300.0
+	area.camera.snap_to_target()
+	await frames(4)
+	Input.action_press("move_right")
+	Input.action_press("sprint")
+	await frames(20)
+
+	var worst := 0.0
+	var moved := 0.0
+	var last_cx: float = area.camera.global_position.x
+	for i in 40:
+		await frames(1)
+		var cx: float = area.camera.global_position.x
+		moved += absf(cx - last_cx)
+		last_cx = cx
+		var half: float = area.camera.get_viewport_rect().size.x * 0.5
+		for layer in area._parallax_layers:
+			var node: Node2D = layer.node
+			var expected: float = cx * (1.0 - float(layer.scroll)) - half
+			worst = maxf(worst, absf(node.position.x - expected))
+	Input.action_release("move_right")
+	Input.action_release("sprint")
+	await frames(2)
+
+	check("the camera actually moved during the check", moved > 20.0, "%.0f px" % moved)
+	# Anything above a pixel is a visible swim on the slow layers.
+	check("parallax layers track the camera within the same frame", worst < 1.0,
+		"worst error %.2f px while moving %.0f px" % [worst, moved])
+
+# ---------------------------------------------------------------- doors
+## Walking into a street-edge door is how the player leaves an area, and it was never
+## tested: every other test travels by calling SceneManager directly, which bypasses the
+## door entirely. So a door that could not fire looked fine from here while the game was
+## unfinishable from the very first street.
+func test_doors() -> void:
+	print("
+-- Doors --")
+	await SceneManager.change_area("ferry_row", "start")
+	await seconds(0.5)
+	clear_stage()
+	await frames(2)
+	var area = GameManager.current_area
+	var door: Door = null
+	for n in area.actors_root.get_children():
+		if n is Door and (n as Door).auto and (n as Door).to_area != "":
+			door = n
+			break
+	check("ferry_row has an automatic street-edge door", door != null)
+	if door == null:
+		return
+
+	# The door detects the player with body_entered, so its mask has to cover the layer
+	# the player's body is actually on. Masking the hurtbox layer instead silently means
+	# it can never fire, because a hurtbox is an Area and not a body.
+	var player := p()
+	check("the door's mask matches the player's body layer",
+		(door.area.collision_mask & player.collision_layer) != 0,
+		"door mask %d vs player body layer %d" % [door.area.collision_mask, player.collision_layer])
+
+	# Now actually walk into it. The destination is captured first: travelling frees the
+	# door node, so reading it afterwards is reading a freed object.
+	var before: String = GameManager.player_data.current_area
+	var destination: String = door.to_area
+	player.global_position = Vector2(door.global_position.x - 40.0, door.global_position.y)
+	await frames(4)
+	Input.action_press("move_right")
+	var guard := 0
+	while GameManager.player_data.current_area == before and guard < 240:
+		await frames(1)
+		guard += 1
+	Input.action_release("move_right")
+	await seconds(0.6)
+	check("walking into the door travels to the next area",
+		GameManager.player_data.current_area == destination,
+		"%s -> %s after %d frames" % [before, GameManager.player_data.current_area, guard])
 
 # ---------------------------------------------------------------- world graph
 ## The map is a graph of doors. A door that names a spawn point the destination does not
