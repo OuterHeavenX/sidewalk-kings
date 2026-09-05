@@ -124,3 +124,47 @@ func _report_playback() -> void:
 		print("street loop mode: ", w.loop_mode, "  (0 = disabled)")
 		if w.loop_mode == AudioStreamWAV.LOOP_DISABLED:
 			fail("music 'street' is imported with looping disabled, so it plays once and stops")
+
+	await _check_real_signal()
+
+## Everything above this point can pass while the game makes no sound whatsoever.
+##
+## That is not hypothetical: the shipped web build was completely silent for three
+## sessions while every check here said AUDIO OK. Players reported playing, positions
+## advanced, buses were unmuted at sensible volumes, and the output was digital zero,
+## because creating audio buses at runtime silences a web export.
+##
+## So the last word belongs to the meter: is there a signal on Master, and did the music
+## fade actually finish rather than parking at its -40 dB starting value.
+func _check_real_signal() -> void:
+	print("\n-- Real signal --")
+	if AudioServer.get_driver_name() == "Dummy":
+		print("Dummy audio driver: signal cannot be measured. Run without --headless.")
+		fail("audio driver is Dummy, so this run proves nothing about audibility")
+		return
+
+	AudioManager.stop_music(0.0)
+	await get_tree().create_timer(0.2).timeout
+	AudioManager.play_music("street")
+
+	var best := -200.0
+	var vol := -200.0
+	for i in 40:
+		await get_tree().create_timer(0.05).timeout
+		best = maxf(best, AudioServer.get_bus_peak_volume_left_db(0, 0))
+		vol = AudioManager._music_active.volume_db
+	print("master bus peak over 2s: %.1f dB" % best)
+	print("music player volume after the fade: %.2f dB" % vol)
+
+	if best <= -60.0:
+		fail("no signal reached the Master bus (peak %.1f dB): the game is silent even "
+			% best + "though every player reports playing")
+	if vol < -6.0:
+		fail("the music fade never completed: the player is parked at %.1f dB, which is "
+			% vol + "audible only as a faint drone")
+
+	# Buses must come from default_bus_layout.tres. Creating them with add_bus() at
+	# runtime silences web exports completely and without any error.
+	if not ResourceLoader.exists("res://default_bus_layout.tres"):
+		fail("default_bus_layout.tres is missing; buses would have to be made at runtime, "
+			+ "which silences web builds")

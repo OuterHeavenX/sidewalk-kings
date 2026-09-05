@@ -226,6 +226,23 @@ func test_audio() -> void:
 	await frames(2)
 	check("play_music assigns a stream", AudioManager._music_active.stream != null)
 
+	# A headless run uses the Dummy driver and cannot hear anything, so the two ways audio
+	# has actually broken in this project are asserted structurally instead.
+	check("audio buses come from a layout resource, not add_bus()",
+		ResourceLoader.exists("res://default_bus_layout.tres"),
+		"creating buses at runtime silences web exports entirely, with no error")
+	# Comments are stripped first: both of these are named in AudioManager's own docs
+	# explaining why they must never be used, and matching those would be a false alarm.
+	var am_code := _code_only("res://autoload/AudioManager.gd")
+	check("AudioManager never calls AudioServer.add_bus()",
+		not am_code.contains("AudioServer.add_bus("),
+		"it silences the browser build")
+	check("music fades are stepped, not tweened",
+		not am_code.contains("create_tween("),
+		"a stalled tween parks music at its -40 dB floor, which reads as a hum")
+	for b in AudioManager.BUSES:
+		check("bus '%s' exists at startup" % b, AudioServer.get_bus_index(b) != -1)
+
 # ---------------------------------------------------------------- title flow
 ## Start a game the way a player does: title screen, New Game, wait for the street.
 ## This is the path that leaves the screen black if a transition fade ever stalls.
@@ -1081,6 +1098,20 @@ func test_world_graph() -> void:
 		if not seen.has(id):
 			unreachable.append(id)
 	check("every area is reachable from ferry_row", unreachable.is_empty(), ", ".join(unreachable))
+
+## Source with comments removed, so a rule written down in a doc comment does not read as
+## a violation of itself.
+func _code_only(path: String) -> String:
+	var out := ""
+	for line in FileAccess.get_file_as_string(path).split("
+"):
+		var t := (line as String).strip_edges()
+		if t.begins_with("#"):
+			continue
+		var hash_at := (line as String).find("#")
+		out += ((line as String).substr(0, hash_at) if hash_at >= 0 else line) + "
+"
+	return out
 
 # ---------------------------------------------------------------- lighting
 ## Lighting fails quietly in both directions. Turned off it does nothing visible, which

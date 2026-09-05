@@ -19,6 +19,17 @@ var _ui_pool: Array[AudioStreamPlayer] = []
 var _cache: Dictionary = {}
 var _last_play_ms: Dictionary = {}
 
+## Music fades are stepped by hand in _process rather than driven by a Tween.
+##
+## The screen fade in SceneManager was moved off tweens for the same reason: a tween that
+## does not advance leaves the thing it was animating stuck at its starting value, and
+## there is no error. For music that start value is -40 dB, which is not silence but a
+## barely audible drone, so the failure reads as "the game hums" rather than as a bug.
+## Stepping it here means the only thing it depends on is this node processing, and this
+## node is PROCESS_MODE_ALWAYS.
+const FADE_FLOOR_DB := -40.0
+var _fades: Array[Dictionary] = []
+
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	_ensure_buses()
@@ -32,13 +43,65 @@ func _ready() -> void:
 		_ui_pool.append(_make_player("UI"))
 	apply_volumes()
 
+## The buses come from res://default_bus_layout.tres, which Godot loads before the audio
+## driver starts. They are NOT created here.
+##
+## They used to be, with AudioServer.add_bus(). On desktop that works. On a web export it
+## silences the entire game: every bus still reports the right name, send, volume and mute
+## state, every player still reports playing with its position advancing, and the output is
+## digital zero. Nothing errors. That cost three sessions of "the audio is fixed" while the
+## shipped browser build made no sound at all.
+##
+## So this only verifies, and complains loudly if the layout is missing.
+func _process(delta: float) -> void:
+	if _fades.is_empty():
+		return
+	var still: Array[Dictionary] = []
+	for f in _fades:
+		var pl: AudioStreamPlayer = f["player"]
+		if not is_instance_valid(pl):
+			continue
+		var target: float = f["target"]
+		var speed: float = f["speed"]
+		pl.volume_db = move_toward(pl.volume_db, target, speed * delta)
+		if is_equal_approx(pl.volume_db, target):
+			pl.volume_db = target
+			if bool(f.get("stop_at_end", false)):
+				pl.stop()
+			continue
+		still.append(f)
+	_fades = still
+
+## Replace any fade already queued for this player, so a fade-out started during a
+## fade-in cannot fight it and leave the volume parked somewhere in between.
+func _start_fade(pl: AudioStreamPlayer, target: float, seconds: float, stop_at_end: bool = false) -> void:
+	var kept: Array[Dictionary] = []
+	for f in _fades:
+		if f["player"] != pl:
+			kept.append(f)
+	_fades = kept
+	var span: float = absf(target - pl.volume_db)
+	if seconds <= 0.0 or span < 0.01:
+		pl.volume_db = target
+		if stop_at_end:
+			pl.stop()
+		return
+	_fades.append({
+		"player": pl,
+		"target": target,
+		"speed": span / seconds,
+		"stop_at_end": stop_at_end,
+	})
+
 func _ensure_buses() -> void:
+	var missing: Array[String] = []
 	for b in BUSES:
 		if AudioServer.get_bus_index(b) == -1:
-			AudioServer.add_bus()
-			var idx := AudioServer.bus_count - 1
-			AudioServer.set_bus_name(idx, b)
-			AudioServer.set_bus_send(idx, "Master")
+			missing.append(b)
+	if not missing.is_empty():
+		push_error("[AudioManager] Missing audio buses: %s. default_bus_layout.tres is not "
+			% ", ".join(missing)
+			+ "loading. Do NOT fix this by creating them at runtime: that silences web builds.")
 
 func _make_player(bus: String) -> AudioStreamPlayer:
 	var p := AudioStreamPlayer.new()
@@ -130,11 +193,17 @@ func play_music(id: String, fade: float = 0.8) -> void:
 		_fade_out(prev, fade)
 		return
 	next.stream = stream
-	next.volume_db = -40.0
 	next.play()
-	var tw := create_tween()
-	tw.set_ignore_time_scale(true)
-	tw.tween_property(next, "volume_db", 0.0, fade)
+	# Only cross-fade when there is something to cross-fade FROM. Starting the first
+	# track of a session at -40 dB and relying on a fade to bring it up means any failure
+	# to advance that fade leaves the game apparently silent, which is precisely the
+	# symptom this project shipped with. A track that has nothing to blend with starts
+	# at full volume, so the worst a broken fade can now do is skip a transition.
+	if prev != null and prev.playing:
+		next.volume_db = FADE_FLOOR_DB
+		_start_fade(next, 0.0, fade)
+	else:
+		next.volume_db = 0.0
 	_fade_out(prev, fade)
 
 func stop_music(fade: float = 0.6) -> void:
@@ -142,12 +211,9 @@ func stop_music(fade: float = 0.6) -> void:
 	_fade_out(_music_active, fade)
 
 func _fade_out(p: AudioStreamPlayer, fade: float) -> void:
-	if not p.playing:
+	if p == null or not p.playing:
 		return
-	var tw := create_tween()
-	tw.set_ignore_time_scale(true)
-	tw.tween_property(p, "volume_db", -40.0, fade)
-	tw.tween_callback(p.stop)
+	_start_fade(p, FADE_FLOOR_DB, fade, true)
 
 # ---------------- Ambience ----------------
 func play_ambience(id: String) -> void:
