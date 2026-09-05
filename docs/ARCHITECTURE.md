@@ -155,6 +155,26 @@ This is the main lever for cheap expansion: a new neighbourhood is one JSON layo
 
 The vertical bands of a street are documented in `tools/gen_areas.py`.
 
+### Ambient motion
+
+A layout may carry `sway` and `flicker` flags on individual scenery items, plus an
+area-level `ambient` block for wind-blown litter. One `Ambient` node per area drives every
+effect from a single `_process`, rather than giving each swaying awning its own script: a
+street has a couple of dozen of these and they are all doing arithmetic on one float.
+
+None of it affects gameplay. No collision, no damage, no state.
+
+Two rules that are not obvious:
+
+- **Everything moves in whole pixels.** The project snaps 2D transforms to the pixel grid,
+  so a sub-pixel sway judders between two positions at an uneven rate rather than moving
+  smoothly. One or two pixels at a slow rate reads as a breeze; anything finer reads as a
+  fault.
+- **Flicker changes `modulate` on the scenery sprite, not on its emission overlay.**
+  Modulate is inherited by children, so the overlay from the lighting pass rides along and
+  the bloom pulses with the light rather than staying at a constant glow behind a
+  flickering lamp.
+
 ### Lighting
 
 A layout may carry an optional `lighting` block. `AreaLighting` reads it and builds a
