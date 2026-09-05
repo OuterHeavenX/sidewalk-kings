@@ -195,6 +195,23 @@ func test_audio() -> void:
 			bad_sfx.append(id)
 	check("every sound effect resolves", bad_sfx.is_empty(), ", ".join(bad_sfx))
 
+	# Every impact a move can produce has to exist. Moves name their hit sound in data, so
+	# a typo there is silent: the hit lands, plays nothing, and looks like a design choice.
+	var bad_hit: Array[String] = []
+	var kicks_not_kicking: Array[String] = []
+	for mid in ContentDB.moves.keys():
+		var mv: MoveData = ContentDB.moves[mid]
+		if mv.hit_sound == "":
+			bad_hit.append(str(mid) + ":empty")
+		elif AudioManager._resolve(AudioManager.SFX_DIR, mv.hit_sound) == null:
+			bad_hit.append("%s:%s" % [mid, mv.hit_sound])
+		if mv.damage_kind == MoveData.DamageKind.KICK and mv.hit_sound == "hit_heavy":
+			kicks_not_kicking.append(str(mid))
+	check("every move's impact sound exists", bad_hit.is_empty(), ", ".join(bad_hit))
+	check("kicks land with a kick sound, not a punch", kicks_not_kicking.is_empty(),
+		", ".join(kicks_not_kicking))
+
+
 	var bad_music: Array[String] = []
 	var not_looping: Array[String] = []
 	for id in ["title", "street", "market", "alley", "industrial", "boss", "victory", "shop"]:
@@ -1310,6 +1327,84 @@ func test_doors() -> void:
 	check("walking into the door travels to the next area",
 		GameManager.player_data.current_area == destination,
 		"%s -> %s after %d frames" % [before, GameManager.player_data.current_area, guard])
+
+	await _check_doors_are_visible()
+
+## An area layout, straight off disk.
+func _layout(area_id: String) -> Dictionary:
+	var path := "res://data/areas/%s.json" % area_id
+	if not FileAccess.file_exists(path):
+		return {}
+	var f := FileAccess.open(path, FileAccess.READ)
+	var parsed = JSON.parse_string(f.get_as_text())
+	f.close()
+	return parsed if parsed is Dictionary else {}
+
+## A door with nothing to look at is not a door, it is a patch of wall that happens to work.
+##
+## The route back onto the roofs was an invisible 24x40 trigger in front of a plain brick
+## facade, with a streetlight standing on the exact same x. It passed every test there was:
+## the graph was symmetric, the spawn existed, the mask was right, and walking into it
+## worked. The only way to find it was to walk the street pressing the interact key. So
+## these two checks are about what the player can SEE, which nothing else here tests.
+func _check_doors_are_visible() -> void:
+	var no_marker: Array[String] = []
+	var no_art: Array[String] = []
+	for area_id in ContentDB.areas.keys():
+		var layout: Dictionary = _layout(str(area_id))
+		if layout.is_empty():
+			continue
+		var scen: Array = layout.get("scenery", [])
+		for entry in layout.get("doors", []):
+			if bool(entry.get("auto", false)):
+				continue   # an edge door is the end of the street; walking off it is expected
+			var dx := float(entry.get("x", 0.0))
+			var tag := "%s/%s" % [area_id, entry.get("id", "?")]
+			# Scenery is anchored top-left and a shopfront is 126 px wide, so proximity has
+			# to be measured against the sprite's extent. Comparing anchors called four
+			# perfectly visible doors invisible and hid the one that really was.
+			var seen := false
+			for sc in scen:
+				var x0 := float(sc.get("x", -9999.0))
+				var tex: Texture2D = load(str(sc.get("texture", "")))
+				var w: float = (tex.get_width() if tex else 0) * float(sc.get("scale", 1.0))
+				if dx >= x0 - 24.0 and dx <= x0 + w + 24.0:
+					seen = true
+					break
+			if not seen:
+				no_art.append(tag)
+	check("every interactable door has art near it", no_art.is_empty(), ", ".join(no_art))
+
+	# And the marker itself has to actually be built, on the live nodes.
+	await SceneManager.change_area("grease_alley", "start")
+	await seconds(0.5)
+	var built := 0
+	var missing := 0
+	for n in GameManager.current_area.actors_root.get_children():
+		var dr := n as Door
+		if dr == null or dr.auto:
+			continue
+		if dr.get_node_or_null("Sprite2D") != null or dr._marker != null:
+			built += 1
+		else:
+			missing += 1
+			no_marker.append(dr.door_id)
+	check("interactable doors build a marker you can see from a distance",
+		missing == 0 and built > 0, "built %d, missing %s" % [built, ", ".join(no_marker)])
+
+	# The fire escape is the specific one that went wrong: the door and its art must line up.
+	var alley: Dictionary = _layout("grease_alley")
+	var roof_x := -1.0
+	for entry in alley.get("doors", []):
+		if str(entry.get("id", "")) == "to_roof":
+			roof_x = float(entry.get("x", 0.0))
+	var escape_x := -1.0
+	for sc in alley.get("scenery", []):
+		if str(sc.get("texture", "")).ends_with("fire_escape.png"):
+			escape_x = float(sc.get("x", 0.0))
+	check("the fire escape door stands on the fire escape",
+		roof_x > 0.0 and escape_x > 0.0 and absf(roof_x - escape_x) <= 40.0,
+		"door x=%.0f, art x=%.0f" % [roof_x, escape_x])
 
 # ---------------------------------------------------------------- world graph
 ## The map is a graph of doors. A door that names a spawn point the destination does not

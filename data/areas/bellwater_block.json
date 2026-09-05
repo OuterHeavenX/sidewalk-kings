@@ -210,6 +210,13 @@
    "scale": 1.0
   },
   {
+   "texture": "res://assets/art/props/fire_escape.png",
+   "x": 1454,
+   "y": -130.0,
+   "z": -20,
+   "scale": 1.0
+  },
+  {
    "texture": "res://assets/art/props/streetlight.png",
    "x": 110,
    "y": -78.0,

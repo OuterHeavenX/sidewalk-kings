@@ -111,6 +111,16 @@ WS_SWING, WS_BLUNT, WS_THROW, WS_BOUNCE = range(4)
 # ===========================================================================
 # MOVES
 # ===========================================================================
+# What a landed hit sounds like follows from what hit you, so it is derived from
+# damage_kind rather than repeated on every move. Spelling it out per move is how nine
+# kicks ended up landing with the sound of a fist: each one passed hit_sound="hit_heavy"
+# by hand, and there was no single place that would have made that look wrong.
+HIT_SOUND_BY_KIND = {
+    DK_PUNCH: "hit_light", DK_KICK: "hit_kick", DK_THROW: "hit_heavy",
+    DK_WEAPON: "hit_weapon", DK_SPECIAL: "hit_crit", DK_BODY: "hit_heavy",
+}
+
+
 def move(id, name, anim, **kw):
     p = dict(
         id=id, display_name=name, description="", animation=anim,
@@ -120,12 +130,15 @@ def move(id, name, anim, **kw):
         energy_cost=0.0, special_cost=0.0, forward_move=0.0, self_launch=0.0,
         grab_target=False, multi_hit=1, armor=False,
         hitbox_offset=(18.0, -22.0), hitbox_size=(22.0, 30.0), lane_tolerance=13.0,
-        followups=[], sound="whoosh_light", hit_sound="hit_light",
+        followups=[], sound="whoosh_light", hit_sound=None,
         screen_shake=0.0, hit_pause=0.04, hit_fx="spark_small", camera_kick=0.0,
         price=0, required_level=1, required_stat="", required_stat_value=0,
         required_move="", required_flag="", learnable=False,
     )
     p.update(kw)
+    # An explicit hit_sound still wins; None means "whatever this kind of hit sounds like".
+    if p["hit_sound"] is None:
+        p["hit_sound"] = HIT_SOUND_BY_KIND.get(p["damage_kind"], "hit_light")
     return p
 
 MOVES = [
@@ -143,7 +156,7 @@ MOVES = [
     move("kick", "Roundhouse", "kick", damage=12, damage_kind=DK_KICK, input=IN_LIGHT,
          startup=6, active=4, recovery=15, hitstun=20, knockback=(120.0, 0.0),
          hitbox_offset=(22.0, -20.0), hitbox_size=(26.0, 30.0), screen_shake=1.6, hit_pause=0.055,
-         hit_fx="spark_big", hit_sound="hit_heavy", sound="kick", followups=["heavy"],
+         hit_fx="spark_big", sound="kick", followups=["heavy"],
          description="Long-reach kick that pushes them off you."),
     move("heavy", "Haymaker", "heavy", damage=17, input=IN_HEAVY, startup=9, active=4, recovery=20,
          hitstun=26, knockback=(180.0, 0.0), knockdown=True, launch_force=110.0,
@@ -154,12 +167,12 @@ MOVES = [
     move("jump_kick", "Jump Kick", "jump_kick", damage=13, damage_kind=DK_KICK, input=IN_LIGHT,
          requirement=RQ_AIR, startup=3, active=8, recovery=6, hitstun=20, knockback=(120.0, 0.0),
          hitbox_offset=(20.0, -14.0), hitbox_size=(26.0, 34.0), screen_shake=1.6, hit_pause=0.05,
-         hit_fx="spark_big", hit_sound="hit_heavy", sound="kick",
+         hit_fx="spark_big", sound="kick",
          description="Attack from the air. Beats grounded grabs."),
     move("jump_stomp", "Falling Stomp", "ground_stomp", damage=16, damage_kind=DK_KICK, input=IN_HEAVY,
          requirement=RQ_AIR, startup=4, active=8, recovery=12, hitstun=24, knockback=(80.0, 0.0),
          knockdown=True, hitbox_offset=(12.0, -8.0), hitbox_size=(24.0, 30.0), screen_shake=3.0,
-         hit_pause=0.08, hit_fx="spark_big", hit_sound="hit_heavy", sound="whoosh_heavy",
+         hit_pause=0.08, hit_fx="spark_big", sound="whoosh_heavy",
          learnable=True, price=180, required_level=3,
          description="Drop both heels onto whoever is below."),
     move("run_attack", "Shoulder Charge", "run_attack", damage=15, damage_kind=DK_BODY,
@@ -199,15 +212,14 @@ MOVES = [
     move("spin_kick", "Spin Kick", "spin_kick", damage=16, damage_kind=DK_KICK, input=IN_HEAVY,
          startup=8, active=6, recovery=18, hitstun=24, knockback=(150.0, 0.0), knockdown=True,
          hitbox_offset=(0.0, -22.0), hitbox_size=(52.0, 32.0), lane_tolerance=18.0,
-         screen_shake=2.8, hit_pause=0.07, hit_fx="spark_big", hit_sound="hit_heavy",
-         sound="whoosh_heavy", energy_cost=12.0, multi_hit=2,
+         screen_shake=2.8, hit_pause=0.07, hit_fx="spark_big", sound="whoosh_heavy", energy_cost=12.0, multi_hit=2,
          learnable=True, price=260, required_level=3, required_stat="technique", required_stat_value=7,
          description="Sweeps a full circle. Hits enemies on both sides."),
     move("flying_knee", "Flying Knee", "run_attack", damage=21, damage_kind=DK_KICK, input=IN_HEAVY,
          requirement=RQ_RUN, startup=5, active=7, recovery=18, hitstun=28, knockback=(190.0, 0.0),
          knockdown=True, self_launch=150.0, forward_move=190.0, hitbox_offset=(20.0, -16.0),
          hitbox_size=(26.0, 34.0), screen_shake=3.2, hit_pause=0.08, hit_fx="spark_big",
-         hit_sound="hit_heavy", sound="dash", energy_cost=14.0,
+         sound="dash", energy_cost=14.0,
          learnable=True, price=300, required_level=4, required_move="run_attack",
          description="Sprint, leap, and drive a knee through their guard."),
     move("power_punch", "Power Punch", "heavy", damage=26, input=IN_HEAVY, startup=13, active=4,
@@ -232,20 +244,19 @@ MOVES = [
     move("ground_stomp", "Ground Stomp", "ground_stomp", damage=12, damage_kind=DK_KICK,
          input=IN_HEAVY, startup=5, active=4, recovery=14, hitstun=16, knockback=(40.0, 0.0),
          hitbox_offset=(14.0, -6.0), hitbox_size=(22.0, 20.0), screen_shake=2.0, hit_pause=0.06,
-         hit_fx="dust", hit_sound="hit_heavy", sound="whoosh_heavy",
+         hit_fx="dust", sound="whoosh_heavy",
          description="Stomp on someone who is already down."),
     # --- Bex's school: Metro Line techniques ---
     move("turnstile_spin", "Turnstile Spin", "spin_kick", damage=14, damage_kind=DK_KICK, input=IN_HEAVY,
          startup=7, active=8, recovery=16, hitstun=22, knockback=(120.0, 0.0), knockdown=True,
          hitbox_offset=(0.0, -22.0), hitbox_size=(58.0, 32.0), lane_tolerance=20.0, multi_hit=3,
-         screen_shake=2.6, hit_pause=0.06, hit_fx="spark_big", hit_sound="hit_heavy",
-         sound="whoosh_heavy", energy_cost=13.0,
+         screen_shake=2.6, hit_pause=0.06, hit_fx="spark_big", sound="whoosh_heavy", energy_cost=13.0,
          learnable=True, price=280, required_level=4, required_move="spin_kick",
          description="A wider, faster spin. Clears a crowd off a platform edge."),
     move("platform_drop", "Platform Drop", "ground_stomp", damage=22, damage_kind=DK_KICK, input=IN_HEAVY,
          requirement=RQ_AIR, startup=5, active=8, recovery=16, hitstun=30, knockback=(110.0, 0.0),
          knockdown=True, hitbox_offset=(12.0, -8.0), hitbox_size=(30.0, 32.0), screen_shake=4.0,
-         hit_pause=0.09, hit_fx="spark_big", hit_sound="hit_heavy", sound="whoosh_heavy",
+         hit_pause=0.09, hit_fx="spark_big", sound="whoosh_heavy",
          learnable=True, price=340, required_level=5, required_move="jump_stomp",
          description="Come down on them with everything. Best from a height."),
     move("closing_doors", "Closing Doors", "grab_punch", damage=16, damage_kind=DK_THROW,
@@ -294,7 +305,7 @@ MOVES = [
          hitstun=16, knockback=(80.0, 0.0), sound="whoosh_light", hit_sound="hit_light"),
     move("enemy_kick", "Thug Kick", "kick", damage=9, damage_kind=DK_KICK, startup=12, active=4,
          recovery=20, hitstun=18, knockback=(110.0, 0.0), hitbox_offset=(21.0, -20.0),
-         sound="kick", hit_sound="hit_light", screen_shake=1.0),
+         sound="kick", screen_shake=1.0),
     move("enemy_heavy", "Thug Haymaker", "heavy", damage=14, startup=18, active=4, recovery=26,
          hitstun=26, knockback=(170.0, 0.0), knockdown=True, hitbox_offset=(23.0, -22.0),
          screen_shake=2.4, hit_pause=0.06, hit_fx="spark_big", hit_sound="hit_heavy",
@@ -324,7 +335,7 @@ MOVES = [
          screen_shake=1.4),
     move("boss_kick", "Boot Polish", "kick", damage=15, damage_kind=DK_KICK, startup=13, active=4,
          recovery=20, hitstun=22, knockback=(150.0, 0.0), hitbox_offset=(24.0, -20.0),
-         screen_shake=2.0, hit_fx="spark_big", hit_sound="hit_heavy", sound="kick"),
+         screen_shake=2.0, hit_fx="spark_big", sound="kick"),
     move("boss_slam", "Pressing Slam", "ground_stomp", damage=24, damage_kind=DK_BODY, startup=16,
          active=6, recovery=34, hitstun=40, knockback=(200.0, 0.0), knockdown=True, armor=True,
          hitbox_offset=(16.0, -12.0), hitbox_size=(46.0, 36.0), lane_tolerance=22.0,

@@ -165,6 +165,24 @@ func run() -> void:
 		await seconds(0.5)
 		await shot(area_id)
 
+	# --- The fire escape, which is the whole point of having drawn one ---
+	await SceneManager.change_area("grease_alley", "start")
+	await seconds(0.8)
+	# An encounter starts as soon as the player is in the street, and a running fight locks
+	# the camera to its arena. The first attempts at this shot framed the subject off the
+	# right edge with the camera pinned 250 px behind the player, which looked like a
+	# camera bug and was a fight nobody had noticed starting.
+	for e in get_tree().get_nodes_in_group("enemies"):
+		e.queue_free()
+	GameManager.current_area.director._finish()
+	GameManager.current_area.camera.unlock()
+	for t in GameManager.current_area._encounter_triggers:
+		t.fired = true
+	await frames(2)
+	GameManager.player.global_position.x = 743.0
+	await seconds(1.2)
+	await shot("fire_escape")
+
 	# --- Boss ---
 	GameManager.set_flag("yard_cleared", true)
 	await SceneManager.change_area("starch_laundromat", "start")

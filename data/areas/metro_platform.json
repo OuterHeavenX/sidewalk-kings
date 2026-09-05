@@ -77,6 +77,13 @@
    "scale": 1.0
   },
   {
+   "texture": "res://assets/art/backgrounds/shop_dojo.png",
+   "x": 630,
+   "y": -202.0,
+   "z": -30,
+   "scale": 1.0
+  },
+  {
    "texture": "res://assets/art/props/ac_unit.png",
    "x": 820,
    "y": -70.0,

@@ -197,35 +197,78 @@ def sfx_whoosh(pitch=1.0, dur=0.16):
         out.append(prev * math.sin(math.pi * t) * 0.75)
     return normalize(out, 0.55)
 
+# A punch landing is three sounds at once: the slap of contact, the meat behind it, and a
+# low thump you feel more than hear. The first version of these had only the slap. Its
+# deepest component was a 300 Hz sine dying in 40 ms, which measured -25 dB RMS against a
+# -16.7 dB whoosh -- so the wind-up was audibly louder than the impact it was leading to,
+# and a landed hit read as a tick. Peak level hid it: these normalised to -1.6 dB peak and
+# sounded like nothing, because a spike has a high peak and almost no energy.
+#
+# Judge these by RMS, not peak. An impact should sit at or above the swing that precedes
+# it. soft_clip before normalize is what buys that: it packs the transient down and lets
+# the low end come up, which also keeps the hit audible on a phone speaker that cannot
+# reproduce the bottom octave at all.
+
 def sfx_hit_light():
-    return normalize(mix(
-        noise_burst(0.07, 0.8, 34, lp=0.6, seed=7),
-        tone(720, 0.05, "square", 0.32, 40, slide=-0.7),
-        tone(300, 0.09, "sine", 0.5, 26, slide=-0.5),
-    ), 0.85)
+    return normalize(soft_clip(mix(
+        noise_burst(0.055, 0.70, 22, lp=0.50, seed=7),      # contact
+        tone(260, 0.10, "square", 0.30, 14, slide=-0.55),   # meat
+        tone(140, 0.15, "sine", 0.70, 8, slide=-0.30),      # body
+        tone(95, 0.17, "sine", 0.60, 6),                    # thump
+    ), 1.35), 0.90)
 
 def sfx_hit_heavy():
-    return normalize(mix(
-        noise_burst(0.18, 0.9, 16, lp=0.34, seed=8),
-        tone(420, 0.08, "square", 0.35, 30, slide=-0.6),
-        tone(120, 0.24, "sine", 0.9, 11, slide=-0.45),
-        tone(70, 0.28, "sine", 0.55, 8),
-    ), 0.95)
+    return normalize(soft_clip(mix(
+        noise_burst(0.10, 0.75, 14, lp=0.36, seed=8),
+        tone(300, 0.12, "square", 0.30, 12, slide=-0.6),
+        tone(120, 0.26, "sine", 0.95, 6, slide=-0.35),
+        tone(68, 0.32, "sine", 0.75, 4.5),
+    ), 1.5), 0.95)
+
+def sfx_hit_kick():
+    """A kick landing, distinct from a punch: duller, lower, and longer.
+
+    A shin carries more mass and less snap than a fist, so the bright contact layer is
+    quieter and more filtered while the low end runs on. Without this every kick in the
+    game landed with the exact sound of a haymaker, which is why a combo read as one
+    repeated noise rather than as different limbs.
+    """
+    return normalize(soft_clip(mix(
+        noise_burst(0.09, 0.50, 18, lp=0.26, seed=17),
+        tone(190, 0.13, "square", 0.26, 13, slide=-0.5),
+        tone(105, 0.24, "sine", 0.90, 6, slide=-0.28),
+        tone(58, 0.30, "sine", 0.80, 4.0),
+    ), 1.45), 0.94)
 
 def sfx_hit_weapon():
-    return normalize(mix(
-        noise_burst(0.12, 0.7, 22, lp=0.75, seed=9),
-        tone(1180, 0.14, "square", 0.3, 22, slide=-0.35),
-        tone(1570, 0.1, "sine", 0.22, 26, slide=-0.3),
-        tone(180, 0.16, "sine", 0.6, 16, slide=-0.4),
-    ), 0.9)
+    """A bat or pipe connecting: a bright crack over the same body every impact needs.
+
+    This had the original defect too and it showed up only once the fists were fixed --
+    a weapon hit measured -23 dB RMS, quieter than a bare jab, which is exactly backwards
+    for the thing you spent money on.
+    """
+    return normalize(soft_clip(mix(
+        noise_burst(0.075, 0.65, 20, lp=0.72, seed=9),
+        tone(1180, 0.10, "square", 0.26, 20, slide=-0.35),
+        tone(1570, 0.07, "sine", 0.18, 24, slide=-0.3),
+        tone(320, 0.14, "square", 0.30, 12, slide=-0.5),
+        tone(130, 0.22, "sine", 0.80, 7, slide=-0.3),
+        tone(74, 0.26, "sine", 0.55, 5),
+    ), 1.45), 0.95)
 
 def sfx_hit_crit():
-    return normalize(mix(
+    """The biggest hit in the game, and it has to measure that way.
+
+    Building this by mixing bright tones on top of sfx_hit_heavy and normalising to peak
+    made it quieter than a plain heavy: the added highs raised the peak, so normalize
+    scaled the whole thing down. Peak level says nothing about how hard something lands.
+    """
+    return normalize(soft_clip(mix(
         sfx_hit_heavy(),
-        tone(880, 0.16, "pulse25", 0.28, 14, slide=0.35),
-        tone(1320, 0.12, "square", 0.2, 18, slide=0.5),
-    ), 0.97)
+        tone(880, 0.16, "pulse25", 0.24, 14, slide=0.35),
+        tone(1320, 0.12, "square", 0.16, 18, slide=0.5),
+        tone(52, 0.36, "sine", 0.70, 3.5),
+    ), 1.9), 0.97)
 
 def sfx_block():
     return normalize(mix(
@@ -247,7 +290,12 @@ def sfx_jump():
     return normalize(tone(300, 0.16, "square", 0.4, 12, slide=1.4), 0.55)
 
 def sfx_step():
-    return normalize(noise_burst(0.05, 0.32, 40, lp=0.22, seed=random.randint(1, 999)), 0.35)
+    # Fixed seed. This drew from the unseeded global RNG, so every run of the generator
+    # produced a different footstep and a spurious diff in the repository -- which quietly
+    # breaks the one guarantee the pipeline offers, that regenerating from source gives you
+    # back the same assets. The variety is added at playback anyway: Player passes a pitch
+    # spread to play_sfx, so no two steps sound alike regardless of what is on disk.
+    return normalize(noise_burst(0.05, 0.32, 40, lp=0.22, seed=41), 0.35)
 
 def sfx_hurt(pitch=1.0):
     return normalize(mix(
@@ -399,6 +447,7 @@ SFX = {
     "punch_light": sfx_punch_light, "punch_heavy": sfx_punch_heavy, "kick": sfx_kick,
     "whoosh_light": lambda: sfx_whoosh(1.0, 0.13), "whoosh_heavy": lambda: sfx_whoosh(0.7, 0.2),
     "hit_light": sfx_hit_light, "hit_heavy": sfx_hit_heavy, "hit_weapon": sfx_hit_weapon, "hit_crit": sfx_hit_crit,
+    "hit_kick": sfx_hit_kick,
     "block": sfx_block, "throw": sfx_throw, "land": sfx_land, "jump": sfx_jump, "step": sfx_step,
     "hurt": sfx_hurt, "enemy_hurt": sfx_enemy_hurt, "enemy_defeat": sfx_enemy_defeat, "knockdown": sfx_knockdown,
     "money": sfx_money, "pickup": sfx_pickup, "purchase": sfx_purchase, "eat": sfx_eat,

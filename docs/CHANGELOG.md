@@ -348,6 +348,88 @@ An area with no lighting block is untouched. Reloading an area keeps the player 
 
 ---
 
+## Unreleased — playtest fixes: doors you can see, punches you can feel
+
+The first full playthrough. Everything below came from it, and all of it is the same
+defect wearing different clothes: something existed, worked correctly, and never announced
+itself.
+
+### The roof route was unfindable
+
+Getting onto the roofs from Bellwater is an automatic street-edge door — you walk into it.
+Coming down puts you in Grease Alley, three areas earlier. Getting back up was a
+**non-auto, mid-street interact door at x=620** with **no art of any kind**: an invisible
+24x40 trigger in front of a plain brick facade, and `lamp_row` put a streetlight at exactly
+x=620, so a lamp stood in front of a door nobody could see. The only way to find it was to
+walk the street pressing the interact key.
+
+- **Fire escapes are drawn now.** There was no fire escape sprite in the game at all. The
+  new one has three landings, stair runs and a drop ladder hanging within reach, because
+  the entire job of the sprite is to say "you can climb here" from across the street.
+- The Grease Alley door moved to clear wall at x=743 and now sits on the art.
+- **Bex's dojo on the metro platform was invisible too** — the only shop in the game with
+  no shopfront, just a bare stretch of platform wall with a trigger in it. Found by the new
+  check, not by playing.
+
+### Doors announce themselves
+
+Every interactable door now carries a chevron that fades in from about 108 px and brightens
+past 1.0 into the bloom when you are close enough to use it. Locked doors show it too: a
+door you cannot open yet is information, and a door you cannot see is a dead end that looks
+like a wall. The HUD prompt still exists, but at 26 px it only ever told you about a door
+you were already standing in.
+
+### Punches now land
+
+Reported as "the swing effects are great, but no punch when it lands". Measured, the
+complaint was exact: `hit_light` was **-25.0 dB RMS against a -16.7 dB whoosh**, so the
+wind-up was 8 dB louder than the impact it led into. Its deepest component was a 300 Hz
+sine dying in 40 ms — there was nothing below 300 Hz in a punch landing.
+
+The sounds had normalised to a loud *peak* (-1.6 dB) and read as fine. Peak says nothing
+about how hard something lands; a click and a thump can share a peak and differ by ten
+decibels of energy.
+
+- Impacts rebuilt with contact, meat and a low thump, soft-clipped so they survive a phone
+  speaker that cannot reproduce the bottom octave at all.
+- **Kicks have their own impact.** Every kick in the game landed with the sound of a
+  haymaker, so a combo read as one repeated noise rather than as different limbs.
+- Weapon hits and crits had the same defect, exposed only once the fists were fixed: a bat
+  measured quieter than a bare jab, and a crit quieter than a normal heavy.
+- The hit sound is now derived from `damage_kind` rather than repeated on every move. Nine
+  kicks each passed `hit_sound="hit_heavy"` by hand and no single place made that look
+  wrong.
+
+| | swing | impact |
+|---|---|---|
+| light | -16.7 | **-15.1** |
+| heavy | -18.0 | **-11.8** |
+| kick | -23.0 | **-11.7** |
+| weapon | -18.0 | **-13.7** |
+| crit | | **-9.2** |
+
+### Fixed by the tests
+
+- **The door-art check called four visible doors invisible and missed the one that was
+  not.** It compared the door's x against each scenery sprite's anchor, but scenery is
+  anchored top-left and a shopfront is 126 px wide. Measuring against the sprite's extent
+  found Bex's dojo, which nothing was covering.
+- **The loudness checks measured nothing at all.** Written first as GDScript reading
+  `AudioStreamWAV.data`, they reported about -5 dB for every sound: Godot imports WAVs as
+  QOA, so that buffer is compressed bytes and decoding it as PCM produces noise. An
+  instrument that returns a plausible number for everything is worse than none, so the
+  check moved to `tools/check_audio.py`, beside the generator, where the sources are PCM.
+
+### Tests
+
+Suite is **297 checks**, plus `tools/check_audio.py`. The new ones assert what the player
+can *see* and *hear*, which nothing here tested before: that every interactable door has
+art reaching it, that the fire escape door stands on the fire escape, that doors build a
+marker, that every move's impact sound exists, that kicks do not land as punches, and that
+every impact outweighs the swing before it.
+
+---
+
 ## Unreleased — the map, fast travel, and three save slots
 
 Phase 2's last stage, and the smallest: nearly all of it was surfacing capability the data

@@ -64,6 +64,14 @@ jobs:
           godot --headless --path . --import || true
           test -d .godot || { echo "::error::Project import produced no .godot directory"; exit 1; }
 
+      - name: Check the audio
+        run: |
+          set -euo pipefail
+          # Impacts must outweigh the swings that precede them. This cannot run inside
+          # Godot: WAVs import as QOA, so the runtime buffer is compressed bytes and
+          # measuring it reports the same wrong number for every sound.
+          python3 tools/check_audio.py
+
       - name: Run the smoke test
         run: |
           set -euo pipefail

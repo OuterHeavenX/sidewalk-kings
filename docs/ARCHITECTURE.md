@@ -226,6 +226,37 @@ scenes. At a 480×270 design resolution, code-built layout is easier to keep con
 `ShopController` handles every shop type from `ShopData`, so the restaurant, store, dojo,
 bookstore and weapon shop are one scene and one script.
 
+### Doors have to be visible
+
+A door is a trigger volume with no appearance of its own. Nothing about placing one puts
+anything on screen, so a door can be correct in every testable way — graph symmetric,
+spawn valid, collision mask right, travel working — and still be undiscoverable. That is
+exactly what happened to the route back onto the roofs and to Bex's dojo.
+
+Two rules:
+
+- **Every interactable door needs art that reaches it.** Not near it: scenery is anchored
+  top-left, so a check that compares anchor positions will clear a door standing under the
+  far end of a 126 px shopfront and flag four that are perfectly visible.
+- **The affordance is the art's job, not the prompt's.** The HUD prompt appears within
+  26 px, which is close enough to be standing in the doorway. The chevron marker starts at
+  108 px, and the fire escape sprite hangs its ladder down within reach so the shape itself
+  says climbable.
+
+### Impacts are measured, not eyeballed
+
+A landed hit must carry more energy than the swing that led into it, and that is checked in
+`tools/check_audio.py` rather than in the smoke test. Godot imports WAVs as QOA, so
+`AudioStreamWAV.data` at runtime is compressed bytes; decoding it as PCM yields noise that
+measures about -5 dB for every sound. The sources on disk are PCM, so the check lives with
+them.
+
+Judge impacts by RMS. The original hit sounds normalised to a -1.6 dB peak and measured
+-25 dB RMS: a click with a tall spike and no body, which playtesting reported as no punch
+sound at all.
+
+A move's impact sound comes from its `damage_kind`, not from a per-move argument.
+
 ### The map
 
 `MapView` draws nodes from `AreaData.map_position` and edges from `AreaData.connections`.

@@ -150,6 +150,82 @@ def prop_streetlight():
     d.polygon([(18, 11), (21, 11), (20, 16), (19, 16)], fill=(255, 255, 235))
     return outline_alpha(im)
 
+def prop_fire_escape():
+    """The iron zigzag up the back of a building, with a drop ladder you can reach.
+
+    This exists because the route onto the roof was an invisible trigger volume in front
+    of a plain brick facade. The door worked; there was simply nothing to see, so the only
+    way to find it was to walk the whole street pressing the interact key.
+
+    The ladder is drawn hanging down within reach rather than folded up, because the
+    entire job of this sprite is to say "you can climb here" from across the street.
+    """
+    W, H = 34, 140
+    im = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    d = ImageDraw.Draw(im)
+    iron = (62, 66, 78)
+    lit = shade(iron, 1.35)
+    dark = shade(iron, 0.62)
+
+    def post(x, y0, y1):
+        d.rectangle([x, y0, x + 2, y1], fill=iron)
+        d.rectangle([x, y0, x, y1], fill=lit)          # light catches the left edge
+
+    LANDINGS = (30, 68, 106)
+    post(3, 8, LANDINGS[-1] + 4)
+    post(29, 8, LANDINGS[-1] + 4)
+
+    for i, ly in enumerate(LANDINGS):
+        # Platform, with a dark underside so it reads as having thickness.
+        d.rectangle([2, ly, 31, ly + 2], fill=lit)
+        d.rectangle([2, ly + 3, 31, ly + 4], fill=dark)
+        # Railing: uprights with a top rail across them.
+        for bx in range(4, 30, 5):
+            d.rectangle([bx, ly - 9, bx, ly - 1], fill=iron)
+        d.rectangle([3, ly - 10, 30, ly - 9], fill=lit)
+        # The stair run down to the next landing, alternating sides so it zigzags.
+        if i + 1 < len(LANDINGS):
+            ny = LANDINGS[i + 1]
+            left = (i % 2 == 0)
+            x0, x1 = (6, 26) if left else (26, 6)
+            # The stringer first, then the treads on top of it. Without the diagonal the
+            # treads read as a row of floating dashes rather than as a flight of stairs.
+            d.line([x0, ly + 6, x1, ny + 1], fill=dark, width=2)
+            steps = 7
+            for k in range(steps):
+                t0 = k / float(steps)
+                sx = int(x0 + (x1 - x0) * t0)
+                sy = int(ly + 5 + (ny - ly - 5) * t0)
+                d.rectangle([min(sx, sx + 3), sy, max(sx, sx + 3), sy + 1], fill=lit)
+
+    # The drop ladder: the part that says this is climbable.
+    lx0, lx1 = 12, 22
+    d.rectangle([lx0, LANDINGS[-1] + 4, lx0 + 1, H - 4], fill=iron)
+    d.rectangle([lx0, LANDINGS[-1] + 4, lx0, H - 4], fill=lit)
+    d.rectangle([lx1, LANDINGS[-1] + 4, lx1 + 1, H - 4], fill=iron)
+    for ry in range(LANDINGS[-1] + 9, H - 4, 6):
+        d.rectangle([lx0, ry, lx1 + 1, ry + 1], fill=lit)
+
+    # Brackets pinning it to the wall.
+    for by in (14, LANDINGS[1] - 14, LANDINGS[2] - 14):
+        d.rectangle([0, by, 3, by + 1], fill=dark)
+        d.rectangle([30, by, 33, by + 1], fill=dark)
+    return outline_alpha(im)
+
+def prop_door_marker():
+    """A small chevron that hangs over a door and points at it.
+
+    The HUD prompt only appears within 26 pixels, which tells you a door is there once
+    you are already standing in it. That is fine for a door you can see and useless for
+    one you cannot, so this marks the spot from across the street.
+    """
+    W, H = 11, 9
+    im = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    d = ImageDraw.Draw(im)
+    d.polygon([(0, 0), (10, 0), (5, 8)], fill=(255, 226, 150))
+    d.polygon([(2, 1), (8, 1), (5, 5)], fill=(255, 248, 220))
+    return outline_alpha(im)
+
 def prop_fence(w=64):
     im = Image.new("RGBA", (w, 40), (0, 0, 0, 0))
     d = ImageDraw.Draw(im)
@@ -513,6 +589,7 @@ PROPS = {
     "metro_sign": prop_metro_sign, "roof_vent": prop_roof_vent, "aerial": prop_aerial,
     "satellite_dish": prop_satellite_dish, "planter": prop_planter,
     "desk": prop_desk, "filing_cabinet": prop_filing_cabinet,
+    "fire_escape": prop_fire_escape, "door_marker": prop_door_marker,
     "laundry_line": lambda: prop_laundry_line(56),
     "fence": lambda: prop_fence(64),
     "graffiti_a": lambda: prop_graffiti(1), "graffiti_b": lambda: prop_graffiti(5), "graffiti_c": lambda: prop_graffiti(9),

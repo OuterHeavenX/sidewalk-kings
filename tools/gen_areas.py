@@ -467,6 +467,14 @@ alley = {
             scenery(PROP + "ac_unit", 340, DECO_BASE - 130, z=-28),
             scenery(PROP + "ac_unit", 980, DECO_BASE - 138, z=-28),
             scenery(PROP + "laundry_line", 640, DECO_BASE - 128, z=-28, sway=2, sway_speed=0.8),
+            # The way back up to the roof. It stands on clear wall between two lamps: the
+            # door used to sit at x=620, which is exactly where lamp_row puts a
+            # streetlight, so a lamp stood in front of a door that had no art of its own.
+            # z is -20, not the -26 the rest of the wall dressing uses: the sidewalk face
+            # is drawn at -24, so at -26 the bottom half of the ladder was hidden behind it
+            # and the escape appeared to stop in mid-air. The whole point is that the ladder
+            # comes down to where you are standing.
+            scenery(PROP + "fire_escape", 726, DECO_BASE - 140, z=-20),
             scenery(PROP + "fence", 60, CURB_TOP - 38, z=-21),
         ]
         + lamp_row(W3, 240, 140)
@@ -511,10 +519,10 @@ alley = {
         {"id": "pops_shop_door", "shop": "pops_gear", "x": 1030, "y": LANE_MIN - 2,
          "label": "Pops' Gear", "required_flag": "met_pops",
          "locked": "Pops hasn't decided if he likes you yet."},
-        {"id": "to_roof", "to": "rooftop_route", "spawn": "from_alley", "x": 620,
-         "y": LANE_MIN - 2, "label": "Fire Escape", "required_flag": "metro_open",
-         "locked": "The ladder is folded up out of reach. No reason to want it yet.",
-         "w": 24, "h": 40},
+        {"id": "to_roof", "to": "rooftop_route", "spawn": "from_alley", "x": 743,
+         "y": LANE_MIN - 2, "label": "Climb the fire escape", "required_flag": "metro_open",
+         "locked": "No reason to be up on the roofs yet.",
+         "w": 34, "h": 46},
     ],
     "spawns": [
         {"id": "start", "x": 80, "y": 58},
@@ -717,6 +725,9 @@ metro = {
     "scenery": [
         scenery(PROP + "metro_sign", 90, ROAD_TOP - 26, z=-28, flicker=0.08, flicker_speed=3.1),
         scenery(PROP + "sign", 560, ROAD_TOP - 44, z=-28),
+        # Bex's dojo. The door into it was a bare stretch of platform wall with an
+        # invisible trigger in it -- the only shop in the game with no shopfront.
+        building("shop_dojo", 630, 212, z=-30),
         scenery(PROP + "ac_unit", 820, ROAD_TOP - 24, z=-28),
         scenery(PROP + "sign", 1104, ROAD_TOP - 44, z=-28),
         scenery(PROP + "metro_sign", 1220, ROAD_TOP - 26, z=-28, flicker=0.08, flicker_speed=3.1),
@@ -918,6 +929,7 @@ bellwater = {
             scenery(PROP + "satellite_dish", 1058, DECO_BASE - 134, z=-28),
             scenery(PROP + "car_blue", 620, CURB_TOP - 38, z=-21),
             scenery(PROP + "fence", 1440, CURB_TOP - 38, z=-21),
+        scenery(PROP + "fire_escape", W8 - 46, DECO_BASE - 140, z=-20),
         ]
         + lamp_row(W8, 200, 110)
     ),

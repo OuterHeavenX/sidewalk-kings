@@ -21,6 +21,7 @@ Only dependency: `pip install pillow`.
 | `gen_data.py` | Moves, enemies, food, books, items, weapons, shops, quests, dialogue, encounters, area metadata | `data/**/*.tres` |
 | `gen_areas.py` | Area layouts | `data/areas/*.json` |
 | `gen_cutscenes.py` | Scripted scenes | `data/cutscenes/*.json` |
+| `check_audio.py` | Verifies impacts outweigh swings | exit code |
 | `gen_scenes.py` | Godot scene files | `*.tscn` throughout the project |
 
 Run them from the project root. Order only matters the first time: characters and world art

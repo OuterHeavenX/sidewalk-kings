@@ -237,6 +237,13 @@
    "sway_speed": 0.8
   },
   {
+   "texture": "res://assets/art/props/fire_escape.png",
+   "x": 726,
+   "y": -130.0,
+   "z": -20,
+   "scale": 1.0
+  },
+  {
    "texture": "res://assets/art/props/fence.png",
    "x": 60,
    "y": -36.0,
@@ -485,13 +492,13 @@
    "id": "to_roof",
    "to": "rooftop_route",
    "spawn": "from_alley",
-   "x": 620,
+   "x": 743,
    "y": 32.0,
-   "label": "Fire Escape",
+   "label": "Climb the fire escape",
    "required_flag": "metro_open",
-   "locked": "The ladder is folded up out of reach. No reason to want it yet.",
-   "w": 24,
-   "h": 40
+   "locked": "No reason to be up on the roofs yet.",
+   "w": 34,
+   "h": 46
   }
  ],
  "spawns": [

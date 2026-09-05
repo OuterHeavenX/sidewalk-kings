@@ -11,7 +11,7 @@ other captures how it looks.
 godot --headless --path . -- --smoke
 ```
 
-Boots the game, starts a session and drives it through 292 checks. Exit code is 0 if
+Boots the game, starts a session and drives it through 297 checks. Exit code is 0 if
 everything passes, 1 otherwise, so it works in CI. Results print to stdout and are also
 flushed line by line to `user://smoke_test.log`, which means a hang or crash still leaves a
 record of exactly how far it got.
