@@ -99,6 +99,11 @@ any individual design choice:
   this size, and an eye flush against the hairline merges into it.
 - **The key light is up and to the left**, on every part, without exception.
 
+**A limb needs a joint.** A uniform-width capsule in one flat tone reads as a slab, not a
+limb, and the bigger the character the worse it gets. Forearms are slimmer than upper
+arms, and every limb is broken at the elbow even when there is no sleeve to justify it.
+Arms hang from the edge of the shoulder, so a wider torso carries them outward.
+
 **Silhouette carries the role.** Torso width, limb thickness, head size, scale, stance and
 hunch come from the enemy's archetype: a rusher is small and narrow, a grappler broad and
 planted, a heavy widest with a small head against a big body, which is what sells mass.

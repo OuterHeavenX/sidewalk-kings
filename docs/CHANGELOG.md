@@ -373,6 +373,13 @@ timings and hitboxes are all untouched. These were rendering faults, not art dec
   rusher had the same silhouette and only the palette told them apart. Torso width, limb
   thickness, head size, overall scale, stance width and hunch now vary by role, and you
   can tell what is coming at you from the outline alone.
+- **Arms read as arms.** They were uniform-width capsules hanging across the chest in one
+  flat tone, which looked like a blob of skin stuck to the torso. The forearm is now
+  slimmer than the upper arm, every limb breaks at the elbow whether or not a sleeve ends
+  there, and the hand is never wider than the wrist.
+- Arms hang from the edge of the shoulder, so widening a torso carries them outward with
+  it. Broad builds previously kept their arms at the narrow spacing and wore them across
+  the middle of the chest.
 - The build comes from the enemy's archetype in the game data, not a second list kept
   beside the art. A hand-written copy would drift the moment an archetype changed, and
   the drift would show up as a heavy that looks like a rusher rather than as an error.

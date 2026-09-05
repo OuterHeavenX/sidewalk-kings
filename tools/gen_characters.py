@@ -442,11 +442,22 @@ def draw_limb(d, pts, w, colors, outline_pass, shadec=None):
         draw_capsule(d, pts[1], pts[2], w + 2, OUTLINE)
         return
     up, lo = colors
+    # The forearm is slimmer than the upper arm. At a uniform width a limb hanging across
+    # the torso reads as a slab rather than as an arm, which is what made the bare
+    # forearms look like blobs of skin stuck to the chest.
+    wl = max(2, w - 1)
     draw_capsule(d, pts[0], pts[1], w, shade(up))
-    draw_capsule(d, pts[1], pts[2], w, shade(lo))
+    draw_capsule(d, pts[1], pts[2], wl, shade(lo))
     o = (0, -1)
     draw_capsule(d, (pts[0][0] + o[0], pts[0][1] + o[1]), (pts[1][0] + o[0], pts[1][1] + o[1]), max(1, w - 1), rgba(up))
-    draw_capsule(d, (pts[1][0] + o[0], pts[1][1] + o[1]), (pts[2][0] + o[0], pts[2][1] + o[1]), max(1, w - 1), rgba(lo))
+    draw_capsule(d, (pts[1][0] + o[0], pts[1][1] + o[1]), (pts[2][0] + o[0], pts[2][1] + o[1]), max(1, wl - 1), rgba(lo))
+    # Always break the limb at the elbow. A sleeve cuff is the obvious case, but a bare
+    # arm needs it more: a thick limb in one flat skin tone hanging across the chest is
+    # the thing that reads as a blob of nothing rather than as an arm.
+    ex, ey = pts[1]
+    r = max(1, wl // 2)
+    joint = shade(up, 0.55) if tuple(up[:3]) != tuple(lo[:3]) else shade(lo, 0.78)
+    d.ellipse([ex - r - 1, ey - r - 1, ex + r, ey + r], fill=joint)
 
 def torso_poly(pose, tw):
     hip = pose["hip"]; neck = pose["neck"]
@@ -651,7 +662,8 @@ def draw_shoe(d, foot, sp, outline_pass, w):
 
 def draw_hand(d, hand, sp, outline_pass, w):
     x, y = hand
-    r = 2 if w <= 4 else 3
+    # Never wider than the forearm, which is now w-1.
+    r = 2 if w <= 5 else 3
     col = rgba(sp["gloves"]) if sp.get("gloves") else rgba(sp["skin"])
     if outline_pass:
         d.ellipse([x - r - 1, y - r - 1, x + r, y + r], fill=OUTLINE)
@@ -667,9 +679,16 @@ def shape_pose(pose, sp):
     """
     st = int(sp.get("stance", 0))
     hu = int(sp.get("hunch", 0))
-    if st == 0 and hu == 0:
+    # Arms hang from the edge of the shoulder, so widening the torso has to carry them
+    # outward with it. Without this a broad build kept its arms at the old narrow spacing
+    # and they hung across the middle of the chest as a slab of bare forearm.
+    spread = int(round((sp.get("torso_w", 12) - 12) / 2.0))
+    if st == 0 and hu == 0 and spread == 0:
         return pose
     out = dict(pose)
+    if spread:
+        for key, sign in (("fa", 1), ("ba", -1)):
+            out[key] = [(x + spread * sign, y) for (x, y) in pose[key]]
     if st:
         # Plant the feet wider apart without moving the hips.
         for key, sign in (("fl", 1), ("bl", -1)):
