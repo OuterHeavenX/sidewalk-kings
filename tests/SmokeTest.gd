@@ -1580,6 +1580,12 @@ func test_character_art() -> void:
 	check("faces have eyes wide enough to read",
 		src.contains("rect(d, [ex, ey, ex + 1, ey + 1], fill=eye)"),
 		"a single dark pixel is invisible at this size")
+	# Builds are derived from each enemy's archetype in gen_data. A hand-written second
+	# list here would drift the moment an archetype changed, and the drift would show up
+	# as a heavy that looks like a rusher rather than as an error.
+	check("silhouettes are derived from the archetype, not a duplicate list",
+		src.contains("_character_archetypes()") and src.contains("BUILDS[a]"),
+		"a heavy and a rusher shared one body before this")
 
 func test_menu_navigation() -> void:
 	print("\n-- Menu navigation --")

@@ -367,6 +367,17 @@ timings and hitboxes are all untouched. These were rendering faults, not art dec
 - Added a consistent key light from the upper left on heads and torsos, so shapes read as
   solid rather than flat.
 
+### Added
+
+- **Builds per archetype.** Every character used to share one body, so a heavy and a
+  rusher had the same silhouette and only the palette told them apart. Torso width, limb
+  thickness, head size, overall scale, stance width and hunch now vary by role, and you
+  can tell what is coming at you from the outline alone.
+- The build comes from the enemy's archetype in the game data, not a second list kept
+  beside the art. A hand-written copy would drift the moment an archetype changed, and
+  the drift would show up as a heavy that looks like a rusher rather than as an error.
+  Anything a character sets by hand still wins.
+
 ### Fixed (test)
 
 - The menu navigation test nudged a volume slider and never put it back. Those sliders

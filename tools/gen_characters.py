@@ -10,6 +10,11 @@ Usage:  python tools/gen_characters.py            (from the project root)
 Output: assets/art/characters/<id>.png + <id>_frames.tres, assets/art/ui/portraits/<id>.png
 """
 import os, math
+import re
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import gen_data as D
 from PIL import Image, ImageDraw
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -299,10 +304,13 @@ def spec(**kw):
         shirt=(200, 60, 60), shirt_shade=(150, 40, 45), shirt_style="jacket", under=(240, 240, 235),
         sleeves=True, pants=(60, 80, 150), pants_shade=(40, 55, 110), shoes=(240, 240, 240), shoe_shade=(180, 180, 190),
         gloves=None, glasses=False, hat=None, hat_color=(40, 40, 40), bandana=None, mask=None, beard=None,
-        torso_w=12, limb_w=4, head_r=7, scale=1.0, belt=(40, 30, 30), apron=None,
+        torso_w=12, limb_w=4, head_r=7, scale=1.0, stance=0, hunch=0, belt=(40, 30, 30), apron=None,
         anims=FULL_SET, mustache=False, eye=(30, 20, 30), stripe=None,
     )
     d.update(kw)
+    # Remember what this character asked for explicitly, so the build applied below can
+    # fill in the rest without overriding a deliberate choice.
+    d["_explicit"] = set(kw.keys())
     return d
 
 CHARACTERS = {
@@ -650,7 +658,32 @@ def draw_hand(d, hand, sp, outline_pass, w):
         return
     d.ellipse([x - r, y - r, x + r - 1, y + r - 1], fill=col)
 
+def shape_pose(pose, sp):
+    """Apply the build's stance and hunch.
+
+    Torso width and limb thickness come from the spec and are read directly by the
+    drawing code. Stance and hunch have to move joints, so they are applied here, to a
+    copy: the pose dictionaries are shared by every character in the game.
+    """
+    st = int(sp.get("stance", 0))
+    hu = int(sp.get("hunch", 0))
+    if st == 0 and hu == 0:
+        return pose
+    out = dict(pose)
+    if st:
+        # Plant the feet wider apart without moving the hips.
+        for key, sign in (("fl", 1), ("bl", -1)):
+            pts = pose[key]
+            out[key] = [pts[0], (pts[1][0] + st * sign, pts[1][1]), (pts[2][0] + st * sign, pts[2][1])]
+    if hu:
+        # Head forward and down, shoulders up: weight carried in front.
+        out["head"] = (pose["head"][0] + hu, pose["head"][1] + hu)
+        out["neck"] = (pose["neck"][0], pose["neck"][1] + max(0, hu - 1))
+    return out
+
+
 def render_pose(pose, sp, size=FRAME):
+    pose = shape_pose(pose, sp)
     img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
     d = ImageDraw.Draw(img)
     lw = sp["limb_w"]
@@ -705,6 +738,57 @@ def render_portrait(sp):
 # ---------------------------------------------------------------------------
 # Sheet packing + Godot SpriteFrames
 # ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# Builds
+#
+# A player should be able to tell what is about to hit them from the outline alone,
+# before any colour or animation registers. Everyone used to share one body, so a heavy
+# and a rusher had the same silhouette and only the palette told them apart.
+#
+# The build comes from the enemy's archetype in gen_data rather than a second list kept
+# here, which would drift the moment an archetype changed. Anything a character sets by
+# hand still wins.
+# ---------------------------------------------------------------------------
+BUILDS = {
+    # narrow, light, small head: reads as fast
+    D.AR_RUSHER:   dict(torso_w=10, limb_w=3, head_r=6, scale=0.94, stance=0, hunch=0),
+    D.AR_GRUNT:    dict(torso_w=12, limb_w=4, head_r=7, scale=1.00, stance=0, hunch=0),
+    # a wide stance and a slight hunch: someone carrying something heavy
+    D.AR_WEAPON:   dict(torso_w=13, limb_w=4, head_r=7, scale=1.00, stance=1, hunch=1),
+    D.AR_RANGED:   dict(torso_w=11, limb_w=3, head_r=7, scale=0.97, stance=0, hunch=0),
+    # broad and planted
+    D.AR_GRAPPLER: dict(torso_w=15, limb_w=5, head_r=7, scale=1.05, stance=2, hunch=1),
+    # widest, heaviest, and the head is small against the body, which is what sells mass
+    D.AR_HEAVY:    dict(torso_w=17, limb_w=6, head_r=7, scale=1.10, stance=3, hunch=2),
+    D.AR_BOSS:     dict(torso_w=18, limb_w=6, head_r=8, scale=1.14, stance=3, hunch=2),
+}
+
+
+def _character_archetypes():
+    """character id -> archetype, read straight off the enemy definitions."""
+    out = {}
+    for e in D.ENEMIES:
+        m = re.search(r"characters/([a-z0-9_]+)_frames\.tres", e["sprite_frames"].path)
+        if m:
+            out[m.group(1)] = e["archetype"]
+    return out
+
+
+def apply_builds():
+    arch = _character_archetypes()
+    missing = [c for c in arch if c not in CHARACTERS]
+    if missing:
+        raise SystemExit("enemies reference characters that do not exist: %s" % ", ".join(sorted(missing)))
+    applied = 0
+    for cid, a in arch.items():
+        sp = CHARACTERS[cid]
+        for k, v in BUILDS[a].items():
+            if k not in sp["_explicit"]:
+                sp[k] = v
+        applied += 1
+    return applied
+
+
 def build_character(cid, sp):
     anim_names = sp["anims"]
     frames = []  # (anim, index, image)
@@ -759,6 +843,8 @@ def write_spriteframes(cid, regions, anim_names):
         f.write("\n".join(lines))
 
 def main():
+    n = apply_builds()
+    print("builds applied to %d enemy characters" % n)
     total = 0
     for cid, sp in CHARACTERS.items():
         n = build_character(cid, sp)

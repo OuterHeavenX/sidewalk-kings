@@ -99,6 +99,11 @@ any individual design choice:
   this size, and an eye flush against the hairline merges into it.
 - **The key light is up and to the left**, on every part, without exception.
 
+**Silhouette carries the role.** Torso width, limb thickness, head size, scale, stance and
+hunch come from the enemy's archetype: a rusher is small and narrow, a grappler broad and
+planted, a heavy widest with a small head against a big body, which is what sells mass.
+Read the outline with the colour removed and the roles should still be obvious.
+
 The Commuters share one navy palette on purpose. Chapter one's gangs are five different
 looks; the sixth is one look repeated, which is the joke and also how you read them at a
 glance in a crowd.
