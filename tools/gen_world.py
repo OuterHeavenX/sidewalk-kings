@@ -5,6 +5,7 @@ Sidewalk Kings - original environment, prop, weapon, FX and UI art generator.
 Everything here is drawn procedurally with Pillow, so all artwork is original to this project.
 Run from the project root:  python tools/gen_world.py
 """
+import json
 import os, math, random
 from PIL import Image, ImageDraw, ImageFilter
 
@@ -1049,25 +1050,134 @@ def write_strip(frames, path):
 # =====================================================================
 TILE = 16
 
+def _wear(d, rnd, base, count=3):
+    """Scuffs: a few short scratches a shade off the base. Cheap, and it breaks the flat."""
+    for _ in range(count):
+        x = rnd.randint(0, TILE - 3)
+        y = rnd.randint(0, TILE - 2)
+        ln = rnd.randint(1, 3)
+        col = shade(base, rnd.uniform(0.88, 1.1))
+        if rnd.random() < 0.5:
+            d.line([(x, y), (x + ln, y)], fill=col)
+        else:
+            d.line([(x, y), (x, y + ln)], fill=col)
+
+
+def _crack(d, rnd, base):
+    """A hairline crack that wanders. Two or three segments is enough to read as one."""
+    x = rnd.randint(2, TILE - 3)
+    y = rnd.randint(2, TILE - 3)
+    col = shade(base, 0.7)
+    for _ in range(rnd.randint(2, 4)):
+        nx = max(0, min(TILE - 1, x + rnd.randint(-3, 3)))
+        ny = max(0, min(TILE - 1, y + rnd.randint(-2, 3)))
+        d.line([(x, y), (nx, ny)], fill=col)
+        x, y = nx, ny
+
+
+def _stain(d, rnd, base, dark=0.95):
+    """A patch where something was spilled, or where water sits after rain.
+
+    Small and barely darker on purpose. The first pass used 4-9px ellipses at 0.82 shade on
+    a 16px tile, which is a quarter of the tile at a tone you cannot miss -- and since every
+    tile got one, the pavement swapped a visible grid for a visible rash of blobs.
+    """
+    w = rnd.randint(2, 4)
+    h = rnd.randint(2, 3)
+    x = rnd.randint(1, TILE - w - 2)
+    y = rnd.randint(1, TILE - h - 2)
+    d.ellipse([x, y, x + w, y + h], fill=shade(base, dark))
+
+
 def tile_sidewalk(v=0):
+    """Paving slab. v0/v1 are the two tones; v2+ are worn versions of the same slab.
+
+    The slab edge is what makes it read as paving, so every variant keeps it and only the
+    surface changes -- variants that alter the silhouette read as different materials
+    rather than as the same pavement in different condition.
+    """
     im = Image.new("RGBA", (TILE, TILE), (0, 0, 0, 0))
     d = ImageDraw.Draw(im)
-    base = (168, 164, 158) if v == 0 else (158, 154, 150)
+    rnd = random.Random(100 + v)
+    base = (168, 164, 158) if v % 2 == 0 else (158, 154, 150)
     d.rectangle([0, 0, TILE - 1, TILE - 1], fill=base)
+    if v == 2:
+        _crack(d, rnd, base)
+        _wear(d, rnd, base, 2)
+    elif v == 3:
+        _stain(d, rnd, base, 0.96)
+        _wear(d, rnd, base, 3)
+    elif v == 4:
+        _crack(d, rnd, base)
+        _stain(d, rnd, base, 0.97)
+    # Edges last, so wear never crosses the joint between slabs.
     d.line([(0, 0), (TILE - 1, 0)], fill=shade(base, 1.12))
     d.line([(0, TILE - 1), (TILE - 1, TILE - 1)], fill=shade(base, 0.82))
     d.line([(0, 0), (0, TILE - 1)], fill=shade(base, 1.06))
     d.line([(TILE - 1, 0), (TILE - 1, TILE - 1)], fill=shade(base, 0.86))
     return noise(im, 6, 100 + v)
 
+
 def tile_asphalt(v=0):
     im = Image.new("RGBA", (TILE, TILE), (0, 0, 0, 0))
     d = ImageDraw.Draw(im)
-    base = (74, 72, 82) if v == 0 else (68, 66, 76)
+    rnd = random.Random(200 + v)
+    base = (74, 72, 82) if v % 2 == 0 else (68, 66, 76)
     d.rectangle([0, 0, TILE - 1, TILE - 1], fill=base)
     if v == 2:
-        d.rectangle([2, 6, 13, 9], fill=(206, 196, 120))
+        d.rectangle([2, 6, 13, 9], fill=(206, 196, 120))   # the road line
+    elif v == 3:
+        _crack(d, rnd, base)
+        _wear(d, rnd, base, 4)
+    elif v == 4:
+        _stain(d, rnd, base, 0.93)
+        _wear(d, rnd, base, 3)
+    elif v == 5:
+        # A patch of newer tarmac, which every road in the world has.
+        d.rectangle([rnd.randint(0, 6), rnd.randint(0, 6),
+                     rnd.randint(9, 15), rnd.randint(9, 15)], fill=shade(base, 1.16))
     return noise(im, 9, 200 + v)
+
+
+def tile_concrete(c=(118, 116, 124), v=0):
+    im = Image.new("RGBA", (TILE, TILE), (0, 0, 0, 0))
+    d = ImageDraw.Draw(im)
+    rnd = random.Random(500 + v)
+    d.rectangle([0, 0, TILE - 1, TILE - 1], fill=c)
+    if v == 1:
+        _crack(d, rnd, c)
+    elif v == 2:
+        _stain(d, rnd, c, 0.95)
+        _wear(d, rnd, c, 2)
+    elif v == 3:
+        _wear(d, rnd, c, 5)
+        d.line([(0, rnd.randint(4, 11)), (TILE - 1, rnd.randint(4, 11))], fill=shade(c, 0.86))
+    d.line([(0, 0), (TILE - 1, 0)], fill=shade(c, 1.1))
+    return noise(im, 8, 500 + v)
+
+
+def tile_metal(c=(96, 104, 112), v=0):
+    im = Image.new("RGBA", (TILE, TILE), (0, 0, 0, 0))
+    d = ImageDraw.Draw(im)
+    rnd = random.Random(600 + v)
+    d.rectangle([0, 0, TILE - 1, TILE - 1], fill=c)
+    for x in range(0, TILE, 4):
+        d.line([(x, 0), (x, TILE - 1)], fill=shade(c, 0.86))
+        d.line([(x + 1, 0), (x + 1, TILE - 1)], fill=shade(c, 1.12))
+    if v == 1:
+        # Rust bleeding from a fixing.
+        for _ in range(2):
+            x = rnd.randint(1, TILE - 3)
+            y = rnd.randint(2, TILE - 5)
+            d.rectangle([x, y, x + 1, y + rnd.randint(2, 4)], fill=(122, 74, 48))
+    elif v == 2:
+        # A bright speck where the plate has been rubbed back to bare metal.
+        px = rnd.randint(2, TILE - 3)
+        py = rnd.randint(2, TILE - 3)
+        d.rectangle([px, py, px + 1, py + 1], fill=shade(c, 1.4))
+        _wear(d, rnd, c, 4)
+    return noise(im, 5, 600 + v)
+
 
 def tile_curb():
     im = Image.new("RGBA", (TILE, TILE), (0, 0, 0, 0))
@@ -1090,22 +1200,6 @@ def tile_brick(c=(150, 78, 62)):
             d.rectangle([x, y, x + 6, y + 2], fill=c)
             d.line([(x, y), (x + 6, y)], fill=shade(c, 1.18))
     return noise(im, 7, 400)
-
-def tile_concrete(c=(118, 116, 124)):
-    im = Image.new("RGBA", (TILE, TILE), (0, 0, 0, 0))
-    d = ImageDraw.Draw(im)
-    d.rectangle([0, 0, TILE - 1, TILE - 1], fill=c)
-    d.line([(0, 0), (TILE - 1, 0)], fill=shade(c, 1.1))
-    return noise(im, 8, 500)
-
-def tile_metal(c=(96, 104, 112)):
-    im = Image.new("RGBA", (TILE, TILE), (0, 0, 0, 0))
-    d = ImageDraw.Draw(im)
-    d.rectangle([0, 0, TILE - 1, TILE - 1], fill=c)
-    for x in range(0, TILE, 4):
-        d.line([(x, 0), (x, TILE - 1)], fill=shade(c, 0.86))
-        d.line([(x + 1, 0), (x + 1, TILE - 1)], fill=shade(c, 1.12))
-    return noise(im, 5, 600)
 
 def tile_tile_floor():
     """Station floor. The two tones are deliberately close together.
@@ -1142,22 +1236,45 @@ def tile_wood_floor():
         d.line([(0, y + 1), (TILE - 1, y + 1)], fill=shade(c, 1.12))
     return noise(im, 7, 900)
 
+# Order matters only in that data/tiles.json is written from it; nothing hand-keeps a copy.
 TILES = [
     ("sidewalk_a", tile_sidewalk(0)), ("sidewalk_b", tile_sidewalk(1)),
     ("asphalt_a", tile_asphalt(0)), ("asphalt_b", tile_asphalt(1)), ("asphalt_line", tile_asphalt(2)),
     ("curb", tile_curb()), ("brick_red", tile_brick((150, 78, 62))), ("brick_tan", tile_brick((168, 140, 100))),
     ("concrete", tile_concrete()), ("metal", tile_metal()), ("tile_floor", tile_tile_floor()),
     ("dirt", tile_dirt()), ("wood_floor", tile_wood_floor()),
+    # Variants. Named "<surface>_v<n>" so the engine can find them by convention and
+    # scatter them, rather than needing a list of which surfaces have variants.
+    ("sidewalk_a_v1", tile_sidewalk(2)), ("sidewalk_a_v2", tile_sidewalk(3)),
+    ("sidewalk_a_v3", tile_sidewalk(4)),
+    ("sidewalk_b_v1", tile_sidewalk(3)), ("sidewalk_b_v2", tile_sidewalk(5)),
+    ("asphalt_a_v1", tile_asphalt(3)), ("asphalt_a_v2", tile_asphalt(4)),
+    ("asphalt_a_v3", tile_asphalt(5)),
+    ("asphalt_b_v1", tile_asphalt(4)), ("asphalt_b_v2", tile_asphalt(5)),
+    ("concrete_v1", tile_concrete(v=1)), ("concrete_v2", tile_concrete(v=2)),
+    ("concrete_v3", tile_concrete(v=3)),
+    ("metal_v1", tile_metal(v=1)), ("metal_v2", tile_metal(v=2)),
 ]
 
 def build_tileset():
+    """Pack the tiles and record where each one landed.
+
+    data/tiles.json exists because Area.gd used to carry its own copy of the tile order.
+    Two lists that must agree, in two languages, with nothing checking: add a tile here and
+    every ground in the game quietly draws the wrong cell of the sheet.
+    """
     cols = 8
     rows = (len(TILES) + cols - 1) // cols
     sheet = Image.new("RGBA", (cols * TILE, rows * TILE), (0, 0, 0, 0))
     for i, (name, im) in enumerate(TILES):
         sheet.paste(im, ((i % cols) * TILE, (i // cols) * TILE))
     sheet.save(A("art", "tilesets", "city_tiles.png"))
-    return {name: (i % cols, i // cols) for i, (name, _) in enumerate(TILES)}
+    index = {name: [i % cols, i // cols] for i, (name, _) in enumerate(TILES)}
+    out = os.path.join(ROOT, "data")
+    os.makedirs(out, exist_ok=True)
+    with open(os.path.join(out, "tiles.json"), "w", newline="\n") as f:
+        json.dump({"columns": cols, "size": TILE, "tiles": index}, f, indent=1)
+    return index
 
 # ---- Building facades (drawn as reusable sprites, not tiles) ----
 def building(w, h, wall, roof=None, windows=(3, 3), win_col=(120, 180, 210), door=True,
@@ -1171,8 +1288,11 @@ def building(w, h, wall, roof=None, windows=(3, 3), win_col=(120, 180, 210), doo
         for row in range(0, h, 5):
             off = 0 if (row // 5) % 2 == 0 else 5
             for x in range(-10, w, 10):
-                d.rectangle([x + off, row, x + off + 8, row + 3], fill=shade(wall, 1.06))
-                d.line([(x + off, row), (x + off + 8, row)], fill=shade(wall, 1.16))
+                # A brick wall is never one colour. Varying each brick a little is the
+                # cheapest thing on this list and the one that reads most as masonry.
+                b = shade(wall, rnd.uniform(0.94, 1.14))
+                d.rectangle([x + off, row, x + off + 8, row + 3], fill=b)
+                d.line([(x + off, row), (x + off + 8, row)], fill=shade(b, 1.14))
     elif style == "panel":
         for x in range(0, w, 14):
             d.line([(x, 0), (x, h - 1)], fill=shade(wall, 0.9))
@@ -1205,6 +1325,40 @@ def building(w, h, wall, roof=None, windows=(3, 3), win_col=(120, 180, 210), doo
                 d.line([(x + 7, y), (x + 7, y + 12)], fill=shade(wall, 0.8))
                 if rnd.random() < 0.25:
                     d.rectangle([x, y + 7, x + 14, y + 12], fill=shade(wc, 0.75))
+                # Lintel above, sill below. The sill overhangs by a pixel each side, which
+                # is what makes it read as a ledge rather than as a line.
+                d.rectangle([x - 1, y - 3, x + 15, y - 2], fill=shade(wall, 1.2))
+                d.rectangle([x - 2, y + 13, x + 16, y + 14], fill=shade(wall, 1.16))
+                d.line([(x - 2, y + 15), (x + 16, y + 15)], fill=shade(wall, 0.72))
+                # Dirt washes off the sill and runs down the wall. Every city building has
+                # these and no drawing of one ever does.
+                if rnd.random() < 0.6:
+                    for sx in (x + 1, x + 13):
+                        run = rnd.randint(4, 14)
+                        d.line([(sx, y + 16), (sx, min(h - 1, y + 16 + run))],
+                               fill=shade(wall, 0.9))
+    # A string course every few floors, which is what stops a tall facade reading as a
+    # single flat sheet with holes punched in it.
+    if h > 120:
+        for by in range(48, h - 40, 56):
+            d.rectangle([0, by, w - 1, by + 1], fill=shade(wall, 1.18))
+            d.line([(0, by + 2), (w - 1, by + 2)], fill=shade(wall, 0.78))
+
+    # A downpipe down one edge, with brackets.
+    if rnd.random() < 0.75:
+        px = 3 if rnd.random() < 0.5 else w - 6
+        d.rectangle([px, 6, px + 2, h - 8], fill=shade(wall, 0.62))
+        d.line([(px, 6), (px, h - 8)], fill=shade(wall, 0.8))
+        for by in range(18, h - 12, 34):
+            d.rectangle([px - 1, by, px + 3, by + 1], fill=shade(wall, 0.5))
+
+    # Grime where the pavement splashes the wall, and under the roof lip where water sits.
+    for gy_off in range(0, 14):
+        a = 1.0 - (gy_off / 14.0)
+        d.line([(0, h - 1 - gy_off), (w - 1, h - 1 - gy_off)],
+               fill=shade(wall, 0.86 + 0.14 * (1.0 - a)))
+    d.line([(0, 7), (w - 1, 7)], fill=shade(wall, 0.84))
+
     # ground floor storefront
     gy = h - 30
     if door:

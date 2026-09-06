@@ -1,0 +1,118 @@
+{
+ "columns": 8,
+ "size": 16,
+ "tiles": {
+  "sidewalk_a": [
+   0,
+   0
+  ],
+  "sidewalk_b": [
+   1,
+   0
+  ],
+  "asphalt_a": [
+   2,
+   0
+  ],
+  "asphalt_b": [
+   3,
+   0
+  ],
+  "asphalt_line": [
+   4,
+   0
+  ],
+  "curb": [
+   5,
+   0
+  ],
+  "brick_red": [
+   6,
+   0
+  ],
+  "brick_tan": [
+   7,
+   0
+  ],
+  "concrete": [
+   0,
+   1
+  ],
+  "metal": [
+   1,
+   1
+  ],
+  "tile_floor": [
+   2,
+   1
+  ],
+  "dirt": [
+   3,
+   1
+  ],
+  "wood_floor": [
+   4,
+   1
+  ],
+  "sidewalk_a_v1": [
+   5,
+   1
+  ],
+  "sidewalk_a_v2": [
+   6,
+   1
+  ],
+  "sidewalk_a_v3": [
+   7,
+   1
+  ],
+  "sidewalk_b_v1": [
+   0,
+   2
+  ],
+  "sidewalk_b_v2": [
+   1,
+   2
+  ],
+  "asphalt_a_v1": [
+   2,
+   2
+  ],
+  "asphalt_a_v2": [
+   3,
+   2
+  ],
+  "asphalt_a_v3": [
+   4,
+   2
+  ],
+  "asphalt_b_v1": [
+   5,
+   2
+  ],
+  "asphalt_b_v2": [
+   6,
+   2
+  ],
+  "concrete_v1": [
+   7,
+   2
+  ],
+  "concrete_v2": [
+   0,
+   3
+  ],
+  "concrete_v3": [
+   1,
+   3
+  ],
+  "metal_v1": [
+   2,
+   3
+  ],
+  "metal_v2": [
+   3,
+   3
+  ]
+ }
+}

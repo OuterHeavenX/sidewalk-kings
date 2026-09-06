@@ -69,6 +69,7 @@ func run() -> void:
 	await test_lighting()
 	await test_chapter_two()
 	await test_chapter_three()
+	await test_ground()
 	await test_entry_events()
 	await test_comics()
 	await test_hints()
@@ -1908,6 +1909,61 @@ func test_chapter_three() -> void:
 ## into and for no other. Everything downstream of an arrival simply never happened: the
 ## Line Office scene sets chapter_2_done, so walking in did nothing and chapter two could
 ## not be finished. Nothing errored -- you stood in an empty office and the story stopped.
+## Ground, tiles and the wet-street shader.
+##
+## The tile index used to be a hand-kept array in Area.gd that had to match the generator's
+## order exactly, in another language, with nothing checking -- so adding one tile shifted
+## every index after it and every ground in the game drew the wrong cell of the sheet. It is
+## generated now, and these check that the two ends still agree.
+func test_ground() -> void:
+	print("
+-- Ground and shaders --")
+	check("the tile index ships", FileAccess.file_exists("res://data/tiles.json"))
+	var f := FileAccess.open("res://data/tiles.json", FileAccess.READ)
+	var parsed = JSON.parse_string(f.get_as_text())
+	f.close()
+	var tiles: Dictionary = parsed.get("tiles", {}) if parsed is Dictionary else {}
+	check("the tile index has tiles in it", tiles.size() > 0, "%d" % tiles.size())
+
+	# Every tile any layout asks for has to exist on the sheet, or that ground draws the
+	# wrong picture and nothing says so.
+	var unknown: Array[String] = []
+	for area_id in ContentDB.areas.keys():
+		for strip in _layout(str(area_id)).get("ground", []):
+			for key in ["tile", "alt"]:
+				var name := str(strip.get(key, ""))
+				if name != "" and not tiles.has(name):
+					unknown.append("%s/%s" % [area_id, name])
+	check("every ground tile a layout asks for exists", unknown.is_empty(), ", ".join(unknown))
+
+	# Variants exist and are found by convention, so a street is not one tile repeated.
+	var with_variants := 0
+	for base in ["sidewalk_a", "asphalt_a", "concrete"]:
+		if tiles.has(base + "_v1"):
+			with_variants += 1
+	check("the common surfaces have variants", with_variants == 3, "%d of 3" % with_variants)
+
+	# The shader is applied where the layout asks for it, and only there.
+	await SceneManager.change_area("ferry_row", "start")
+	await seconds(0.5)
+	var wet_count := _count_shaded(GameManager.current_area.ground_root)
+	check("a wet street gets the wet-ground shader", wet_count > 0, "%d shaded tiles" % wet_count)
+
+	await SceneManager.change_area("line_office", "start")
+	await seconds(0.5)
+	var dry_count := _count_shaded(GameManager.current_area.ground_root)
+	check("an interior does not", dry_count == 0, "%d shaded tiles indoors" % dry_count)
+
+## How many ground sprites carry a shader material.
+func _count_shaded(root: Node) -> int:
+	if root == null:
+		return 0
+	var n := 0
+	for c in root.get_children():
+		if c is Sprite2D and (c as Sprite2D).material is ShaderMaterial:
+			n += 1
+	return n
+
 func test_entry_events() -> void:
 	print("
 -- Entry events --")

@@ -114,9 +114,30 @@ func _build_parallax() -> void:
 		holder.z_index = int(entry.get("z", -50))
 		_parallax_layers.append({"node": holder, "scroll": scroll, "width": tex.get_width() * scale_v * repeat})
 
+## One shared material for every wet ground sprite in the area.
+##
+## Shared, not per-sprite: a street is hundreds of tiles and giving each one its own
+## material is hundreds of shader instances to no visible effect.
+var _wet_material: ShaderMaterial = null
+
+func _wet_ground_material() -> ShaderMaterial:
+	if _wet_material != null:
+		return _wet_material
+	var wet := float(layout.get("wet", 0.0))
+	if wet <= 0.0:
+		return null
+	var sh: Shader = load("res://assets/shaders/wet_ground.gdshader")
+	if sh == null:
+		return null
+	_wet_material = ShaderMaterial.new()
+	_wet_material.shader = sh
+	_wet_material.set_shader_parameter("wetness", wet)
+	return _wet_material
+
 func _build_ground() -> void:
 	# Ground strips: repeating 16px tiles across the area width.
 	var tileset := _tex("res://assets/art/tilesets/city_tiles.png")
+	var wet_mat := _wet_ground_material()
 	for strip in layout.get("ground", []):
 		# A "color" strip is a flat backing band drawn behind the tiles. Portrait and other
 		# tall viewports reveal more world than the tiled rows cover, and tiling that far
@@ -149,31 +170,80 @@ func _build_ground() -> void:
 		var x := x0
 		var alt := str(strip.get("alt", ""))
 		var alt_idx := _tile_index(alt) if alt != "" else Vector2(-1, -1)
+		# Variants of each surface, scattered by position. One tile repeated, or two in a
+		# strict checkerboard, is the loudest "this is a tile map" signal in the picture --
+		# louder than the palette or the sprites, because the eye finds a 16px grid instantly.
+		var variants := _variants_of(str(strip.get("tile", "")))
+		var alt_variants: Array = _variants_of(alt) if alt != "" else []
 		var n := 0
 		while x < x1:
 			for row in h:
 				var s := Sprite2D.new()
 				s.texture = tileset
 				s.region_enabled = true
-				var use := idx
+				var use := _variant_for(variants, n, row)
 				if alt_idx.x >= 0 and (n + row) % 2 == 1:
-					use = alt_idx
+					use = _variant_for(alt_variants, n, row) if not alt_variants.is_empty() else alt_idx
 				s.region_rect = Rect2(use.x * 16, use.y * 16, 16, 16)
 				s.centered = false
 				s.position = Vector2(x, y + row * 16)
 				s.z_index = int(strip.get("z", -20))
+				if wet_mat != null and bool(strip.get("wet", true)):
+					s.material = wet_mat
 				ground_root.add_child(s)
 			x += 16
 			n += 1
 
-const TILE_NAMES := ["sidewalk_a", "sidewalk_b", "asphalt_a", "asphalt_b", "asphalt_line", "curb",
-	"brick_red", "brick_tan", "concrete", "metal", "tile_floor", "dirt", "wood_floor"]
+## Where each tile sits on the sheet, written by gen_world.py.
+##
+## This used to be a hand-kept array of names in this file that had to match the generator's
+## order exactly, in a different language, with nothing checking. Adding one tile shifted
+## every index after it and silently drew the wrong cell for every ground in the game.
+static var _tile_index_cache: Dictionary = {}
+
+static func _tiles() -> Dictionary:
+	if not _tile_index_cache.is_empty():
+		return _tile_index_cache
+	var path := "res://data/tiles.json"
+	if FileAccess.file_exists(path):
+		var f := FileAccess.open(path, FileAccess.READ)
+		var parsed = JSON.parse_string(f.get_as_text())
+		f.close()
+		if parsed is Dictionary:
+			_tile_index_cache = parsed.get("tiles", {})
+	return _tile_index_cache
 
 func _tile_index(name: String) -> Vector2:
-	var i := TILE_NAMES.find(name)
-	if i < 0:
+	var t := _tiles()
+	if not t.has(name):
 		return Vector2(-1, -1)
-	return Vector2(i % 8, i / 8)
+	var cell: Array = t[name]
+	return Vector2(float(cell[0]), float(cell[1]))
+
+## The variants of a surface, by naming convention: concrete, concrete_v1, concrete_v2...
+##
+## Convention rather than a list, so adding a variant to the generator is enough -- a list
+## here would be the same hand-kept duplication the tile index just stopped being.
+func _variants_of(name: String) -> Array:
+	var base := _tile_index(name)
+	# Weighted towards clean. Detail on every tile is not detail, it is a new pattern: the
+	# first version marked roughly three tiles in four and the pavement went from a visible
+	# grid to a visible rash. Most of a street is plain, with something to notice now and then.
+	var out: Array = [base, base, base, base, base]
+	var t := _tiles()
+	var n := 1
+	while t.has("%s_v%d" % [name, n]):
+		out.append(_tile_index("%s_v%d" % [name, n]))
+		n += 1
+	return out
+
+## Which variant this cell gets. Deterministic in world position, so a street looks the same
+## every time you walk into it, and scattered enough that the eye stops finding the grid.
+func _variant_for(variants: Array, col: int, row: int) -> Vector2:
+	if variants.size() <= 1:
+		return variants[0]
+	var h: int = absi(col * 73856093 ^ row * 19349663 ^ int(walk_max_x) * 83492791)
+	return variants[h % variants.size()]
 
 ## Lighting must exist before anything emissive is built: it sets the gain compensation
 ## that keeps lamps above the bloom threshold under a dark ambient tint.

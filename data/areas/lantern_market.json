@@ -803,6 +803,7 @@
    }
   ]
  },
+ "wet": 0.5,
  "lane_min": 34.0,
  "lane_max": 74.0,
  "walk_min_x": 20.0,

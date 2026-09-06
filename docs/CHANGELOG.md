@@ -348,6 +348,64 @@ An area with no lighting block is untouched. Reloading an area keeps the player 
 
 ---
 
+## v0.7.0 — ground, facades, and the first shader
+
+### Ground that does not read as a grid
+
+Every surface was one 16px tile repeated, or two alternating in a strict checkerboard. At
+16px that pattern is the loudest "this is a tile map" signal in the picture — louder than
+the palette or the sprites, because the eye finds a grid instantly.
+
+Surfaces now have variants with cracks, wear, patches and stains, scattered deterministically
+by world position: the same street looks the same every time you walk into it, and the grid
+is gone.
+
+**Tuned down after looking at it.** The first pass put a 4-9px stain at 0.82 shade on a 16px
+tile and gave one to roughly three tiles in four. The pavement swapped a visible grid for a
+visible rash. Stains are small and barely darker now, and the scatter is weighted towards
+clean — most of a street is plain, with something to notice now and then.
+
+### Facades that have stood outside
+
+Brick that is not all one colour, sills and lintels, the dirt that washes off a sill and
+runs down the wall, downpipes with brackets, a string course every few floors so a tall
+facade is not one flat sheet with holes in it, and grime where the pavement splashes the
+base.
+
+### The first shader
+
+Wet streets. Two things happen to a road when it is wet — it darkens and deepens, and long
+soft bands of reflected light slide across it — and this does both with no screen reads,
+because the game runs on the Compatibility renderer for WebGL2 and mobile where reading the
+screen in 2D is a trap.
+
+Two things it has to get right:
+
+- **The pattern is computed in world space, not UV space.** Ground is hundreds of 16px
+  tiles, so a UV-driven pattern restarts inside every tile and paints a grid straight back
+  on top of the one the variants were added to break up.
+- **It stays below 1.0.** Glow threshold is exactly 1.0, so a brighter highlight would bloom,
+  and a blooming pavement is not a highlight, it is a bug.
+
+Wetness is a layout property, so it is on outdoor streets and off in interiors and the
+tunnel.
+
+### Fixed on the way
+
+**Area.gd carried its own copy of the tile order** — an array of names that had to match the
+generator exactly, in a different language, with nothing checking. Adding a single tile
+shifted every index after it and every ground in the game would have drawn the wrong cell of
+the sheet, silently. The index is generated to `data/tiles.json` now, and a check asserts
+that every tile any layout asks for actually exists.
+
+### Tests
+
+Suite is **392 checks**. The new ones cover the tile index shipping and agreeing with the
+layouts, the common surfaces having variants, and the shader being applied on wet streets
+and not indoors.
+
+---
+
 ## v0.6.0 — the bot plays it, and four ways it could not be finished
 
 A bot that plays the game from New Game to the credits, and the bugs it found. It walks with
