@@ -348,6 +348,68 @@ An area with no lighting block is untouched. Reloading an area keeps the player 
 
 ---
 
+## v0.5.0 — a bot that plays the game, and the softlock it found
+
+### The game could not be finished
+
+Asked to confirm the game was beatable, I wrote something that plays it: `--play` starts a
+new game and walks the whole story with the real movement, attack and interact actions. It
+never sets a story flag itself, so a flag that does not get set is the game failing, not the
+bot being told to pretend.
+
+It found a **permanent softlock in chapter one**, and it is the reason the game could not
+be finished.
+
+`chapter_1_done` came only from the `q_starch` quest reward. Dez only hands out `q_starch`
+if you walk back to Ferry Row **after** clearing the laundromat's guards but **before**
+fighting Big Starch. Beat the boss without it and `once_flag` closes that encounter forever:
+the quest can never complete, the metro never opens, and chapters two and three are
+unreachable. Nothing errors. Nothing on screen says anything.
+
+The dialogue written for this — `starch_defeat`, which sets the flag *and* carries the
+Tuesday-money reveal that sets up the whole of chapter two — **was wired to nothing at all**.
+It existed as a resource that no code referenced, so no player had ever seen it.
+
+Beating Big Starch now plays it and grants `chapter_1_done` directly.
+
+### Dez tells you what to do
+
+The same investigation showed the progression *depends* on walking back to Dez between jobs
+and never says so. That is not a bug a flag fixes; somebody has to say it in words.
+
+Hints are an ordered list in `data/hints.json`, first match wins, with a guaranteed
+unconditional last entry — there is no story state in which the game has nothing to tell
+you. Dez says the current one whenever he has no story dialogue queued, instead of "...",
+and the pause menu's **Quests** page leads with it and names the area to head for.
+
+### Enemies read the fight
+
+Until now an enemy decided what to do by rolling dice against its aggression without ever
+looking at the player. Three additions, all reading the player's own attack phase, which
+the game already tracked exactly:
+
+- **Punish.** An enemy in range while you are in recovery attacks. No dice roll. Whiffing
+  costs something now, which was the biggest thing missing from the fight.
+- **Guard.** Enemies can block. Light hits are absorbed, heavies break through — the same
+  rule you live under, so it teaches the answer rather than just being harder. Short, on a
+  cooldown, and dropped the moment a hit lands, because a guard you cannot get through is a
+  wall rather than a difficulty.
+- **Respect.** Some step out of range when you wind up instead of walking into it.
+
+Rushers never guard and heavies guard most, so a crowd keeps its texture.
+
+Difficulty comes from these rather than from bigger numbers: an enemy that punishes a whiff
+is harder in a way you can learn, an enemy with 40% more health is only slower to kill.
+
+### Tests
+
+Suite is **373 checks**, plus the playthrough. The new ones cover the hint system never
+coming up empty (all 15 states produce a distinct hint), and the AI behaviours, which are
+invisible when they break — an enemy that stops punishing whiffs still walks, still swings,
+and the fight just goes quiet.
+
+---
+
 ## v0.4.0 — louder music, harder hits, and blood
 
 ### The fight music never actually changed

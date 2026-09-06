@@ -1,0 +1,109 @@
+{
+ "hints": [
+  {
+   "text": "It is done. Line 4 stays shut, and it has your name on it now. Come and eat something.",
+   "where": "ferry_row",
+   "if_flag": "chapter_3_done",
+   "if_not_flag": "",
+   "if_quest": ""
+  },
+  {
+   "text": "The Foreman is in the substation at the far end of the line. He is the one holding the paper.",
+   "where": "substation",
+   "if_flag": "line_four_cleared",
+   "if_not_flag": "",
+   "if_quest": ""
+  },
+  {
+   "text": "They are taking the platform apart down on Line 4. Get down there and stop them.",
+   "where": "line_four",
+   "if_flag": "took_the_form",
+   "if_not_flag": "",
+   "if_quest": ""
+  },
+  {
+   "text": "You have the form. Nothing arrives on Tuesday now. Go and find out what that did.",
+   "where": "line_office",
+   "if_flag": "chapter_2_done",
+   "if_not_flag": "",
+   "if_quest": ""
+  },
+  {
+   "text": "The Line Office is at the far end of the metro platform. Whoever signs for the money works there.",
+   "where": "line_office",
+   "if_flag": "bellwater_cleared",
+   "if_not_flag": "",
+   "if_quest": ""
+  },
+  {
+   "text": "The Commuters hold Bellwater Block, one stop along. Clear it.",
+   "where": "bellwater_block",
+   "if_flag": "found_tuesday_locker",
+   "if_not_flag": "",
+   "if_quest": ""
+  },
+  {
+   "text": "Somebody leaves a bag on the metro platform every Tuesday and never gets off the train. Search the lockers.",
+   "where": "metro_platform",
+   "if_flag": "metro_open",
+   "if_not_flag": "",
+   "if_quest": ""
+  },
+  {
+   "text": "Big Starch said the money comes in on Tuesdays, from the metro side. Come and see me about it.",
+   "where": "ferry_row",
+   "if_flag": "chapter_1_done",
+   "if_not_flag": "",
+   "if_quest": ""
+  },
+  {
+   "text": "Starch and Sons is behind the yard. He folds every note in this city.",
+   "where": "starch_laundromat",
+   "if_flag": "hideout_cleared",
+   "if_not_flag": "",
+   "if_quest": ""
+  },
+  {
+   "text": "The laundromat is past the Rustpile Yard. Whoever pays the gangs is in there.",
+   "where": "starch_laundromat",
+   "if_flag": "yard_cleared",
+   "if_not_flag": "",
+   "if_quest": ""
+  },
+  {
+   "text": "The Rust Rats have the yard past the alley. Go and be a nuisance.",
+   "where": "rustpile_yard",
+   "if_flag": "alley_cleared",
+   "if_not_flag": "",
+   "if_quest": ""
+  },
+  {
+   "text": "Whoever runs Grease Alley is worth a conversation. The alley is past the market.",
+   "where": "grease_alley",
+   "if_flag": "market_cleared",
+   "if_not_flag": "",
+   "if_quest": ""
+  },
+  {
+   "text": "The Sweaters have Lantern Market boxed in. It is east along the row.",
+   "where": "lantern_market",
+   "if_flag": "market_opened",
+   "if_not_flag": "",
+   "if_quest": ""
+  },
+  {
+   "text": "Five Pigeons off the Ferry Row and I will tell you what I know.",
+   "where": "ferry_row",
+   "if_flag": "knows_premise",
+   "if_not_flag": "",
+   "if_quest": ""
+  },
+  {
+   "text": "Come and talk to me. I am by the ferry, where I always am.",
+   "where": "ferry_row",
+   "if_flag": "",
+   "if_not_flag": "",
+   "if_quest": ""
+  }
+ ]
+}

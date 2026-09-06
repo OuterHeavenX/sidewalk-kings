@@ -116,9 +116,20 @@ func can_move() -> bool:
 	# DODGE is included: a roll is committed movement, driven by roll_dir rather than input.
 	return state in [State.IDLE, State.WALK, State.RUN, State.JUMP, State.DODGE] and not dead
 
-## True while holding a guard. Overridden by Player; enemies do not guard yet.
+## True while holding a guard. Overridden by Player and by EnemyBase.
 func is_guarding() -> bool:
 	return false
+
+## What this actor is doing with its own attack right now, for anyone reading the fight.
+## 0 none, 1 start-up (committed, nothing out yet), 2 active, 3 recovery (cannot cancel).
+func attack_phase() -> int:
+	# Actor itself has no CombatController; Player and EnemyBase each own one. Reading it
+	# through the node keeps this on the base class, where anyone reading a fight can use
+	# it, without the base pretending to a field it does not have.
+	var c := get_node_or_null("Combat") as CombatController
+	if c == null or c.current == null:
+		return 0
+	return c.phase
 
 func can_act() -> bool:
 	return state in [State.IDLE, State.WALK, State.RUN] and not dead

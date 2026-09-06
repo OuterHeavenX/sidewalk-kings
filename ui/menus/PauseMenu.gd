@@ -200,6 +200,21 @@ func _show_page(p: Page) -> void:
 			_row("Books read", str(pd.books_read.size()), UITheme.TEXT_DIM)
 		Page.QUESTS:
 			page_title.text = "Quests"
+			# What to do next, at the top, before the quest list. A quest log tells you what
+			# you accepted; this tells you where to go, which is the thing a player who has
+			# put the game down for a week actually needs.
+			_row("Next", "", UITheme.ACCENT)
+			var hint_label := Label.new()
+			hint_label.text = "  " + HintManager.current_text()
+			hint_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+			UITheme.style_label(hint_label, 9, UITheme.TEXT)
+			page_col.add_child(hint_label)
+			var where := HintManager.current_target()
+			if where != "":
+				var a: AreaData = ContentDB.get_area(where)
+				if a:
+					_row("  Head for", a.display_name, UITheme.ACCENT_2)
+			page_col.add_child(HSeparator.new())
 			var act := QuestManager.active_quests()
 			if act.is_empty():
 				_row("No active quests.", "", UITheme.TEXT_DIM)

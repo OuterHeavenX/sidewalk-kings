@@ -408,6 +408,7 @@
    "character": "dez",
    "x": 150,
    "y": 38.0,
+   "gives_hints": true,
    "conditional": [
     {
      "dialogue": "dez_ending",

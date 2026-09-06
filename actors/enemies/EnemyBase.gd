@@ -23,6 +23,12 @@ var ai_state: AI = AI.WAIT
 var target: Node2D = null
 var think_timer: float = 0.0
 var attack_cooldown: float = 0.0
+
+## Guarding. Enemies hold a guard for a moment when the player commits to something, then
+## drop it. It is deliberately short and on a cooldown: a guard you cannot get through is
+## not difficulty, it is a wall, and heavies break it anyway.
+var guard_time: float = 0.0
+var guard_cooldown: float = 0.0
 var circle_dir: int = 1
 var desired_lane_offset: float = 0.0
 var slot_index: int = 0
@@ -97,6 +103,12 @@ func _update_ai(delta: float) -> void:
 		return
 	if attack_cooldown > 0.0:
 		attack_cooldown -= delta
+	if guard_time > 0.0:
+		guard_time -= delta
+		if guard_time <= 0.0:
+			guard_cooldown = randf_range(1.1, 2.2)
+	elif guard_cooldown > 0.0:
+		guard_cooldown -= delta
 	if state == State.KNOCKDOWN:
 		_handle_knockdown(delta)
 		return
@@ -171,6 +183,24 @@ func _update_ai(delta: float) -> void:
 			move_input = Vector2.ZERO
 			play_anim("idle")
 
+## Enemies guard the same way the player does: light hits are absorbed, heavies break
+## through. Nothing about this is hidden from the player, and the answer to it is a move
+## they already own.
+func is_guarding() -> bool:
+	return guard_time > 0.0 and not dead and can_act()
+
+func on_guarded(d: DamageData) -> void:
+	AudioManager.play_sfx("block", -6.0)
+	FX.spark_guard(global_position + Vector2(d.direction * 8.0, -z_height - 22.0), get_parent())
+	# Guarding costs ground, so chipping at a guard still moves them.
+	knockback_velocity.x = d.knockback.x * d.direction * 0.35
+
+## How committed the player is right now. This is what turns dice-rolling into fighting.
+func _target_phase() -> int:
+	if target == null or not is_instance_valid(target) or not target.has_method("attack_phase"):
+		return 0
+	return target.attack_phase()
+
 func _decide() -> void:
 	think_timer = data.reaction_delay * randf_range(0.7, 1.4)
 	if target == null:
@@ -212,6 +242,25 @@ func _decide() -> void:
 		return
 
 	var in_range := dist <= data.preferred_distance + 8.0 and lane_diff <= 16.0
+	var phase := _target_phase()
+
+	# Punish the whiff. The player is in recovery and cannot cancel, so this is the opening,
+	# and taking it is not a dice roll.
+	if in_range and phase == 3 and attack_cooldown <= 0.0:
+		_do_attack(dist)
+		return
+
+	# The player has committed and the hit has not landed. Guard it, or get out of the way.
+	if in_range and phase == 1:
+		if guard_cooldown <= 0.0 and guard_time <= 0.0 and randf() < _guard_chance():
+			guard_time = randf_range(0.32, 0.55)
+			move_input = Vector2.ZERO
+			ai_state = AI.WAIT
+			return
+		if randf() < 0.35:
+			ai_state = AI.RETREAT
+			return
+
 	if in_range and attack_cooldown <= 0.0:
 		if randf() < data.aggression:
 			_do_attack(dist)
@@ -224,6 +273,25 @@ func _decide() -> void:
 			circle_dir = -circle_dir
 		return
 	ai_state = AI.APPROACH
+
+## How likely this enemy is to guard. Heavies and bosses hold their ground; rushers do not
+## block anything, which is what makes them rushers.
+func _guard_chance() -> float:
+	if data == null:
+		return 0.0
+	match data.archetype:
+		EnemyData.Archetype.RUSHER:
+			return 0.0
+		EnemyData.Archetype.RANGED:
+			return 0.10
+		EnemyData.Archetype.HEAVY:
+			return 0.55
+		EnemyData.Archetype.BOSS:
+			return 0.5
+		EnemyData.Archetype.GRAPPLER:
+			return 0.35
+		_:
+			return 0.25
 
 ## A flanker walking the back of the lane can meet a solid prop, and it has no pathfinding
 ## to go round one. If it stops making progress while trying to move, send it along the
@@ -447,6 +515,9 @@ func compute_damage(d: DamageData) -> int:
 
 func on_damaged(d: DamageData, amount: int) -> void:
 	_become_aggro()
+	# A hit that gets through ends the guard. Otherwise a lucky raise covers a whole combo.
+	guard_time = 0.0
+	guard_cooldown = randf_range(0.8, 1.6)
 	if health_bar and data and data.show_health_bar:
 		health_bar.visible = true
 		health_bar.set_value(hp)

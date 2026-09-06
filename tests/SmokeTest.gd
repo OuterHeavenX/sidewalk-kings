@@ -69,6 +69,8 @@ func run() -> void:
 	await test_lighting()
 	await test_chapter_two()
 	await test_chapter_three()
+	await test_hints()
+	await test_enemy_ai()
 	await test_hit_effects()
 	await test_boss()
 	await test_character_art()
@@ -1862,6 +1864,129 @@ func test_chapter_three() -> void:
 ## exactly the kind that rot silently: an effect that stops spawning because a texture was
 ## renamed, and stains that outlive the person who bled them. The second is the one that
 ## turns a street into a permanent record of every fight that ever happened on it.
+## Enemy AI that reads the fight.
+##
+## These behaviours are invisible when they break: an enemy that stops punishing whiffs
+## still walks, still swings, still dies, and the fight simply goes quiet in a way no
+## screenshot shows.
+## Dez knows what you should be doing.
+##
+## The playthrough found that chapter one's progression depends on walking back to Dez
+## between jobs and that nothing in the game says so. A hint system fixes that only if it
+## can never come up empty, so that is the main thing asserted here: there is no reachable
+## story state in which the game has nothing to tell you.
+func test_hints() -> void:
+	print("
+-- Hints --")
+	check("hints loaded", HintManager._hints.size() > 0, "%d" % HintManager._hints.size())
+	check("the last hint is unconditional, so there is always one",
+		str(HintManager._hints[-1].get("if_flag", "")) == ""
+		and str(HintManager._hints[-1].get("if_not_flag", "")) == ""
+		and str(HintManager._hints[-1].get("if_quest", "")) == "")
+
+	# Every place a hint points at has to exist, or it points the player at nothing.
+	var bad_target: Array[String] = []
+	var empty_text: Array[String] = []
+	for h in HintManager._hints:
+		var where := str(h.get("where", ""))
+		if where != "" and not ContentDB.areas.has(where):
+			bad_target.append(where)
+		if str(h.get("text", "")).strip_edges() == "":
+			empty_text.append(where)
+	check("every hint points at a real area", bad_target.is_empty(), ", ".join(bad_target))
+	check("no hint is blank", empty_text.is_empty(), ", ".join(empty_text))
+
+	# Walk the story and check the hint changes and never disappears. The flags are set in
+	# the order a player sets them, because the hint list is ordered and an entry placed
+	# above the one it follows swallows everything after it.
+	var saved: Dictionary = {}
+	var story: Array[String] = ["knows_premise", "market_opened", "market_cleared",
+		"alley_cleared", "yard_cleared", "hideout_cleared", "chapter_1_done", "metro_open",
+		"found_tuesday_locker", "bellwater_cleared", "chapter_2_done", "took_the_form",
+		"line_four_cleared", "chapter_3_done"]
+	for f in story:
+		saved[f] = GameManager.get_flag(f)
+		GameManager.set_flag(f, false)
+
+	var seen: Dictionary = {}
+	var silent: Array[String] = []
+	var start_hint := HintManager.current_text()
+	check("a brand new game already has a hint", start_hint != "", start_hint)
+	seen[start_hint] = true
+	for f in story:
+		GameManager.set_flag(f, true)
+		var t := HintManager.current_text()
+		if t == "":
+			silent.append(f)
+		seen[t] = true
+	check("the game is never silent about what to do next", silent.is_empty(),
+		"silent after: " + ", ".join(silent))
+	# If the ordering is wrong, one entry answers for every state and this collapses.
+	check("the hint actually changes as the story moves", seen.size() >= 8,
+		"%d distinct hints across %d states" % [seen.size(), story.size() + 1])
+
+	for f in saved.keys():
+		GameManager.set_flag(str(f), bool(saved[f]))
+
+func test_enemy_ai() -> void:
+	print("
+-- Enemies reading the fight --")
+	await SceneManager.change_area("ferry_row", "start")
+	await seconds(0.5)
+	clear_stage()
+	await frames(2)
+
+	var e := spawn_enemy("pigeon_grunt", 30.0)
+	check("an enemy to test", e != null)
+	if e == null:
+		return
+	var pl := p()
+
+	# Guarding: a light hit is absorbed, a heavy is not. This is the same rule the player
+	# lives under, which is the point -- the answer is a move they already have.
+	e.hp = e.data.max_hp
+	e.guard_time = 5.0
+	check("an enemy can guard", e.is_guarding())
+	var before: int = e.hp
+	var light := DamageData.new()
+	light.amount = 10
+	light.direction = 1
+	light.hit_sound = ""
+	light.source = pl
+	e.take_damage(light)
+	check("a guard absorbs a light hit", e.hp == before, "%d -> %d" % [before, e.hp])
+
+	e.guard_time = 5.0
+	before = e.hp
+	var heavy := DamageData.new()
+	heavy.amount = 10
+	heavy.direction = 1
+	heavy.heavy = true
+	heavy.hit_sound = ""
+	heavy.source = pl
+	e.take_damage(heavy)
+	check("a heavy breaks a guard", e.hp < before, "%d -> %d" % [before, e.hp])
+	check("being hit drops the guard", not e.is_guarding())
+
+	# Rushers never guard: that is what makes them rushers, and if this ever quietly becomes
+	# "everyone guards" the crowd stops having texture.
+	var r := spawn_enemy("pigeon_rusher", 60.0)
+	if r != null:
+		check("a rusher does not guard", is_equal_approx(r._guard_chance(), 0.0),
+			"%.2f" % r._guard_chance())
+	var h := spawn_enemy("commuter_heavy", 90.0)
+	if h != null:
+		check("a heavy guards more than a grunt", h._guard_chance() > e._guard_chance(),
+			"%.2f vs %.2f" % [h._guard_chance(), e._guard_chance()])
+
+	# Reading the player's commitment is what all of it is built on.
+	check("an idle player reads as not committed", pl.attack_phase() == 0,
+		"phase %d" % pl.attack_phase())
+	pl._press_attack(MoveData.InputKind.LIGHT)
+	await frames(2)
+	check("an attacking player reads as committed", pl.attack_phase() > 0,
+		"phase %d" % pl.attack_phase())
+
 func test_hit_effects() -> void:
 	print("\n-- Impacts and blood --")
 	for id in ["burst_light", "burst_heavy", "burst_weapon", "blood_drop",

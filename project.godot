@@ -12,7 +12,7 @@ config_version=5
 
 config/name="Sidewalk Kings"
 config/description="An original 2D side-scrolling open-world beat-'em-up RPG."
-config/version="0.4.0"
+config/version="0.5.0"
 run/main_scene="res://scenes/boot/Boot.tscn"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 boot_splash/bg_color=Color(0.07, 0.06, 0.1, 1)
@@ -37,6 +37,7 @@ DialogueManager="*res://systems/DialogueManager.gd"
 ShopManager="*res://systems/ShopManager.gd"
 Renderer2D="*res://autoload/Renderer2D.gd"
 CutsceneManager="*res://systems/CutsceneManager.gd"
+HintManager="*res://systems/HintManager.gd"
 
 [debug]
 

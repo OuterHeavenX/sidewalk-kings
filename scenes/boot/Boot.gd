@@ -29,6 +29,14 @@ func _ready() -> void:
 		var ac = load("res://tests/AudioCheck.gd").new()
 		get_tree().root.add_child(ac)
 		return
+	# Full playthrough:  godot --path . -- --play
+	# Asks the only question the smoke test cannot: can somebody starting a new game
+	# actually reach the end. Those are different questions, and this game has already
+	# shipped once with every system green and the first street impossible to leave.
+	if "--play" in args:
+		var play = load("res://tests/Playthrough.gd").new()
+		get_tree().root.add_child(play)
+		return
 	# Visual capture pass:  godot --path . -- --shots
 	if "--shots" in args:
 		var shots = load("res://tests/ScreenshotTool.gd").new()

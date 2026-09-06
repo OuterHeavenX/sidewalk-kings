@@ -263,6 +263,7 @@ ferry = {
     ],
     "npcs": [
         {"id": "dez", "name": "Dez", "character": "dez", "x": 150, "y": LANE_MIN + 4,
+         "gives_hints": True,
          "conditional": [
              {"dialogue": "dez_ending", "if_flag": "chapter_3_done"},
              {"dialogue": "dez_took_it", "if_flag": "took_the_form", "if_not_flag": "told_dez_ch3"},

@@ -4,6 +4,10 @@ extends Node2D
 ## Dialogue is chosen from a list of conditional entries so lines change as the story moves.
 
 @export var npc_id: String = "dez"
+## A guide always has something useful to say. When none of this NPC's story dialogue
+## applies, they tell you what to do next instead of saying "...", which is what Dez was
+## doing between chapters -- in a game whose progression depends on going back to him.
+@export var gives_hints: bool = false
 @export var display_name: String = "Local"
 @export var character: String = "dez"
 @export var dialogue_id: String = ""
@@ -90,6 +94,9 @@ func interact(by: Node) -> void:
 		ShopManager.open_shop(shop_id)
 		talking = false
 		QuestManager.notify_talked_to(npc_id)
+	elif gives_hints:
+		DialogueManager.say(display_name, HintManager.current_text(), npc_id)
+		talking = false
 	else:
 		DialogueManager.say(display_name, "...")
 		talking = false

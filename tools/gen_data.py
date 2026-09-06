@@ -8,6 +8,7 @@ the engine only reads the generated resources.
 
 Run from the project root:  python tools/gen_data.py
 """
+import json
 import os
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -1209,6 +1210,60 @@ DIALOGUES = {
 }
 
 # ===========================================================================
+# HINTS  -  what Dez tells you when you have lost the thread
+# ===========================================================================
+# Checked in order, first match wins. Most specific first: a broad early condition placed
+# high swallows every state after it. The last entry has no condition and always matches,
+# so there is no state in which Dez has nothing to say.
+#
+# "where" is the area the hint points at, and the map screen marks it. Leave it empty for a
+# hint about the place you are already standing in.
+def hint(text, where="", **kw):
+    d = dict(text=text, where=where, if_flag="", if_not_flag="", if_quest="")
+    d.update(kw)
+    return d
+
+
+HINTS = [
+    hint("It is done. Line 4 stays shut, and it has your name on it now. "
+         "Come and eat something.", "ferry_row", if_flag="chapter_3_done"),
+
+    # --- Chapter three ---
+    hint("The Foreman is in the substation at the far end of the line. He is the one "
+         "holding the paper.", "substation", if_flag="line_four_cleared"),
+    hint("They are taking the platform apart down on Line 4. Get down there and stop them.",
+         "line_four", if_flag="took_the_form"),
+    hint("You have the form. Nothing arrives on Tuesday now. Go and find out what that "
+         "did.", "line_office", if_flag="chapter_2_done"),
+
+    # --- Chapter two ---
+    hint("The Line Office is at the far end of the metro platform. Whoever signs for the "
+         "money works there.", "line_office", if_flag="bellwater_cleared"),
+    hint("The Commuters hold Bellwater Block, one stop along. Clear it.",
+         "bellwater_block", if_flag="found_tuesday_locker"),
+    hint("Somebody leaves a bag on the metro platform every Tuesday and never gets off the "
+         "train. Search the lockers.", "metro_platform", if_flag="metro_open"),
+    hint("Big Starch said the money comes in on Tuesdays, from the metro side. Come and "
+         "see me about it.", "ferry_row", if_flag="chapter_1_done"),
+
+    # --- Chapter one ---
+    hint("Starch and Sons is behind the yard. He folds every note in this city.",
+         "starch_laundromat", if_flag="hideout_cleared"),
+    hint("The laundromat is past the Rustpile Yard. Whoever pays the gangs is in there.",
+         "starch_laundromat", if_flag="yard_cleared"),
+    hint("The Rust Rats have the yard past the alley. Go and be a nuisance.",
+         "rustpile_yard", if_flag="alley_cleared"),
+    hint("Whoever runs Grease Alley is worth a conversation. The alley is past the market.",
+         "grease_alley", if_flag="market_cleared"),
+    hint("The Sweaters have Lantern Market boxed in. It is east along the row.",
+         "lantern_market", if_flag="market_opened"),
+    hint("Five Pigeons off the Ferry Row and I will tell you what I know.",
+         "ferry_row", if_flag="knows_premise"),
+
+    hint("Come and talk to me. I am by the ferry, where I always am.", "ferry_row"),
+]
+
+# ===========================================================================
 # ENCOUNTERS
 # ===========================================================================
 def encounter(id, gang, waves, **kw):
@@ -1284,9 +1339,17 @@ ENCOUNTERS = [
                                                    wave("commuter_ranged", 1, "left", 0.8)],
               max_active=4, reward_flag="bellwater_cleared",
               clear_dialogue="metro_poster"),
+    # clear_dialogue is load-bearing, not flavour. "starch_defeat" is what sets
+    # chapter_1_done, and it was written and then wired to nothing: the flag came only from
+    # the q_starch reward, and Dez only hands out q_starch if you walk back to Ferry Row
+    # before fighting the boss. Beat Big Starch without it and once_flag closes the
+    # encounter forever, so the metro never opens and the game cannot be finished -- with
+    # nothing on screen to say so. It also carries the Tuesday money reveal that sets up the
+    # whole of chapter two, which no player had ever seen.
     encounter("boss_starch", "cleaners", [wave("big_starch", 1, "right", 0.0, True)],
               max_active=1, boss_id="big_starch", music="boss",
-              intro_dialogue="starch_intro", once_flag="enc_boss_starch"),
+              intro_dialogue="starch_intro", clear_dialogue="starch_defeat",
+              reward_flag="chapter_1_done", once_flag="enc_boss_starch"),
 ]
 
 # ===========================================================================
@@ -1371,6 +1434,12 @@ def main():
     for a in AREAS:
         write_tres("areas", a["id"], "AreaData", a)
     print("areas: %d" % len(AREAS))
+    # Hints ship as JSON rather than as resources: they are an ordered list evaluated
+    # at runtime, not things looked up by id, and the order is the whole design.
+    hints_path = os.path.join(ROOT, "data", "hints.json")
+    with open(hints_path, "w", newline=chr(10)) as f:
+        json.dump({"hints": HINTS}, f, indent=1)
+    print("hints: %d" % len(HINTS))
 
 if __name__ == "__main__":
     main()

@@ -272,6 +272,7 @@ func _build_npcs() -> void:
 		n.dialogue_id = str(entry.get("dialogue", ""))
 		n.shop_id = str(entry.get("shop", ""))
 		n.wander = bool(entry.get("wander", false))
+		n.gives_hints = bool(entry.get("gives_hints", false))
 		var cond: Array[Dictionary] = []
 		for c in entry.get("conditional", []):
 			cond.append(c)
