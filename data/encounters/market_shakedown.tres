@@ -14,6 +14,6 @@ once_flag = ""
 respawn_on_reenter = true
 boss_id = ""
 reward_flag = "market_cleared"
-music = "market"
+music = "battle"
 intro_dialogue = ""
 clear_dialogue = ""

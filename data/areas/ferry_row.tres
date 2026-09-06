@@ -7,7 +7,6 @@ script = ExtResource("1_ferry_row")
 id = "ferry_row"
 display_name = "Ferry Row"
 district = "Riverbend East"
-music = "street"
 ambience = "river"
 gang = "pigeons"
 map_position = Vector2(0.0, 0.0)

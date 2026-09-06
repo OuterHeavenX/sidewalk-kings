@@ -224,15 +224,33 @@ func play_telegraph(seconds: float) -> void:
 		if is_instance_valid(self) and sprite and flash_time <= 0.0:
 			sprite.modulate = Color(1, 1, 1))
 
+## Props and breakables take damage too, and a crate does not bleed.
+@export var bleeds: bool = true
+
 func flash(duration: float = 0.12) -> void:
 	if sprite == null:
 		return
 	flash_time = duration
 	sprite.modulate = Color(2.4, 2.2, 2.2, 1.0)
 
+## What a landed hit throws out. The burst matches the kind of blow rather than the size of
+## the sprite that caused it, so a bat always reads as a bat.
+func _burst_for(d: DamageData) -> String:
+	if d.kind == MoveData.DamageKind.WEAPON:
+		return "burst_weapon"
+	return "burst_heavy" if (d.heavy or d.crit) else "burst_light"
+
 func _spawn_hit_fx(d: DamageData, amount: int) -> void:
 	var fx_pos := global_position + Vector2(d.direction * 8.0, -z_height - 22.0)
 	FX.spawn(d.hit_fx, fx_pos, get_parent())
+	FX.impact(fx_pos, d.direction, _burst_for(d), get_parent())
+	# Blood scales with how hard it landed, and lands on the floor this actor is standing
+	# on -- global_position.y is lane depth here, which is the ground.
+	# Not every jab draws blood. Bleeding on every connected hit turned a street brawl into
+	# a crime scene: eight stains a second, stacked, in a palette this muted.
+	if bleeds and amount > 0 and (d.heavy or d.crit or randf() < 0.45):
+		var drops: int = 1 + (2 if d.heavy or d.crit else 0) + mini(amount / 10, 2)
+		FX.blood(fx_pos, d.direction, self, global_position.y, drops, get_parent())
 	if d.hit_sound != "":
 		AudioManager.play_sfx(d.hit_sound)
 

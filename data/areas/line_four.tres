@@ -7,7 +7,6 @@ script = ExtResource("1_line_four")
 id = "line_four"
 display_name = "Line 4"
 district = "Line 4"
-music = "industrial"
 ambience = "industrial"
 gang = "crew"
 map_position = Vector2(2.25, 2.55)

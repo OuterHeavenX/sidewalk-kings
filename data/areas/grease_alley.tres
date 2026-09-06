@@ -7,7 +7,6 @@ script = ExtResource("1_grease_alley")
 id = "grease_alley"
 display_name = "Grease Alley"
 district = "Backstreets"
-music = "alley"
 ambience = "alley"
 gang = "grease"
 map_position = Vector2(2.0, 0.5)

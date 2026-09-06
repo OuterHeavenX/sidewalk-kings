@@ -63,7 +63,7 @@ func _report_streams() -> void:
 	if not missing_sfx.is_empty():
 		fail("sfx that do not resolve: " + ", ".join(missing_sfx))
 
-	var music_ids: Array[String] = ["title", "street", "market", "alley", "industrial", "boss", "victory", "shop", "metro"]
+	var music_ids: Array[String] = ["title", "street", "market", "alley", "industrial", "boss", "victory", "shop", "metro", "battle", "tension"]
 	var missing_music: Array[String] = []
 	for id in music_ids:
 		if AudioManager._resolve(AudioManager.MUSIC_DIR, id) == null:

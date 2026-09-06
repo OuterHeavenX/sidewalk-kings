@@ -262,6 +262,22 @@ Two rules:
   108 px, and the fire escape sprite hangs its ladder down within reach so the shape itself
   says climbable.
 
+### Fight music has to differ from street music
+
+`AudioManager.play_music` returns early when the id has not changed, so an encounter that
+names its own area's track is a switch that never fires. Encounters therefore do not name a
+track at all: `encounter()` derives it, `boss` when there is a `boss_id` and `battle`
+otherwise, and no area uses either. The smoke test asserts no encounter shares its area's
+music, which is what caught both boss rooms playing the boss theme before the boss.
+
+### Blood belongs to whoever bled it
+
+`FX` keys stains by the instance id of the actor they came from, and `EnemyBase.die()` calls
+`FX.clear_blood(self)` as it fades. Keying on the object itself would keep a freed enemy
+alive in the dictionary, and never clearing would leave a street carrying a record of every
+fight it has ever hosted. Areas free their own children, so `FX.forget_blood()` on area
+change drops the registry rather than the sprites.
+
 ### Impacts are measured, not eyeballed
 
 A landed hit must carry more energy than the swing that led into it, and that is checked in

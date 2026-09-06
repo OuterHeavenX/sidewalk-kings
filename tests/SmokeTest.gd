@@ -69,6 +69,7 @@ func run() -> void:
 	await test_lighting()
 	await test_chapter_two()
 	await test_chapter_three()
+	await test_hit_effects()
 	await test_boss()
 	await test_character_art()
 	await test_map_and_saves()
@@ -237,7 +238,8 @@ func test_audio() -> void:
 
 	var bad_music: Array[String] = []
 	var not_looping: Array[String] = []
-	for id in ["title", "street", "market", "alley", "industrial", "boss", "victory", "shop"]:
+	for id in ["title", "street", "market", "alley", "industrial", "boss", "victory", "shop",
+			"metro", "battle", "tension"]:
 		var stream: AudioStream = AudioManager._resolve(AudioManager.MUSIC_DIR, id)
 		if stream == null:
 			bad_music.append(id)
@@ -245,6 +247,24 @@ func test_audio() -> void:
 		if stream is AudioStreamWAV and (stream as AudioStreamWAV).loop_mode == AudioStreamWAV.LOOP_DISABLED:
 			not_looping.append(id)
 	check("every music track resolves", bad_music.is_empty(), ", ".join(bad_music))
+
+	# A fight has to sound different from the street it happens on. play_music returns early
+	# when the id has not changed, so an encounter that names its own area's track is a
+	# switch that never fires -- which is how almost every fight in the game ended up
+	# playing the same music as the street it started on, with the intent sitting right
+	# there in the data looking correct.
+	var silent_switch: Array[String] = []
+	for area_id in ContentDB.areas.keys():
+		var layout := _layout(str(area_id))
+		var area_music: String = ContentDB.areas[area_id].music
+		for entry in layout.get("encounters", []):
+			var enc: EncounterData = ContentDB.get_encounter(str(entry.get("id", "")))
+			if enc == null:
+				continue
+			if enc.music == "" or enc.music == area_music:
+				silent_switch.append("%s in %s (%s)" % [enc.id, area_id,
+					"unset" if enc.music == "" else enc.music])
+	check("every fight changes the music", silent_switch.is_empty(), ", ".join(silent_switch))
 	check("music loops instead of playing once and stopping", not_looping.is_empty(), ", ".join(not_looping))
 
 	var bad_amb: Array[String] = []
@@ -1835,6 +1855,73 @@ func test_chapter_three() -> void:
 		guard += 1
 	check("the ending closes its dialogue behind it", not DialogueManager.is_active(),
 		"still open after %d frames" % (guard * 2))
+
+## Impacts and blood.
+##
+## None of this is visible to an assertion the way a flag is, but two things about it are
+## exactly the kind that rot silently: an effect that stops spawning because a texture was
+## renamed, and stains that outlive the person who bled them. The second is the one that
+## turns a street into a permanent record of every fight that ever happened on it.
+func test_hit_effects() -> void:
+	print("\n-- Impacts and blood --")
+	for id in ["burst_light", "burst_heavy", "burst_weapon", "blood_drop",
+			"blood_splat_0", "blood_splat_1", "blood_splat_2"]:
+		check("effect art '%s' exists" % id,
+			ResourceLoader.exists("res://assets/art/fx/%s.png" % id))
+
+	await SceneManager.change_area("ferry_row", "start")
+	await seconds(0.5)
+	clear_stage()
+	await frames(2)
+	FX.forget_blood()
+
+	var e := spawn_enemy("pigeon_grunt", 40.0)
+	check("an enemy to bleed", e != null)
+	if e == null:
+		return
+	var eid := e.get_instance_id()
+
+	# Heavy hits always bleed, so this does not depend on a coin flip.
+	var d := DamageData.new()
+	d.amount = 20
+	d.direction = 1
+	d.heavy = true
+	d.hit_sound = ""
+	d.source = p()
+	e.take_damage(d)
+	await seconds(0.6)          # long enough for the droplets to land and become stains
+	var stains: int = FX._stains.get(eid, []).size()
+	check("a landed hit leaves blood on the floor", stains > 0, "%d stains" % stains)
+
+	# The cap. A long fight in one street must not accumulate sprites without limit.
+	#
+	# The enemy is topped up between hits on purpose: twelve heavy blows kill a Pigeon four
+	# times over, and a dead one has already had its blood cleared -- so the first version
+	# of this check measured an empty list and passed without testing anything.
+	for i in range(12):
+		if is_instance_valid(e):
+			e.hp = e.data.max_hp if e.data else 200
+		var d2 := DamageData.new()
+		d2.amount = 20
+		d2.direction = 1
+		d2.heavy = true
+		d2.hit_sound = ""
+		d2.source = p()
+		if is_instance_valid(e) and not e.dead:
+			e.take_damage(d2)
+		await frames(3)
+	await seconds(0.7)
+	var capped: int = FX._stains.get(eid, []).size()
+	check("blood on the floor is capped", capped <= FX.MAX_STAINS_PER_ACTOR,
+		"%d stains, cap %d" % [capped, FX.MAX_STAINS_PER_ACTOR])
+
+	# And the whole point: it goes when the body goes.
+	if is_instance_valid(e) and not e.dead:
+		e.die(null)
+	await seconds(2.0)
+	var left: int = FX._stains.get(eid, []).size()
+	check("blood leaves with the enemy that bled it", not FX._stains.has(eid),
+		"%d stains still registered" % left)
 
 ## The raw steps of a cutscene, straight off disk.
 func _cutscene_steps(id: String) -> Array:

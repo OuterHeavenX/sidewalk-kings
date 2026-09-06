@@ -976,6 +976,67 @@ def fx_sweat(size=8):
     d.ellipse([2, 3, 4, 5], fill=(220, 245, 255))
     return outline_alpha(im)
 
+def fx_hit_burst(size, col, seed=1):
+    """A bigger, meaner version of the spark: a hard white core, a shockwave ring, and
+    spikes that shoot out further than they have any business doing. Impacts are supposed
+    to be over-sold; this is the frame you actually feel."""
+    frames = []
+    rnd = random.Random(seed)
+    spikes = [rnd.uniform(0, math.tau) for _ in range(9)]
+    lengths = [rnd.uniform(0.62, 1.0) for _ in range(9)]
+    for f in range(4):
+        im = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+        d = ImageDraw.Draw(im)
+        c = size / 2.0
+        t = f / 3.0
+        a = int(255 * (1.0 - t * 0.8))
+        # Shockwave: thin, fast, and gone.
+        rr = size * (0.18 + 0.44 * t)
+        d.ellipse([c - rr, c - rr, c + rr, c + rr], outline=col + (int(a * 0.7),), width=2)
+        # Spikes.
+        for ang, ln in zip(spikes, lengths):
+            r0 = size * 0.10
+            r1 = size * (0.20 + 0.56 * t) * ln
+            w = max(1, int(size * 0.09 * (1.0 - t)))
+            d.line([(c + math.cos(ang) * r0, c + math.sin(ang) * r0),
+                    (c + math.cos(ang) * r1, c + math.sin(ang) * r1)],
+                   fill=col + (a,), width=w)
+        # Core, blowing out to white then vanishing.
+        cr = size * (0.24 - 0.20 * t)
+        if cr > 0.5:
+            d.ellipse([c - cr, c - cr, c + cr, c + cr], fill=(255, 255, 255, a))
+        frames.append(im)
+    return frames
+
+
+def fx_blood_drop(size=4):
+    im = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    d = ImageDraw.Draw(im)
+    d.ellipse([0, 0, size - 1, size - 1], fill=(146, 26, 32))
+    d.point((1, 1), fill=(196, 58, 58))
+    return outline_alpha(im, (58, 10, 14, 200))
+
+
+def fx_blood_splat(size, seed=1):
+    """A stain on the pavement. Irregular on purpose: three of these at different sizes and
+    rotations should never read as the same stamp twice."""
+    rnd = random.Random(seed)
+    im = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    d = ImageDraw.Draw(im)
+    c = size / 2.0
+    main = size * rnd.uniform(0.18, 0.24)
+    d.ellipse([c - main * 1.4, c - main, c + main * 1.4, c + main], fill=(104, 20, 26))
+    # Flung clear of the main stain. Overlapping the blob just made it a bigger blob.
+    for _ in range(rnd.randint(5, 8)):
+        ang = rnd.uniform(0, math.tau)
+        dist = rnd.uniform(main * 1.6, size * 0.48)
+        r = rnd.uniform(0.7, size * 0.075)
+        x = c + math.cos(ang) * dist
+        y = c + math.sin(ang) * dist * 0.55
+        d.ellipse([x - r, y - r * 0.8, x + r, y + r * 0.8], fill=(92, 17, 23))
+    return im
+
+
 def write_strip(frames, path):
     w, h = frames[0].size
     sheet = Image.new("RGBA", (w * len(frames), h), (0, 0, 0, 0))
@@ -1518,6 +1579,12 @@ def build_fx():
     write_strip(fx_spark(30, (255, 180, 90), 8, 2), os.path.join(out, "spark_big.png"))
     write_strip(fx_spark(26, (170, 220, 255), 7, 3), os.path.join(out, "spark_weapon.png"))
     write_strip(fx_spark(36, (230, 150, 255), 10, 4), os.path.join(out, "spark_special.png"))
+    write_strip(fx_hit_burst(38, (255, 232, 150), 11), os.path.join(out, "burst_light.png"))
+    write_strip(fx_hit_burst(52, (255, 196, 110), 12), os.path.join(out, "burst_heavy.png"))
+    write_strip(fx_hit_burst(46, (190, 230, 255), 13), os.path.join(out, "burst_weapon.png"))
+    fx_blood_drop(4).save(os.path.join(out, "blood_drop.png"))
+    for i in range(3):
+        fx_blood_splat(14 + i * 5, 21 + i).save(os.path.join(out, "blood_splat_%d.png" % i))
     write_strip(fx_dust(18), os.path.join(out, "dust.png"))
     write_strip(fx_impact_ring(28), os.path.join(out, "ring.png"))
     write_strip(fx_impact_ring(40, (200, 160, 255)), os.path.join(out, "ring_special.png"))

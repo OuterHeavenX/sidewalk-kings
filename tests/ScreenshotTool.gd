@@ -71,6 +71,15 @@ func run() -> void:
 	player._press_attack(MoveData.InputKind.LIGHT)
 	await frames(8)
 	await shot("combat_punch")
+	# A few landed hits, then a look at what is left on the floor. The impact burst and the
+	# blood are the whole point of this pass and neither is visible to any assertion.
+	for i in range(5):
+		player._press_attack(MoveData.InputKind.LIGHT)
+		await frames(14)
+	await frames(6)
+	await shot("combat_impact")
+	await seconds(1.0)
+	await shot("combat_blood")
 	player.combat.cancel()
 	player.set_state(Actor.State.IDLE)
 	player.energy = player.max_energy

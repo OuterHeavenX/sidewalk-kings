@@ -549,7 +549,7 @@ def music_title():
     harm = ["E4", ".", ".", ".", "-", "-", "-", "-", "A4", ".", ".", ".", "-", "-", "-", "-",
             "G4", ".", ".", ".", "-", "-", "-", "-", "D4", ".", ".", ".", "-", "-", "-", "-"]
     drums = {"k": [0, 6, 8, 14], "s": [4, 12], "h": [0, 2, 4, 6, 8, 10, 12, 14]}
-    return build_song(104, 8, bass, lead, harm, drums)
+    return build_song(118, 8, bass, lead, harm, drums)
 
 def music_street():
     bass = ["D2", ".", "D2", ".", "-", "-", "A2", ".", "D2", ".", "-", "-", "C2", ".", "-", "-",
@@ -558,8 +558,9 @@ def music_street():
             "A4", ".", "C5", ".", "A4", ".", "G4", ".", "F4", ".", "D4", ".", "-", "-", "-", "-"]
     harm = ["A3", ".", "-", "-", "D4", ".", "-", "-", "F4", ".", "-", "-", "D4", ".", "-", "-",
             "C4", ".", "-", "-", "F4", ".", "-", "-", "G3", ".", "-", "-", "A3", ".", "-", "-"]
-    drums = {"k": [0, 7, 8], "s": [4, 12], "h": [2, 6, 10, 14], "t": [15]}
-    return build_song(122, 8, bass, lead, harm, drums)
+    drums = {"k": [0, 3, 7, 8, 11], "s": [4, 12],
+             "h": [0, 2, 4, 6, 8, 10, 12, 14], "t": [15]}
+    return build_song(138, 8, bass, lead, harm, drums, lead_vol=0.29)
 
 def music_market():
     bass = ["G2", ".", "-", "G2", "-", "D3", "-", ".", "E2", ".", "-", "E2", "-", "B2", "-", ".",
@@ -568,8 +569,10 @@ def music_market():
             "C5", "-", "E5", "-", "G5", "-", "E5", "-", "D5", "-", "B4", "-", "-", "-", "-", "-"]
     harm = ["G4", ".", ".", ".", "-", "-", "-", "-", "E4", ".", ".", ".", "-", "-", "-", "-",
             "C5", ".", ".", ".", "-", "-", "-", "-", "D5", ".", ".", ".", "-", "-", "-", "-"]
-    drums = {"k": [0, 8], "s": [4, 12], "h": [0, 2, 3, 4, 6, 8, 10, 11, 12, 14]}
-    return build_song(134, 8, bass, lead, harm, drums, lead_kind="square", harm_kind="tri")
+    drums = {"k": [0, 3, 8, 11], "s": [4, 12],
+             "h": [0, 2, 3, 4, 6, 8, 10, 11, 12, 14, 15]}
+    return build_song(146, 8, bass, lead, harm, drums, lead_kind="square", harm_kind="tri",
+                      lead_vol=0.29)
 
 def music_alley():
     bass = ["E2", ".", ".", ".", "-", "-", "E2", ".", "G2", ".", "-", "-", "A2", ".", "-", "-",
@@ -578,8 +581,9 @@ def music_alley():
             "E4", ".", "-", "D4", "-", "E4", ".", "-", "-", "-", "-", "-", "-", "-", "-", "-"]
     harm = ["B3", ".", ".", ".", ".", ".", ".", ".", "-", "-", "-", "-", "-", "-", "-", "-",
             "A3", ".", ".", ".", ".", ".", ".", ".", "-", "-", "-", "-", "-", "-", "-", "-"]
-    drums = {"k": [0, 10], "s": [4, 12], "h": [2, 6, 14]}
-    return build_song(112, 8, bass, lead, harm, drums, lead_kind="tri", harm_kind="saw", lead_vol=0.22)
+    drums = {"k": [0, 6, 10], "s": [4, 12], "h": [0, 2, 6, 8, 10, 14]}
+    return build_song(130, 8, bass, lead, harm, drums, lead_kind="tri", harm_kind="saw",
+                      lead_vol=0.27)
 
 def music_industrial():
     bass = ["C2", "-", "C2", "-", "C2", "-", "D#2", "-", "C2", "-", "C2", "-", "G2", "-", "F2", "-",
@@ -589,7 +593,8 @@ def music_industrial():
     harm = ["G3", ".", ".", ".", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-",
             "F3", ".", ".", ".", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-"]
     drums = {"k": [0, 3, 6, 8, 11], "s": [4, 12], "h": [0, 2, 4, 6, 8, 10, 12, 14], "t": [14]}
-    return build_song(140, 8, bass, lead, harm, drums, lead_kind="saw", bass_kind="square", lead_vol=0.2)
+    return build_song(150, 8, bass, lead, harm, drums, lead_kind="saw", bass_kind="square",
+                      lead_vol=0.26)
 
 def music_boss():
     bass = ["D2", "-", "D2", "-", "D2", "-", "D2", "-", "F2", "-", "F2", "-", "E2", "-", "E2", "-",
@@ -599,14 +604,51 @@ def music_boss():
     harm = ["A4", "-", "-", "-", "F4", "-", "-", "-", "D4", "-", "-", "-", "-", "-", "-", "-",
             "A#4", "-", "-", "-", "A4", "-", "-", "-", "F4", "-", "-", "-", "-", "-", "-", "-"]
     drums = {"k": [0, 2, 6, 8, 10, 14], "s": [4, 12], "h": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15], "t": [15]}
-    return build_song(158, 8, bass, lead, harm, drums, lead_kind="saw", harm_kind="square", lead_vol=0.24, bass_vol=0.38)
+    return build_song(166, 8, bass, lead, harm, drums, lead_kind="saw", harm_kind="square",
+                      lead_vol=0.28, bass_vol=0.40)
+
+def music_tension():
+    """A boss room before anything happens in it.
+
+    Both boss areas used to play the boss theme on entry, so walking in blew the reveal and
+    the fight starting changed nothing. This is what the room sounds like while it is still
+    just a room: slow, sparse, and mostly space.
+    """
+    bass = ["D2", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-",
+            "A#1", "-", "-", "-", "-", "-", "-", "-", "C2", "-", "-", "-", "-", "-", "-", "-"]
+    lead = ["A4", "-", "-", "-", "-", "-", "-", "-", "-", "-", "F4", "-", "-", "-", "-", "-",
+            "-", "-", "-", "-", "D4", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-"]
+    harm = ["D4", ".", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-",
+            "F4", ".", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-"]
+    drums = {"k": [0], "h": [8]}
+    return build_song(84, 8, bass, lead, harm, drums, lead_kind="tri", harm_kind="tri",
+                      lead_vol=0.16, harm_vol=0.10, bass_vol=0.26)
+
+
+def music_battle():
+    """What a fight sounds like. The one track no area uses, so it always changes.
+
+    Fast, straight-eight bass that never rests, a saw lead that keeps moving, and a kick
+    pattern with a push on the "and" of two so it leans forward rather than sitting square.
+    """
+    bass = ["A1", "-", "A1", "-", "A1", "A1", "-", "A1", "A1", "-", "A1", "-", "C2", "-", "D2", "-",
+            "A1", "-", "A1", "-", "A1", "A1", "-", "A1", "F1", "-", "G1", "-", "A1", "-", "-", "-"]
+    lead = ["A4", "-", "C5", "-", "E5", "-", "D5", "C5", "A4", "-", "-", "C5", "-", "D5", "-", "-",
+            "E5", "-", "G5", "-", "E5", "-", "D5", "C5", "D5", "-", "C5", "-", "A4", "-", "-", "-"]
+    harm = ["E4", ".", "-", "-", "A4", ".", "-", "-", "E4", ".", "-", "-", "G4", ".", "-", "-",
+            "A4", ".", "-", "-", "C5", ".", "-", "-", "G4", ".", "-", "-", "E4", ".", "-", "-"]
+    drums = {"k": [0, 3, 6, 8, 11, 14], "s": [4, 12],
+             "h": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15], "t": [15]}
+    return build_song(152, 8, bass, lead, harm, drums, lead_kind="saw", harm_kind="square",
+                      bass_kind="square", lead_vol=0.26, bass_vol=0.38)
+
 
 def music_victory():
     bass = ["C3", ".", "-", "-", "G2", ".", "-", "-", "A2", ".", "-", "-", "F2", ".", "-", "-"]
     lead = ["C5", ".", "E5", ".", "G5", ".", ".", ".", "-", "-", "E5", ".", "C5", ".", ".", "."]
     harm = ["G4", ".", ".", ".", "-", "-", "-", "-", "E4", ".", ".", ".", "-", "-", "-", "-"]
     drums = {"k": [0, 8], "s": [4, 12], "h": [0, 2, 4, 6, 8, 10, 12, 14]}
-    return build_song(120, 2, bass, lead, harm, drums)
+    return build_song(132, 2, bass, lead, harm, drums, lead_vol=0.30)
 
 def music_shop():
     bass = ["F2", ".", "-", "-", "C3", ".", "-", "-", "A2", ".", "-", "-", "C3", ".", "-", "-",
@@ -616,7 +658,8 @@ def music_shop():
     harm = ["F4", ".", ".", ".", "-", "-", "-", "-", "A4", ".", ".", ".", "-", "-", "-", "-",
             "A#4", ".", ".", ".", "-", "-", "-", "-", "C5", ".", ".", ".", "-", "-", "-", "-"]
     drums = {"k": [0, 8], "h": [4, 12]}
-    return build_song(98, 8, bass, lead, harm, drums, lead_kind="tri", harm_kind="tri", lead_vol=0.2)
+    return build_song(110, 8, bass, lead, harm, drums, lead_kind="tri", harm_kind="tri",
+                      lead_vol=0.23)
 
 def music_metro():
     bass = ["A1", "-", "A1", "-", "A1", "-", "A1", "-", "G1", "-", "G1", "-", "A1", "-", "-", "-",
@@ -625,14 +668,15 @@ def music_metro():
             "C5", "-", "-", "B4", "-", "A4", "-", "-", "G4", "-", "E4", "-", "-", "-", "-", "-"]
     harm = ["E4", ".", ".", ".", ".", ".", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-",
             "F4", ".", ".", ".", ".", ".", "-", "-", "G4", ".", ".", ".", "-", "-", "-", "-"]
-    drums = {"k": [0, 4, 8, 12], "s": [4, 12], "h": [0, 2, 4, 6, 8, 10, 12, 14], "t": [15]}
-    return build_song(128, 8, bass, lead, harm, drums, lead_kind="square", harm_kind="tri",
-                      lead_vol=0.21)
+    drums = {"k": [0, 3, 4, 8, 11, 12], "s": [4, 12],
+             "h": [0, 1, 2, 4, 6, 8, 9, 10, 12, 14], "t": [15]}
+    return build_song(142, 8, bass, lead, harm, drums, lead_kind="square", harm_kind="tri",
+                      lead_vol=0.27)
 
 MUSIC = {
     "title": music_title, "street": music_street, "market": music_market, "alley": music_alley,
     "industrial": music_industrial, "boss": music_boss, "victory": music_victory, "shop": music_shop,
-    "metro": music_metro,
+    "metro": music_metro, "battle": music_battle, "tension": music_tension,
 }
 
 # ----------------------------------------------------------------------

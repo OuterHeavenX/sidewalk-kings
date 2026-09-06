@@ -483,6 +483,9 @@ func die(d: DamageData = null) -> void:
 	await get_tree().create_timer(1.1).timeout
 	if not is_instance_valid(self):
 		return
+	# The floor goes back to how it was. Blood that outlives the person who bled it turns a
+	# street into a record of every fight that ever happened there.
+	FX.clear_blood(self, 0.45)
 	var tw := create_tween()
 	tw.tween_property(self, "modulate:a", 0.0, 0.45)
 	tw.tween_callback(queue_free)

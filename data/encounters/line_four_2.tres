@@ -14,6 +14,6 @@ once_flag = "enc_line_four_2"
 respawn_on_reenter = true
 boss_id = ""
 reward_flag = "line_four_cleared"
-music = "industrial"
+music = "battle"
 intro_dialogue = "gangs_arrive"
 clear_dialogue = ""

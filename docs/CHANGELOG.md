@@ -348,6 +348,80 @@ An area with no lighting block is untouched. Reloading an area keeps the player 
 
 ---
 
+## v0.4.0 — louder music, harder hits, and blood
+
+### The fight music never actually changed
+
+This was asked for as "make it more action", and it turned out not to be a tuning problem.
+`play_music` returns early when the id has not changed, and **almost every encounter named
+the track its own area was already playing** — `alley_ambush` asked for `alley` inside
+Grease Alley, whose music is `alley`. The switch existed in the data, looked correct, and
+fired essentially never. Of twenty-one encounters, two changed anything.
+
+Fights now use a **battle** track, which no area uses, so the change always happens.
+Encounters derive it from the helper rather than naming it each: a fight gets `battle`
+unless it has a `boss_id`, and then it gets `boss`. Eighteen hand-written restatements of
+area music are gone.
+
+The switch back was already fine — `Area.on_encounter_cleared` restores the area track and
+the director calls it.
+
+**Boss rooms got a new problem out of the same check.** Both boss areas played the `boss`
+track on entry, so walking in blew the reveal and the fight starting changed nothing. They
+have a **tension** track now: slow, sparse, mostly space. The room sounds like a room, and
+then the boss theme lands.
+
+### The whole soundtrack is faster
+
+Tempo and drum density across every track, and the leads brought up so they cut:
+
+| | was | now | | | was | now |
+|---|---|---|---|---|---|---|
+| title | 104 | 118 | | industrial | 140 | 150 |
+| street | 122 | **138** | | metro | 128 | **142** |
+| market | 134 | 146 | | boss | 158 | 166 |
+| alley | 112 | **130** | | victory | 120 | 132 |
+| shop | 98 | 110 | | battle | — | **152** |
+
+### Impacts
+
+Landed hits throw a burst that punches past its own size before settling, plus streaks
+along the direction of the blow — a radially symmetric spark cannot say which way a punch
+went. Three variants, picked by what hit you rather than by what sprite threw it, so a bat
+always reads as a bat.
+
+### Blood
+
+Droplets arc out of a hit, accelerate downward, land on the floor and stay as stains. They
+sit under the actors and over the road, squashed, because the floor is seen at an angle.
+
+**They leave with the body.** An enemy clears its own stains as it fades, which is the whole
+point: blood that outlives the person who bled it turns a street into a permanent record of
+every fight that ever happened there.
+
+**Tuned down twice after looking at it.** The first pass bled on every connected hit with no
+size limit, and six seconds of brawling produced a wall of bright red. Light hits mostly do
+not bleed now, stains are smaller, fainter and darker, and no actor may leave more than four
+before the oldest fades.
+
+### Tests
+
+Suite is **357 checks**. The new ones assert that every fight changes the music (the check
+that found the boss rooms), that the effect art exists, that a landed hit leaves blood, that
+it is capped, and that it leaves with the enemy that bled it.
+
+**Fixed while writing them:** the cap check killed the enemy on its way to the cap and then
+measured an already-cleared list, so it passed without testing anything. It tops the enemy
+up between blows now.
+
+### Not verified
+
+The music is faster and busier by measurement — tempo, drum hits per bar, note density —
+but nobody has heard it. Tempo and density are reliable levers; whether it is *better* is
+a judgement this pass could not make.
+
+---
+
 ## Unreleased — the map is rooms now
 
 Asked for as a metroidvania-style map.

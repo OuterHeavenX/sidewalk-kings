@@ -50,6 +50,9 @@ func toggle_pause() -> void:
 ## Tear down the current area and build the requested one. Called by SceneManager.
 func load_area(area_id: String, spawn_id: String = "start") -> void:
 	EventBus.area_loading.emit(area_id)
+	# The old area frees its own children, stains included, but the registry that tracks
+	# them is static and would otherwise keep an entry per enemy per area for the session.
+	FX.forget_blood()
 	if area and is_instance_valid(area):
 		if area.director:
 			area.director.abort()
