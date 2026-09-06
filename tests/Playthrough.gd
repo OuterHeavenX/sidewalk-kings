@@ -96,6 +96,27 @@ func run() -> void:
 	await frames(2)
 	get_tree().quit(0 if (failures.is_empty() and done) else 1)
 
+## Wait for a story flag rather than sampling it once.
+##
+## Arrival flags come from cutscenes that start a frame or two after the area finishes
+## loading and then run for several seconds. Sampling immediately reported chapter two as
+## broken when the scene that sets it had not begun.
+func _await_flag(flag_name: String, timeout: float = 25.0) -> bool:
+	if flag_name == "":
+		return true
+	var deadline := Time.get_ticks_msec() / 1000.0 + timeout
+	while Time.get_ticks_msec() / 1000.0 < deadline:
+		if GameManager.get_flag(flag_name):
+			return true
+		# A cutscene that is still running is the game working, not the game stuck. The
+		# Line Office arrival is 17 steps with three conversations and a timed camera move
+		# in it, and a fixed deadline expired in the middle and called the chapter broken.
+		if CutsceneManager.is_playing():
+			deadline = Time.get_ticks_msec() / 1000.0 + timeout
+		await settle()
+		await frames(4)
+	return GameManager.get_flag(flag_name)
+
 func _clock() -> String:
 	var t := int(GameManager.player_data.playtime)
 	return "%d:%02d" % [t / 60, t % 60]
@@ -186,7 +207,7 @@ func goto(dest: String, expect_flag: String = "") -> void:
 	if GameManager.player_data.current_area != dest:
 		fail("gave up routing to %s after %d hops" % [dest, guard])
 		return
-	if expect_flag != "" and not GameManager.get_flag(expect_flag):
+	if expect_flag != "" and not await _await_flag(expect_flag):
 		fail("reaching %s did not set '%s'" % [dest, expect_flag])
 
 ## Breadth-first over the areas, using only doors that are currently open.
@@ -295,6 +316,8 @@ func travel(from: String, to: String, expect_flag: String = "") -> void:
 		if now - _last_report > 6.0:
 			_last_report = now
 			var pp := player()
+			if not is_instance_valid(door):
+				break
 			note("  ...to %s: x=%.0f y=%.0f door=(%.0f, %.0f) auto=%s state=%d"
 				% [to,
 				pp.global_position.x if is_instance_valid(pp) else -1.0,
@@ -333,9 +356,19 @@ func clear_area(area_id: String, expect_flag: String = "") -> void:
 		_still_ticks = 0
 		_detour = 0
 		while is_instance_valid(player()) and absf(player().global_position.x - target_x) > 30.0:
+			# Street edges are automatic doors, so a sweep can walk you into the next area.
+			# Go back and carry on rather than abandoning the street: giving up here left
+			# the Rustpile Yard's second encounter untriggered, so yard_cleared never set
+			# and chapter one stopped, for no reason to do with the game.
 			if GameManager.player_data.current_area != area_id:
 				note("left %s early; walking back" % area_id)
-				break
+				await goto(area_id)
+				if not failures.is_empty():
+					return
+				_last_gap = 1e9
+				_still_ticks = 0
+				_detour = 0
+				continue
 			if Time.get_ticks_msec() / 1000.0 > deadline:
 				fail("could not finish clearing %s within %ds (stopped at x=%.0f heading for %.0f)"
 					% [area_id, int(STEP_TIMEOUT * 4.0),
@@ -363,15 +396,13 @@ func clear_area(area_id: String, expect_flag: String = "") -> void:
 					pp.hp if is_instance_valid(pp) else -1,
 					_detour, _still_ticks])
 		_release()
-		if GameManager.player_data.current_area != area_id:
-			break
 		if _fighting():
 			fights += 1
 			await fight()
 	_release()
 	await settle()
 	note("cleared %s (%d fights)" % [area_id, fights])
-	if expect_flag != "" and not GameManager.get_flag(expect_flag):
+	if expect_flag != "" and not await _await_flag(expect_flag):
 		fail("clearing %s did not set '%s'" % [area_id, expect_flag])
 
 ## Fight until the director says the encounter is over.
@@ -379,7 +410,20 @@ func fight() -> void:
 	var deadline := Time.get_ticks_msec() / 1000.0 + STEP_TIMEOUT * 2.0
 	while _fighting():
 		if Time.get_ticks_msec() / 1000.0 > deadline:
-			fail("a fight in %s never ended" % GameManager.player_data.current_area)
+			# Say what the fight looked like when it would not end, or the next run is spent
+			# guessing which of the enemies was the problem.
+			var alive: Array[String] = []
+			var pp := player()
+			for en in get_tree().get_nodes_in_group("enemies"):
+				if is_instance_valid(en) and not en.dead:
+					alive.append("%s hp=%d at %.0f,%.0f%s" % [en.enemy_id, en.hp,
+						en.global_position.x, en.global_position.y,
+						" state=%d" % en.ai_state if en.get("ai_state") != null else ""])
+			fail("a fight in %s never ended; player at %.0f,%.0f vs [%s]"
+				% [GameManager.player_data.current_area,
+				pp.global_position.x if is_instance_valid(pp) else -1.0,
+				pp.global_position.y if is_instance_valid(pp) else -1.0,
+				"; ".join(alive)])
 			return
 		await _revive_if_dead()
 		if DialogueManager.is_active():
@@ -435,14 +479,23 @@ func talk_to(npc_id: String, what: String, expect_flag: String = "") -> void:
 	await _advance_dialogue()
 	await settle()
 	note("talked to %s (%s)" % [npc_id, what])
-	if expect_flag != "" and not GameManager.get_flag(expect_flag):
+	if expect_flag != "" and not await _await_flag(expect_flag, 8.0):
 		fail("talking to %s to %s did not set '%s'" % [npc_id, what, expect_flag])
 
 ## Search every searchable prop in the area. The Tuesday locker is a story gate hidden in one.
 func search_props(area_id: String) -> void:
 	if not failures.is_empty():
 		return
+	# Clearing a street can walk you out of it, so make sure we are back in the one whose
+	# props we mean to search. The first version searched whatever area it happened to be
+	# standing in and reported "0 props" from the wrong street.
+	await goto(area_id)
+	if not failures.is_empty():
+		return
 	await settle()
+	if GameManager.current_area == null:
+		fail("no area loaded to search in %s" % area_id)
+		return
 	var found := 0
 	for n in GameManager.current_area.actors_root.get_children():
 		if not n.has_method("interact") or not n.get("searchable"):
@@ -602,6 +655,13 @@ func settle() -> void:
 	var guard := 0
 	while guard < 1200:
 		var busy := false
+		# A comic panel waits for a keypress and nothing else will ever send one, so the bot
+		# has to press it. Without this the run stops dead on the opening screen, and it
+		# looks exactly like the game hanging.
+		var comic := _find_comic()
+		if comic != null:
+			comic._advance()
+			busy = true
 		if DialogueManager.is_active():
 			await _advance_dialogue()
 			busy = true
@@ -613,6 +673,14 @@ func settle() -> void:
 			return
 		await frames(2)
 		guard += 1
+
+## The comic player, if one is on screen. Created on demand by CutsceneManager, so it is
+## found by type rather than by a known path.
+func _find_comic() -> Node:
+	for n in get_tree().root.get_children():
+		if n.get_script() != null and n.has_method("is_playing") and n.has_method("_advance") 				and n.get("_panels") != null and n.is_playing():
+			return n
+	return null
 
 func _revive_if_dead() -> void:
 	var p := player()

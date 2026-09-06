@@ -78,6 +78,11 @@ func play(id: String) -> void:
 	cutscene_finished.emit(id)
 
 ## Stop early. The remaining flags and quests are still applied.
+## True once a skip has been asked for and before the scene has unwound. Anything a step is
+## awaiting -- a comic, in particular -- has to be able to see this and stop.
+func is_aborting() -> bool:
+	return _abort
+
 func abort() -> void:
 	if is_playing():
 		_abort = true
@@ -96,6 +101,8 @@ func _run(step: Dictionary) -> void:
 			await _sleep(float(step.get("time", 0.5)))
 		"say":
 			await _say(str(step.get("dialogue", "")))
+		"comic":
+			await _comic(str(step.get("id", "")))
 		"camera":
 			await _camera(step)
 		"move":
@@ -132,6 +139,18 @@ func _apply_state_only(step: Dictionary) -> void:
 				QuestManager.complete_quest(str(step["complete"]))
 		_:
 			pass
+
+## Hand the screen to the comic player and wait for it.
+##
+## The player is created on demand rather than living in the scene: comics are rare, and a
+## CanvasLayer that exists for the whole game is a thing that can be left visible.
+func _comic(comic_id: String) -> void:
+	if comic_id == "":
+		return
+	var player = load("res://ui/ComicPlayer.gd").new()
+	get_tree().root.add_child(player)
+	await player.play(comic_id)
+	player.queue_free()
 
 func _sleep(seconds: float) -> void:
 	# Frame-counted rather than a timer: a SceneTreeTimer does not fire while the tree is

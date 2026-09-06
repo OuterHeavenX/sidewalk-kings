@@ -155,10 +155,10 @@
    "width": 70
   }
  ],
- "on_enter": [
+ "on_clear": [
   {
+   "encounter": "boss_foreman",
    "cutscene": "chapter_three_end",
-   "if_flag": "foreman_beaten",
    "if_not_flag": "seen_ch3_end"
   }
  ],

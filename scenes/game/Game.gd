@@ -53,6 +53,11 @@ func load_area(area_id: String, spawn_id: String = "start") -> void:
 	# The old area frees its own children, stains included, but the registry that tracks
 	# them is static and would otherwise keep an entry per enemy per area for the session.
 	FX.forget_blood()
+	# A cutscene belongs to the area that started it. Letting one outlive the area leaves it
+	# driving a camera and actors that have been freed, and blocks the next area's own
+	# opening from ever starting, because only one scene may play at a time.
+	if CutsceneManager.is_playing():
+		CutsceneManager.abort()
 	if area and is_instance_valid(area):
 		if area.director:
 			area.director.abort()

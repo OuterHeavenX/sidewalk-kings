@@ -110,6 +110,14 @@ func change_area(area_id: String, spawn_id: String = "start") -> void:
 	await game_root.load_area(area_id, spawn_id)
 	await fade_in(0.3)
 	_busy = false
+	# Entry events run here, after the fade, for every area the player walks into.
+	#
+	# They used to run only in Game._ready(), which means only for whichever area the game
+	# booted into -- so no area's on_enter ever fired during actual play. The Line Office
+	# arrival is what sets chapter_2_done, so walking in did nothing and chapter two could
+	# not be completed. Nothing errored: you simply stood in an empty office.
+	if game_root.area and is_instance_valid(game_root.area):
+		game_root.area.run_entry_events()
 
 ## Rebuild the current area in place, keeping the player where they were standing.
 ## Used when a setting changes what an area is made of, such as lighting, so the change is

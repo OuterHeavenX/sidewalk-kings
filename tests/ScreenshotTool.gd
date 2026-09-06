@@ -177,6 +177,25 @@ func run() -> void:
 		await seconds(0.5)
 		await shot(area_id)
 
+	# --- The opening comic ---
+	GameManager.set_flag("seen_intro", false)
+	var comic = load("res://ui/ComicPlayer.gd").new()
+	get_tree().root.add_child(comic)
+	comic.play("intro")
+	await seconds(0.6)
+	await shot("comic_1")
+	comic._advance()
+	await seconds(0.4)
+	await shot("comic_2")
+	comic._advance()
+	comic._advance()
+	await seconds(0.4)
+	await shot("comic_4")
+	comic._running = false
+	await seconds(0.3)
+	comic.queue_free()
+	await frames(2)
+
 	# --- The fire escape, which is the whole point of having drawn one ---
 	await SceneManager.change_area("grease_alley", "start")
 	await seconds(0.8)

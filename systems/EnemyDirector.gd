@@ -100,6 +100,16 @@ func _spawn(entry: Dictionary) -> void:
 	e.slot_index = spawned_total
 	spawned_total += 1
 	alive.append(e)
+	# An enemy spawned into a running encounter is already in the fight, so it does not wait
+	# to notice the player.
+	#
+	# Aggro range is 190px, which is right for someone loitering on a street and wrong for
+	# someone the director just sent to attack. Walk away mid-encounter and the spawns sit
+	# idle at the far end forever: the fight never ends, so the camera stays locked, the
+	# battle music keeps playing and fast travel keeps refusing, with nothing on screen to
+	# say the area still thinks you are fighting. The playthrough found it stranded 900px
+	# from three Pigeons who had never looked up.
+	e.call_deferred("_become_aggro")
 	e.defeated.connect(_on_enemy_defeated)
 	EventBus.enemy_spawned.emit(e)
 	_slot_timer = 0.0

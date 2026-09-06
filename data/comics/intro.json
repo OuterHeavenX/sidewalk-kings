@@ -1,0 +1,33 @@
+{
+ "id": "intro",
+ "panels": [
+  {
+   "art": "intro_1",
+   "speaker": "",
+   "text": "Riverbend. Two years away, and the ferry still smells of diesel and fried dough.",
+   "bubble": "left",
+   "tail": 0.5
+  },
+  {
+   "art": "intro_2",
+   "speaker": "",
+   "text": "Four blocks. Four crews. The Pigeons had the row, and everybody knew exactly whose corner they were standing on.",
+   "bubble": "left",
+   "tail": 0.5
+  },
+  {
+   "art": "intro_3",
+   "speaker": "",
+   "text": "Kip came home on a Tuesday, which turns out to matter.",
+   "bubble": "right",
+   "tail": 0.5
+  },
+  {
+   "art": "intro_4",
+   "speaker": "",
+   "text": "Because last month, for the first time in anyone's memory, the four of them stopped fighting.",
+   "bubble": "left",
+   "tail": 0.5
+  }
+ ]
+}

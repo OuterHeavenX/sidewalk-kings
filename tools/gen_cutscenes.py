@@ -28,9 +28,27 @@ def quest(**kw):        return dict({"do": "quest"}, **kw)
 def shake(a=2.0):       return {"do": "shake", "amount": a}
 def sfx(i):             return {"do": "sfx", "id": i}
 def music(i):           return {"do": "music", "id": i}
+def comic(i):           return {"do": "comic", "id": i}
 
 
 CUTSCENES = {
+    # The opening, as comic panels. The flags come after the panels but are applied even if
+    # the player skips, because abort() runs the remaining flag and quest steps -- which is
+    # the whole reason story state lives on steps and not inside dialogue.
+    # The opening: panels first, then the conversation that has always been there.
+    #
+    # knows_premise and q_pigeons are repeated as explicit steps even though intro_ferry
+    # sets them itself. A player who skips this skips the dialogue with it, and abort()
+    # only applies flag and quest STEPS -- which is exactly how chapter two once shipped
+    # unfinishable. Setting them twice costs nothing; not setting them ends the game.
+    "intro_comic": [
+        comic("intro"),
+        say("intro_ferry"),
+        flag("knows_premise"),
+        quest(start="q_pigeons"),
+        flag("seen_intro"),
+    ],
+
     # The arrival. Kip expects the end of a trail and finds a man at a desk, so the scene
     # is built to deflate: the camera pans past the filing cabinets before it finds him,
     # and he speaks first, about the wrong thing.

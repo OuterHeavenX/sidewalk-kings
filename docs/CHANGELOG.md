@@ -348,6 +348,95 @@ An area with no lighting block is untouched. Reloading an area keeps the player 
 
 ---
 
+## v0.6.0 — the bot plays it, and four ways it could not be finished
+
+A bot that plays the game from New Game to the credits, and the bugs it found. It walks with
+the movement actions, fights with the attack actions, talks to NPCs and opens doors, and it
+never sets a story flag itself — so a flag that does not get set is the game failing.
+
+Four progression bugs, none of which the 383-check suite could see, because every one of
+them left the *systems* working perfectly. The areas built, the doors opened, the fights
+ran. The story stopped.
+
+### 1. Chapter one could not be finished
+
+`chapter_1_done` came only from the `q_starch` quest reward, and Dez only hands out
+`q_starch` if you walk back to Ferry Row after clearing the laundromat guards and before
+fighting Big Starch. Beat the boss without it and `once_flag` closes that encounter forever:
+the quest can never complete, the metro never opens, chapters two and three are unreachable.
+
+`starch_defeat` — the dialogue written to set the flag, carrying the Tuesday-money reveal
+that sets up all of chapter two — **was referenced by nothing**. It existed as a resource no
+code mentioned. Nobody had ever seen it. Beating Big Starch now plays it and grants the flag.
+
+### 2. Entry events fired for exactly one area
+
+`run_entry_events()` was called only in `Game._ready()`, so an area's `on_enter` ran only for
+whichever area the game booted into. Walk into any other area and its entry events never
+happened. The Line Office arrival is what sets `chapter_2_done`, so walking in did nothing
+and chapter two could not be completed — you stood in an empty office and the story stopped.
+
+### 3. Walking away from a fight left the area in combat forever
+
+Encounter spawns used the ordinary 190px aggro range, which is right for someone loitering
+on a street and wrong for someone the director just sent to attack. Leave mid-fight and the
+spawns sit idle at the far end: the encounter never ends, so the camera stays locked, the
+battle music keeps playing and fast travel keeps refusing, with nothing on screen to say the
+area still thinks you are fighting. The bot found it stranded 900px from three Pigeons who
+had never looked up.
+
+### 4. Cutscenes outlived the areas that started them
+
+Found by adding comic panels: the opening runs long enough to survive an area change, at
+which point it drives a freed camera and blocks the next area's own opening from ever
+starting, because only one scene may play at a time. `load_area()` aborts any running scene.
+
+### Comic panels
+
+Story beats can be told as wide panels now. The art is generated like everything else —
+composed from the same skyline, facades and character sprites the game is built from, so a
+panel costs about 80 KB rather than three megabytes — and the words are **not** baked in:
+there is no font in the art pipeline, and text painted into a PNG cannot be restyled or
+translated and is blurry at every scale but one. `ComicPlayer` draws the bubble at runtime.
+
+A comic is a cutscene step, so it inherits the flag and quest steps and the skip safety. It
+also carries a per-panel dwell and stops on abort, because a full-screen thing that responds
+only to input is a soft-lock waiting for a player who does not know it wants a key.
+
+The opening is four panels, then the conversation that was always there.
+
+### It can be finished
+
+Seven attempts, six of which found something. The seventh walked the whole story:
+
+    chapter 1 done    true
+    chapter 2 done    true
+    chapter 3 done    true
+    === THE GAME CAN BE FINISHED ===
+
+78 minutes of in-game time, level 11, one death. That is the first time anyone or anything
+has reached the end of Sidewalk Kings.
+
+### Also
+
+- **Dez tells you what to do.** Ordered hints with a guaranteed unconditional fallback, so
+  there is no state where the game has nothing to say. He says it instead of "...", and the
+  pause menu's Quests page leads with it and names the area to head for.
+- **Enemies read the fight.** They punish a whiff, they guard (lights absorbed, heavies
+  break through), and rushers and ranged slip a wind-up. The first version let *everyone*
+  back off on every wind-up, which made fights unwinnable rather than hard: attacking roots
+  the player, so an enemy that steps back each swing drifts away faster than you can close.
+  The bot hung on a Ferry Row fight that could not end, and a person would have felt it as
+  the enemy running away for the entire encounter.
+
+### Tests
+
+Suite is **386 checks**, plus `--play`. Each of the four progression bugs now has a check
+that would have caught it, and all four are about the *story* advancing rather than about a
+system working -- which is the distinction that let every one of them ship.
+
+---
+
 ## v0.5.0 — a bot that plays the game, and the softlock it found
 
 ### The game could not be finished
@@ -371,6 +460,18 @@ Tuesday-money reveal that sets up the whole of chapter two — **was wired to no
 It existed as a resource that no code referenced, so no player had ever seen it.
 
 Beating Big Starch now plays it and grants `chapter_1_done` directly.
+
+### The ending only played if you left and came back
+
+Chapter three's closing scene hung off the substation's `on_enter` block, and you are
+already standing in the substation when you beat the Foreman. It could only fire if the
+player walked out and back in again, which almost nobody would do. The chapter still
+completed, because the clear dialogue sets the flag, so nothing looked wrong — the scene
+written for the ending simply never happened.
+
+Areas support `on_clear` now: events that belong to winning a fight rather than to walking
+into a room. It waits for the encounter's own clear dialogue to finish first, since the
+director starts that 0.6s after the fight ends.
 
 ### Dez tells you what to do
 

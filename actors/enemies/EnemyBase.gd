@@ -250,14 +250,24 @@ func _decide() -> void:
 		_do_attack(dist)
 		return
 
-	# The player has committed and the hit has not landed. Guard it, or get out of the way.
+	# The player has committed and the hit has not landed. Guard it, or slip it.
 	if in_range and phase == 1:
 		if guard_cooldown <= 0.0 and guard_time <= 0.0 and randf() < _guard_chance():
 			guard_time = randf_range(0.32, 0.55)
 			move_input = Vector2.ZERO
 			ai_state = AI.WAIT
 			return
-		if randf() < 0.35:
+		# Backing off is for the two archetypes it reads as skill on, it is on a cooldown,
+		# and it never chains.
+		#
+		# Letting everyone retreat on every wind-up made fights unwinnable rather than hard:
+		# attacking roots the player, so an enemy that steps back each time you swing drifts
+		# away faster than you can close, forever. The playthrough bot hung on a Ferry Row
+		# fight that could not end, and a person would have felt it as the enemy running
+		# away from them for the whole encounter.
+		var slippery: bool = data.archetype == EnemyData.Archetype.RUSHER 			or data.archetype == EnemyData.Archetype.RANGED
+		if slippery and guard_cooldown <= 0.0 and randf() < 0.3:
+			guard_cooldown = randf_range(1.4, 2.4)
 			ai_state = AI.RETREAT
 			return
 

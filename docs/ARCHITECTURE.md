@@ -262,6 +262,28 @@ Two rules:
   108 px, and the fire escape sprite hangs its ladder down within reach so the shape itself
   says climbable.
 
+### Comic panels
+
+Story beats can be told as wide panels instead of a dialogue box over the street. Two rules:
+
+- **The art is generated like everything else**, composed from the same skyline, facades and
+  character sprites the game is built from. A panel costs about 80 KB; a painted one costs
+  three megabytes, against a shipped package under four.
+- **The words are not baked in.** There is no font in the art pipeline — shop signs are
+  drawn as abstract blocks, not letters — and text painted into a PNG cannot be restyled or
+  translated and is blurry at every scale but one. `ComicPlayer` draws the bubble at runtime
+  in the game's own UI font, on the side the panel was composed to leave open.
+
+A comic is a cutscene step, so it composes with the flag and quest steps and inherits the
+skip safety. Two things it must never do, both learned immediately:
+
+- **It must not be able to hang.** It waits for input, so it also carries a per-panel dwell
+  and stops when `CutsceneManager.is_aborting()` — a full-screen thing that responds only
+  to input is a soft-lock waiting for a player who does not know it wants a key.
+- **A cutscene must not outlive its area.** The opening comic runs ~30s, long enough to
+  survive an area change, at which point it drives a freed camera and blocks the next
+  area's own opening from ever starting. `Game.load_area()` aborts any running scene.
+
 ### Fight music has to differ from street music
 
 `AudioManager.play_music` returns early when the id has not changed, so an encounter that

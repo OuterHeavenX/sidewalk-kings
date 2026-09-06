@@ -379,6 +379,40 @@ func on_encounter_cleared(encounter_id: String) -> void:
 	GameManager.notify("Area clear!", "clear")
 	if meta and meta.music != "":
 		AudioManager.play_music(meta.music)
+	_run_clear_events(encounter_id)
+
+## Scenes that belong to winning a fight rather than to walking into a room.
+##
+## Hung off on_enter, an ending can only play if the player leaves and comes back, because
+## they are already standing in the room when they win. The chapter still completed, so
+## nothing looked wrong; the scene simply never happened.
+func _run_clear_events(encounter_id: String) -> void:
+	for entry in layout.get("on_clear", []):
+		if str(entry.get("encounter", "")) != encounter_id:
+			continue
+		if entry.has("if_flag") and not GameManager.get_flag(str(entry["if_flag"])):
+			continue
+		if entry.has("if_not_flag") and GameManager.get_flag(str(entry["if_not_flag"])):
+			continue
+		if entry.has("cutscene"):
+			_play_after_dialogue(str(entry["cutscene"]))
+		elif entry.has("dialogue"):
+			DialogueManager.start(str(entry["dialogue"]))
+		if entry.has("set_flag"):
+			GameManager.set_flag(str(entry["set_flag"]), true)
+		return
+
+## Wait for the encounter's own clear dialogue to finish before taking the screen. The
+## director starts that dialogue 0.6s after the fight ends, so starting a cutscene the
+## moment the fight clears would cut straight across it.
+func _play_after_dialogue(cutscene_id: String) -> void:
+	await get_tree().create_timer(0.9).timeout
+	var guard := 0
+	while DialogueManager.is_active() and guard < 3000:
+		await get_tree().process_frame
+		guard += 1
+	if is_instance_valid(self):
+		CutsceneManager.play(cutscene_id)
 
 ## Optional scripted intro/outro dialogue driven by area layout data.
 func run_entry_events() -> void:

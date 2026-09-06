@@ -297,8 +297,10 @@ ferry = {
         {"id": "ferry_pair", "x": 760, "width": 60},
         {"id": "ferry_squad", "x": 1180, "width": 70},
     ],
+    # run_entry_events fires only the first matching entry, so the comic cannot sit
+    # alongside the intro dialogue -- it has to contain it.
     "on_enter": [
-        {"dialogue": "intro_ferry", "if_not_flag": "seen_intro"},
+        {"cutscene": "intro_comic", "if_not_flag": "seen_intro"},
     ],
     "ambient": ambient(drift=litter(count=8, speed=15.0)),
     # Dusk. The sun is gone but the sky has not caught up, so the ambient is still bluish
@@ -1248,8 +1250,10 @@ substation = {
     "encounters": [
         {"id": "boss_foreman", "x": 430, "width": 70},
     ],
-    "on_enter": [
-        {"cutscene": "chapter_three_end", "if_flag": "foreman_beaten",
+    # On clear, not on enter: you are already in the substation when you beat him, so an
+    # on_enter ending can only play if you leave and walk back in.
+    "on_clear": [
+        {"encounter": "boss_foreman", "cutscene": "chapter_three_end",
          "if_not_flag": "seen_ch3_end"},
     ],
     "lane_min": 40.0,

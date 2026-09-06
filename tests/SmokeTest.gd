@@ -69,6 +69,8 @@ func run() -> void:
 	await test_lighting()
 	await test_chapter_two()
 	await test_chapter_three()
+	await test_entry_events()
+	await test_comics()
 	await test_hints()
 	await test_enemy_ai()
 	await test_hit_effects()
@@ -381,10 +383,14 @@ func test_title_flow() -> void:
 	check("player exists after the title flow", is_instance_valid(GameManager.player))
 	# Entry events run on the frame after the fade completes.
 	guard = 0
-	while not DialogueManager.is_active() and guard < 60:
+	# The opening is a cutscene now -- comic panels, then the conversation that was always
+	# there -- so entry is "something took the screen", not specifically a dialogue box.
+	while not DialogueManager.is_active() and not CutsceneManager.is_playing() and guard < 120:
 		await frames(1)
 		guard += 1
-	check("opening scene runs its entry dialogue", DialogueManager.is_active() or GameManager.get_flag("seen_intro"),
+	check("opening scene runs its entry sequence",
+		DialogueManager.is_active() or CutsceneManager.is_playing()
+		or GameManager.get_flag("seen_intro"),
 		"state=%d" % GameManager.state)
 	if DialogueManager.is_active():
 		DialogueManager._finish()
@@ -1178,6 +1184,20 @@ func test_cutscenes() -> void:
 	await seconds(0.6)
 	check("the office builds", GameManager.player_data.current_area == "line_office")
 
+	# Entering the office now starts its own arrival cutscene, as it should. Clear it first,
+	# or the explicit play() below is refused because one is already running and the test
+	# ends up asserting against a scene it did not start.
+	if CutsceneManager.is_playing():
+		CutsceneManager.abort()
+		var settle := 0
+		while CutsceneManager.is_playing() and settle < 600:
+			if DialogueManager.is_active():
+				DialogueManager._finish()
+			await frames(1)
+			settle += 1
+	GameManager.set_flag("chapter_2_done", false)
+	GameManager.set_flag("seen_line_office", false)
+
 	var started := {"hit": false}
 	CutsceneManager.cutscene_started.connect(func(_i): started["hit"] = true, CONNECT_ONE_SHOT)
 	CutsceneManager.play("line_office_arrival")
@@ -1875,6 +1895,99 @@ func test_chapter_three() -> void:
 ## between jobs and that nothing in the game says so. A hint system fixes that only if it
 ## can never come up empty, so that is the main thing asserted here: there is no reachable
 ## story state in which the game has nothing to tell you.
+## Comic panels.
+##
+## The failure this system has is that it takes the whole screen and waits for input: if a
+## panel's art is missing or a comic id is wrong, the player gets a black rectangle and no
+## way to know whether the game is broken or just slow. So the art is checked to exist, and
+## the opening is checked to still set the flags the story needs -- because the intro
+## dialogue now lives inside a cutscene, and a skipped cutscene must still start the game.
+## An area's on_enter events have to fire when you walk into it.
+##
+## They used to run only in Game._ready(), so they fired for whichever area the game booted
+## into and for no other. Everything downstream of an arrival simply never happened: the
+## Line Office scene sets chapter_2_done, so walking in did nothing and chapter two could
+## not be finished. Nothing errored -- you stood in an empty office and the story stopped.
+func test_entry_events() -> void:
+	print("
+-- Entry events --")
+	var with_entry: Array[String] = []
+	for area_id in ContentDB.areas.keys():
+		if _layout(str(area_id)).get("on_enter", []).size() > 0:
+			with_entry.append(str(area_id))
+	check("some areas have entry events", with_entry.size() > 0, ", ".join(with_entry))
+
+	GameManager.set_flag("bellwater_cleared", true)
+	GameManager.set_flag("seen_line_office", false)
+	GameManager.set_flag("chapter_2_done", false)
+	# Start somewhere else, so this is a real arrival and not the boot area.
+	await SceneManager.change_area("metro_platform", "start")
+	await seconds(0.5)
+	await SceneManager.change_area("line_office", "start")
+
+	var guard := 0
+	while not CutsceneManager.is_playing() and not GameManager.get_flag("chapter_2_done") 			and guard < 240:
+		await frames(1)
+		guard += 1
+	check("walking into an area runs its entry events",
+		CutsceneManager.is_playing() or GameManager.get_flag("chapter_2_done"),
+		"nothing happened after %d frames in the Line Office" % guard)
+
+	CutsceneManager.abort()
+	guard = 0
+	while CutsceneManager.is_playing() and guard < 600:
+		if DialogueManager.is_active():
+			DialogueManager._finish()
+		await frames(1)
+		guard += 1
+	check("the arrival still completes the chapter when skipped",
+		GameManager.get_flag("chapter_2_done"))
+
+func test_comics() -> void:
+	print("
+-- Comic panels --")
+	var comic_path := "res://data/comics/intro.json"
+	check("the intro comic exists", FileAccess.file_exists(comic_path))
+	if not FileAccess.file_exists(comic_path):
+		return
+	var f := FileAccess.open(comic_path, FileAccess.READ)
+	var parsed = JSON.parse_string(f.get_as_text())
+	f.close()
+	var panels: Array = parsed.get("panels", []) if parsed is Dictionary else []
+	check("the intro comic has panels", panels.size() > 0, "%d" % panels.size())
+
+	var missing: Array[String] = []
+	var wordless: Array[String] = []
+	for pn in panels:
+		var art := str(pn.get("art", ""))
+		if not ResourceLoader.exists("res://assets/art/comics/%s.png" % art):
+			missing.append(art)
+		if str(pn.get("text", "")).strip_edges() == "":
+			wordless.append(art)
+	check("every panel has its art", missing.is_empty(), ", ".join(missing))
+	check("every panel has something to say", wordless.is_empty(), ", ".join(wordless))
+
+	# The opening is now a cutscene, and a skipped cutscene has to leave a playable game.
+	var steps: Array = _cutscene_steps("intro_comic")
+	check("the opening cutscene exists", steps.size() > 0)
+	var sets_premise := false
+	var starts_quest := false
+	for st in steps:
+		if str(st.get("do", "")) == "flag" and str(st.get("name", "")) == "knows_premise":
+			sets_premise = true
+		if str(st.get("do", "")) == "quest" and str(st.get("start", "")) == "q_pigeons":
+			starts_quest = true
+	check("skipping the opening still sets the premise", sets_premise)
+	check("skipping the opening still starts the first quest", starts_quest)
+
+	# And it has to actually run, and give the screen back.
+	GameManager.set_flag("knows_premise", false)
+	await CutsceneManager.play("intro_comic")
+	await frames(4)
+	check("the opening leaves the player in control after it runs",
+		GameManager.state == GameManager.State.PLAYING, "state %d" % GameManager.state)
+	check("the opening sets the premise when it runs", GameManager.get_flag("knows_premise"))
+
 func test_hints() -> void:
 	print("
 -- Hints --")
@@ -1933,6 +2046,31 @@ func test_enemy_ai() -> void:
 -- Enemies reading the fight --")
 	await SceneManager.change_area("ferry_row", "start")
 	await seconds(0.5)
+	clear_stage()
+	await frames(2)
+
+	# An encounter's spawns must come after you from anywhere on the street. Aggro range is
+	# 190px, which is right for a loiterer and wrong for someone the director just sent to
+	# attack: walk away mid-fight and idle spawns leave the area permanently "in combat",
+	# camera locked and fast travel refused, with nothing on screen to explain it.
+	var far_area = GameManager.current_area
+	if far_area != null and far_area.director != null:
+		var enc: EncounterData = ContentDB.get_encounter("ferry_pair")
+		if enc != null:
+			GameManager.set_flag("enc_ferry_pair", false)
+			far_area.director.start_encounter(enc)
+			await seconds(1.2)
+			var idle := 0
+			var live := 0
+			for en in get_tree().get_nodes_in_group("enemies"):
+				if is_instance_valid(en) and not en.dead:
+					live += 1
+					if not en.aggro:
+						idle += 1
+			check("an encounter's spawns are already in the fight",
+				live > 0 and idle == 0, "%d of %d still idle" % [idle, live])
+			far_area.director.abort()
+			await frames(4)
 	clear_stage()
 	await frames(2)
 

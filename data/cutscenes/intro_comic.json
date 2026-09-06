@@ -1,0 +1,27 @@
+{
+ "id": "intro_comic",
+ "steps": [
+  {
+   "do": "comic",
+   "id": "intro"
+  },
+  {
+   "do": "say",
+   "dialogue": "intro_ferry"
+  },
+  {
+   "do": "flag",
+   "name": "knows_premise",
+   "value": true
+  },
+  {
+   "do": "quest",
+   "start": "q_pigeons"
+  },
+  {
+   "do": "flag",
+   "name": "seen_intro",
+   "value": true
+  }
+ ]
+}
