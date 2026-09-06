@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DialogueData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/DialogueData.gd" id="1_tally_beaten"]
+
+[resource]
+script = ExtResource("1_tally_beaten")
+id = "tally_beaten"
+lines = Array[Dictionary]([{"name": "Tally", "text": "Forty-two.", "portrait": "tally"}, {"name": "Kip", "text": "Why did you take the money?", "portrait": "kip"}, {"name": "Tally", "text": "Because it comes on Tuesday.", "portrait": "tally"}, {"name": "Kip", "text": "That's it?", "portrait": "kip"}, {"name": "Tally", "text": "Every good thing that has ever happened to anyone I know happened by accident and never happened twice. This one comes on Tuesday. You have no idea what that is worth.", "portrait": "tally"}, {"name": "Kip", "text": "So you sold the row for a timetable.", "portrait": "kip"}, {"name": "Tally", "text": "I bought a timetable with the row. Say it either way, it is the same Tuesday.", "portrait": "tally", "set_flag": "knows_tally", "end": true}])
+pause_game = true
+once_flag = ""

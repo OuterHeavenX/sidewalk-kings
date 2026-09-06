@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DialogueData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/DialogueData.gd" id="1_vell_meet"]
+
+[resource]
+script = ExtResource("1_vell_meet")
+id = "vell_meet"
+lines = Array[Dictionary]([{"name": "", "text": "The back of the wool shop. Every surface has yarn on it and every ball is in exactly the right place."}, {"name": "Auntie Vell", "text": "Shoes.", "portrait": "vell"}, {"name": "Kip", "text": "...sorry?", "portrait": "kip"}, {"name": "Auntie Vell", "text": "You are standing on my floor in them. Sit down, I will put the kettle on, and then we can do whatever this is.", "portrait": "vell"}, {"name": "Kip", "text": "You run the Sweaters.", "portrait": "kip"}, {"name": "Auntie Vell", "text": "I run a shop. They come in for the wool and they stay for the company, and then people started calling it a gang.", "portrait": "vell", "end": true}])
+pause_game = true
+once_flag = ""

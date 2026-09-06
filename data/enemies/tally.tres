@@ -1,0 +1,43 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://actors/enemies/EnemyData.gd" id="1_tally"]
+[ext_resource type="SpriteFrames" path="res://assets/art/characters/tally_frames.tres" id="2_tally"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/portraits/tally.png" id="3_tally"]
+
+[resource]
+script = ExtResource("1_tally")
+id = "tally"
+display_name = "Tally"
+gang = "pigeons"
+archetype = 6
+sprite_frames = ExtResource("2_tally")
+portrait = ExtResource("3_tally")
+max_hp = 150
+damage_multiplier = 1.0
+defense = 2.0
+move_speed = 92.0
+run_speed = 168.0
+weight = 1.2
+armor_threshold = 8
+grab_resist = 0.0
+can_be_grabbed = false
+preferred_distance = 30.0
+aggression = 0.72
+reaction_delay = 0.26
+attack_cooldown = 0.95
+circle_chance = 0.5
+picks_up_weapons = false
+ranged_distance = 140.0
+moves = Array[String](["boss_jab", "enemy_rush", "boss_kick"])
+heavy_move = "enemy_heavy"
+ranged_move = ""
+xp = 90
+money_min = 0
+money_max = 0
+drop_table = []
+drop_chance = 0.12
+scale = 1.02
+tint = Color(1.0, 1.0, 1.0, 1.0)
+show_health_bar = false
+taunts = Array[String](["Forty-one. That's how many of us you've put down.", "I keep count. Somebody has to."])
+defeat_lines = Array[String](["Forty-two, then."])

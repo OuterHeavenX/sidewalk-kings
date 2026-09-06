@@ -415,6 +415,11 @@
      "if_flag": "chapter_3_done"
     },
     {
+     "dialogue": "dez_four_reasons",
+     "if_flag": "knows_skip",
+     "if_not_flag": "knows_why"
+    },
+    {
      "dialogue": "dez_took_it",
      "if_flag": "took_the_form",
      "if_not_flag": "told_dez_ch3"
@@ -497,6 +502,18 @@
  ],
  "doors": [
   {
+   "id": "to_office",
+   "to": "ferry_office",
+   "spawn": "from_street",
+   "x": 300,
+   "y": 32.0,
+   "label": "Ticket office",
+   "required_flag": "knows_premise",
+   "locked": "Shut. It has been shut for years.",
+   "w": 30,
+   "h": 46
+  },
+  {
    "id": "to_market",
    "to": "lantern_market",
    "spawn": "from_ferry",
@@ -509,6 +526,11 @@
   }
  ],
  "spawns": [
+  {
+   "id": "from_office",
+   "x": 300,
+   "y": 58
+  },
   {
    "id": "start",
    "x": 90,

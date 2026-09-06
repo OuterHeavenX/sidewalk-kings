@@ -92,6 +92,41 @@
    "if_quest": ""
   },
   {
+   "text": "You have all four reasons. Come and tell me what they add up to.",
+   "where": "ferry_row",
+   "if_flag": "knows_skip",
+   "if_not_flag": "knows_why",
+   "if_quest": ""
+  },
+  {
+   "text": "Skip runs the Rust Rats out of the scrap office, up at the top of the heap.",
+   "where": "scrap_office",
+   "if_flag": "knows_crank",
+   "if_not_flag": "knows_skip",
+   "if_quest": ""
+  },
+  {
+   "text": "Crank is in the workshop off Grease Alley. Ask her why she took it.",
+   "where": "grease_workshop",
+   "if_flag": "knows_vell",
+   "if_not_flag": "knows_crank",
+   "if_quest": ""
+  },
+  {
+   "text": "Auntie Vell is in the back of the wool shop, in the market.",
+   "where": "wool_back",
+   "if_flag": "knows_tally",
+   "if_not_flag": "knows_vell",
+   "if_quest": ""
+  },
+  {
+   "text": "Tally keeps the Pigeons' books in the old ticket office on the row. Start there.",
+   "where": "ferry_office",
+   "if_flag": "knows_premise",
+   "if_not_flag": "knows_tally",
+   "if_quest": ""
+  },
+  {
    "text": "Five Pigeons off the Ferry Row and I will tell you what I know.",
    "where": "ferry_row",
    "if_flag": "knows_premise",

@@ -1,0 +1,176 @@
+{
+ "parallax": [
+  {
+   "texture": "res://assets/art/backgrounds/interior_wall.png",
+   "y": -370.0,
+   "scroll": 0.85,
+   "repeat": 4,
+   "scale": 2.0,
+   "z": -90
+  }
+ ],
+ "ground": [
+  {
+   "color": [
+    0.22,
+    0.21,
+    0.24
+   ],
+   "y": 2.0,
+   "height": 460,
+   "z": -26,
+   "x": -40,
+   "x2": 700
+  },
+  {
+   "tile": "wood_floor",
+   "y": 2.0,
+   "height": 10,
+   "z": -22,
+   "x": -40,
+   "x2": 700
+  }
+ ],
+ "scenery": [
+  {
+   "texture": "res://assets/art/props/desk.png",
+   "x": 300,
+   "y": -76.0,
+   "z": -28,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/props/filing_cabinet.png",
+   "x": 120,
+   "y": -90.0,
+   "z": -28,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/props/filing_cabinet.png",
+   "x": 148,
+   "y": -90.0,
+   "z": -28,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/props/sign.png",
+   "x": 460,
+   "y": -90.0,
+   "z": -28,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/props/flyer.png",
+   "x": 540,
+   "y": -66.0,
+   "z": -27,
+   "scale": 1.0
+  }
+ ],
+ "props": [
+  {
+   "id": "crate",
+   "x": 120,
+   "y": 68.0,
+   "breakable": true,
+   "hp": 8,
+   "money": 20
+  },
+  {
+   "id": "trashcan",
+   "x": 570,
+   "y": 76.0,
+   "breakable": true,
+   "hp": 10,
+   "money": 24
+  }
+ ],
+ "weapons": [],
+ "npcs": [],
+ "doors": [
+  {
+   "id": "to_street",
+   "to": "ferry_row",
+   "spawn": "from_office",
+   "x": 16,
+   "y": 58.0,
+   "label": "Back out",
+   "auto": true,
+   "w": 22,
+   "h": 46
+  }
+ ],
+ "spawns": [
+  {
+   "id": "start",
+   "x": 80,
+   "y": 58
+  },
+  {
+   "id": "from_street",
+   "x": 80,
+   "y": 58
+  }
+ ],
+ "encounters": [
+  {
+   "id": "boss_tally",
+   "x": 297.0,
+   "width": 70
+  }
+ ],
+ "lane_min": 38.0,
+ "lane_max": 76.0,
+ "lighting": {
+  "ambient": [
+   0.44,
+   0.42,
+   0.48
+  ],
+  "glow": true,
+  "lights": [
+   {
+    "x": 140,
+    "y": 34.0,
+    "color": [
+     1.0,
+     0.94,
+     0.78
+    ],
+    "energy": 0.7,
+    "scale": 2.0,
+    "texture": "wide"
+   },
+   {
+    "x": 360,
+    "y": 34.0,
+    "color": [
+     1.0,
+     0.94,
+     0.78
+    ],
+    "energy": 0.7,
+    "scale": 2.0,
+    "texture": "wide"
+   },
+   {
+    "x": 580,
+    "y": 34.0,
+    "color": [
+     1.0,
+     0.94,
+     0.78
+    ],
+    "energy": 0.7,
+    "scale": 2.0,
+    "texture": "wide"
+   }
+  ]
+ },
+ "ambient": {},
+ "walk_min_x": 20.0,
+ "walk_max_x": 640.0,
+ "ground_y": 2.0,
+ "camera_y": -12.0
+}

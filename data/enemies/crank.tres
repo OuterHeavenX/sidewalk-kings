@@ -1,0 +1,43 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://actors/enemies/EnemyData.gd" id="1_crank"]
+[ext_resource type="SpriteFrames" path="res://assets/art/characters/crank_frames.tres" id="2_crank"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/portraits/crank.png" id="3_crank"]
+
+[resource]
+script = ExtResource("1_crank")
+id = "crank"
+display_name = "Crank"
+gang = "grease"
+archetype = 6
+sprite_frames = ExtResource("2_crank")
+portrait = ExtResource("3_crank")
+max_hp = 200
+damage_multiplier = 1.0
+defense = 4.0
+move_speed = 72.0
+run_speed = 124.0
+weight = 2.1
+armor_threshold = 13
+grab_resist = 0.0
+can_be_grabbed = false
+preferred_distance = 34.0
+aggression = 0.62
+reaction_delay = 0.34
+attack_cooldown = 1.3
+circle_chance = 0.25
+picks_up_weapons = true
+ranged_distance = 140.0
+moves = Array[String](["boss_jab", "enemy_weapon_swing", "boss_kick"])
+heavy_move = "boss_slam"
+ranged_move = ""
+xp = 130
+money_min = 0
+money_max = 0
+drop_table = []
+drop_chance = 0.12
+scale = 1.1
+tint = Color(1.0, 1.0, 1.0, 1.0)
+show_health_bar = false
+taunts = Array[String](["Everything in here I fixed twice.", "Hold still, this is delicate work."])
+defeat_lines = Array[String](["Right. Right. Fair enough."])

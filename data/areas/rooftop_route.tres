@@ -7,6 +7,7 @@ script = ExtResource("1_rooftop_route")
 id = "rooftop_route"
 display_name = "Rooftop Route"
 district = "Above Riverbend"
+music = "market"
 ambience = "city"
 gang = "commuters"
 map_position = Vector2(2.6, -0.8)

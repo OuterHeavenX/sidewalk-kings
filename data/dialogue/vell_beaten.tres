@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DialogueData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/DialogueData.gd" id="1_vell_beaten"]
+
+[resource]
+script = ExtResource("1_vell_beaten")
+id = "vell_beaten"
+lines = Array[Dictionary]([{"name": "Auntie Vell", "text": "Well. That is that.", "portrait": "vell"}, {"name": "Kip", "text": "Why did you take it?", "portrait": "kip"}, {"name": "Auntie Vell", "text": "Marisol's boy. The one who sits outside the bookshop.", "portrait": "vell"}, {"name": "Kip", "text": "What about him?", "portrait": "kip"}, {"name": "Auntie Vell", "text": "He has an appointment across the river every fortnight, and the crossing costs, and the appointment costs, and neither of those has ever once been cancelled for being inconvenient.", "portrait": "vell"}, {"name": "Kip", "text": "You could have asked people.", "portrait": "kip"}, {"name": "Auntie Vell", "text": "I did ask people. People said yes and then people forgot. The envelope does not forget.", "portrait": "vell", "set_flag": "knows_vell", "end": true}])
+pause_game = true
+once_flag = ""

@@ -266,6 +266,7 @@ ferry = {
          "gives_hints": True,
          "conditional": [
              {"dialogue": "dez_ending", "if_flag": "chapter_3_done"},
+             {"dialogue": "dez_four_reasons", "if_flag": "knows_skip", "if_not_flag": "knows_why"},
              {"dialogue": "dez_took_it", "if_flag": "took_the_form", "if_not_flag": "told_dez_ch3"},
              {"dialogue": "dez_chapter_two", "if_flag": "chapter_2_done", "if_not_flag": "told_dez_ch2"},
              {"dialogue": "dez_metro", "if_flag": "chapter_1_done", "if_not_flag": "metro_open"},
@@ -285,10 +286,14 @@ ferry = {
          "y": LANE_MIN + 5, "dialogue": "auntie_wander", "wander": True},
     ],
     "doors": [
+        {"id": "to_office", "to": "ferry_office", "spawn": "from_street", "x": 300,
+         "y": LANE_MIN - 2, "label": "Ticket office", "required_flag": "knows_premise",
+         "locked": "Shut. It has been shut for years.", "w": 30, "h": 46},
         {"id": "to_market", "to": "lantern_market", "spawn": "from_ferry", "x": W1 - 24,
          "y": LANE_MAX - 16, "label": "Lantern Market", "auto": True, "w": 22, "h": 46},
     ],
     "spawns": [
+        {"id": "from_office", "x": 300, "y": 58},
         {"id": "start", "x": 90, "y": 56},
         {"id": "from_market", "x": W1 - 70, "y": 56},
     ],
@@ -397,6 +402,9 @@ market = {
          "dialogue": "rumor_kid_line", "wander": True},
     ],
     "doors": [
+        {"id": "to_wool", "to": "wool_back", "spawn": "from_street", "x": 560,
+         "y": LANE_MIN - 2, "label": "Back of the wool shop", "required_flag": "knows_premise",
+         "locked": "Locked, and the sign says back in five minutes.", "w": 30, "h": 46},
         {"id": "to_ferry", "to": "ferry_row", "spawn": "from_market", "x": 16, "y": LANE_MAX - 16,
          "label": "Ferry Row", "auto": True, "w": 22, "h": 46},
         {"id": "to_alley", "to": "grease_alley", "spawn": "from_market", "x": W2 - 24,
@@ -412,6 +420,7 @@ market = {
          "required_flag": "met_odell", "locked": "The door's shut. Somebody's inside, though."},
     ],
     "spawns": [
+        {"id": "from_wool", "x": 560, "y": 58},
         {"id": "start", "x": 80, "y": 56},
         {"id": "from_ferry", "x": 70, "y": 56},
         {"id": "from_alley", "x": W2 - 70, "y": 56},
@@ -519,6 +528,12 @@ alley = {
          ], "dialogue": "pops_intro"},
     ],
     "doors": [
+        {"id": "to_workshop", "to": "grease_workshop", "spawn": "from_street", "x": 1030,
+         # knows_premise, like the other three. Gating this one on met_pops meant the
+         # workshop was behind a conversation nothing pointed you at -- the hint says
+         # "Crank is in the workshop off Grease Alley" and says nothing about Pops.
+         "y": LANE_MIN - 6, "label": "The workshop", "required_flag": "knows_premise",
+         "locked": "Roller door, chained from the inside.", "w": 30, "h": 46},
         {"id": "to_market", "to": "lantern_market", "spawn": "from_alley", "x": 16,
          "y": LANE_MAX - 16, "label": "Lantern Market", "auto": True, "w": 22, "h": 46},
         {"id": "to_yard", "to": "rustpile_yard", "spawn": "from_alley", "x": W3 - 24,
@@ -532,6 +547,7 @@ alley = {
          "w": 34, "h": 46},
     ],
     "spawns": [
+        {"id": "from_workshop", "x": 1000, "y": 58},
         {"id": "start", "x": 80, "y": 58},
         {"id": "from_market", "x": 70, "y": 58},
         {"id": "from_yard", "x": W3 - 70, "y": 58},
@@ -617,6 +633,9 @@ yard = {
          "y": LANE_MIN + 4, "dialogue": "worker_line"},
     ],
     "doors": [
+        {"id": "to_scrap", "to": "scrap_office", "spawn": "from_street", "x": 700,
+         "y": LANE_MIN - 2, "label": "Scrap office", "required_flag": "knows_premise",
+         "locked": "Up a ladder that is not there any more.", "w": 30, "h": 46},
         {"id": "to_alley", "to": "grease_alley", "spawn": "from_yard", "x": 16, "y": LANE_MAX - 16,
          "label": "Grease Alley", "auto": True, "w": 22, "h": 46},
         {"id": "to_hideout", "to": "starch_laundromat", "spawn": "start", "x": 1430,
@@ -624,6 +643,7 @@ yard = {
          "required_flag": "yard_cleared", "locked": "The Rust Rats are still crawling all over the yard."},
     ],
     "spawns": [
+        {"id": "from_scrap", "x": 700, "y": 58},
         {"id": "start", "x": 80, "y": 58},
         {"id": "from_alley", "x": 70, "y": 58},
         {"id": "from_hideout", "x": 1360, "y": 58},
@@ -1276,4 +1296,103 @@ substation = {
 build("substation", W12, substation)
 
 
-print("12 area layouts written to data/areas/")
+# ===========================================================================
+# THE DENS - one room per crew, and the person who answers for it
+# ===========================================================================
+def den(area_id, width, wall_tex, floor_tile, boss_enc, dressing, lights, wet=0.0):
+    """A leader's room. Same shape every time: a way back, some furniture, one fight.
+
+    Built by a helper rather than four times by hand, because four near-identical layouts
+    written out longhand is four places for one of them to quietly differ.
+    """
+    layout = {
+        "parallax": [
+            {"texture": _tex_path(wall_tex), "y": -370.0, "scroll": 0.85, "repeat": 4,
+             "scale": 2.0, "z": -90},
+        ],
+        "ground": [
+            fill((0.22, 0.21, 0.24), SIDEWALK_TOP - 16.0, 460, -40, width + 40),
+            ground(floor_tile, SIDEWALK_TOP - 16.0, SIDEWALK_ROWS + 1, -40, width + 40, z=-22),
+        ],
+        "scenery": dressing,
+        "props": [
+            prop("crate", 120, LANE_MAX - 6, breakable=True, hp=8, money=20),
+            prop("trashcan", width - 90, breakable=True, hp=10, money=24),
+        ],
+        "weapons": [],
+        "npcs": [],
+        "doors": [
+            {"id": "to_street", "to": "", "spawn": "start", "x": 16, "y": LANE_MAX - 16,
+             "label": "Back out", "auto": True, "w": 22, "h": 46},
+        ],
+        "spawns": [
+            {"id": "start", "x": 80, "y": 58},
+            {"id": "from_street", "x": 80, "y": 58},
+        ],
+        "encounters": [
+            {"id": boss_enc, "x": width * 0.45, "width": 70},
+        ],
+        "lane_min": 38.0,
+        "lane_max": 76.0,
+        "lighting": lighting((0.44, 0.42, 0.48), lights),
+        "ambient": ambient(),
+    }
+    if wet > 0.0:
+        layout["wet"] = wet
+    return layout
+
+
+W_OFFICE = 660
+office_den = den("ferry_office", W_OFFICE, "interior_wall", "wood_floor", "boss_tally", [
+    scenery(PROP + "desk", 300, ROAD_TOP - 30, z=-28),
+    scenery(PROP + "filing_cabinet", 120, ROAD_TOP - 44, z=-28),
+    scenery(PROP + "filing_cabinet", 148, ROAD_TOP - 44, z=-28),
+    scenery(PROP + "sign", 460, ROAD_TOP - 44, z=-28),
+    scenery(PROP + "flyer", 540, ROAD_TOP - 20, z=-27),
+], [light(x, 34.0, (1.0, 0.94, 0.78), 0.7, 2.0, "wide") for x in range(140, W_OFFICE, 220)])
+office_den["doors"][0]["to"] = "ferry_row"
+office_den["doors"][0]["spawn"] = "from_office"
+build("ferry_office", W_OFFICE, office_den)
+
+W_WOOL = 620
+wool_den = den("wool_back", W_WOOL, "interior_wall", "wood_floor", "boss_vell", [
+    scenery(PROP + "locker", 110, ROAD_TOP - 46, z=-28),
+    scenery(PROP + "locker", 142, ROAD_TOP - 46, z=-28),
+    scenery(PROP + "bench", 300, ROAD_TOP - 20, z=-28),
+    scenery(PROP + "awning_green", 430, ROAD_TOP - 40, z=-28),
+    scenery(PROP + "flyer", 520, ROAD_TOP - 20, z=-27),
+], [light(x, 34.0, (1.0, 0.88, 0.72), 0.8, 2.0, "wide") for x in range(130, W_WOOL, 200)])
+wool_den["doors"][0]["to"] = "lantern_market"
+wool_den["doors"][0]["spawn"] = "from_wool"
+build("wool_back", W_WOOL, wool_den)
+
+W_SHOP = 760
+shop_den = den("grease_workshop", W_SHOP, "interior_wall", "concrete", "boss_crank", [
+    scenery(PROP + "pipe_stack", 120, ROAD_TOP - 30, z=-28),
+    scenery(PROP + "cable_spool", 250, DECO_BASE - 30, z=-20),
+    scenery(PROP + "tire", 340, DECO_BASE - 18, z=-20),
+    scenery(PROP + "ac_unit", 470, ROAD_TOP - 24, z=-28),
+    scenery(PROP + "work_lamp", 600, DECO_BASE - 46, z=-20),
+    scenery(PROP + "graffiti_b", 660, ROAD_TOP - 40, z=-27),
+], [light(300, 36.0, (1.0, 0.92, 0.72), 0.9, 2.2, "wide"),
+    light(600, 40.0, (1.0, 0.96, 0.86), 1.3, 1.7, "wide")])
+shop_den["doors"][0]["to"] = "grease_alley"
+shop_den["doors"][0]["spawn"] = "from_workshop"
+shop_den["weapons"] = [{"id": "pipe", "x": 200, "y": LANE_MAX - 8}]
+build("grease_workshop", W_SHOP, shop_den)
+
+W_SCRAP = 700
+scrap_den = den("scrap_office", W_SCRAP, "interior_wall", "metal", "boss_skip", [
+    scenery(PROP + "desk", 280, ROAD_TOP - 30, z=-28),
+    scenery(PROP + "barrier", 420, DECO_BASE - 26, z=-20),
+    scenery(PROP + "cable_spool", 520, DECO_BASE - 30, z=-20),
+    scenery(PROP + "pipe_stack", 610, ROAD_TOP - 30, z=-28),
+    scenery(PROP + "graffiti_c", 160, ROAD_TOP - 40, z=-27),
+], [light(x, 36.0, (1.0, 0.86, 0.62), 0.75, 2.0, "wide") for x in range(150, W_SCRAP, 230)])
+scrap_den["doors"][0]["to"] = "rustpile_yard"
+scrap_den["doors"][0]["spawn"] = "from_scrap"
+scrap_den["weapons"] = [{"id": "plank", "x": 240, "y": LANE_MAX - 8}]
+build("scrap_office", W_SCRAP, scrap_den)
+
+
+print("16 area layouts written to data/areas/")

@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DialogueData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/DialogueData.gd" id="1_tally_meet"]
+
+[resource]
+script = ExtResource("1_tally_meet")
+id = "tally_meet"
+lines = Array[Dictionary]([{"name": "", "text": "A ticket office nobody has bought a ticket in for years. The counter is covered in notebooks."}, {"name": "Tally", "text": "Forty-one.", "portrait": "tally"}, {"name": "Kip", "text": "What?", "portrait": "kip"}, {"name": "Tally", "text": "Forty-one of mine you have put on the pavement. I keep count. Somebody has to keep count.", "portrait": "tally"}, {"name": "Kip", "text": "You're the one running the Pigeons?", "portrait": "kip"}, {"name": "Tally", "text": "I am the one who writes it down. That is most of running anything.", "portrait": "tally", "end": true}])
+pause_game = true
+once_flag = ""

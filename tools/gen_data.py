@@ -469,6 +469,44 @@ ENEMIES = [
           xp=160, money_min=0, money_max=0, scale=1.2, show_health_bar=False,
           taunts=["You are getting the floor dirty."],
           defeat_lines=["...everything I own is white."]),
+    # ---- Gang leaders ---------------------------------------------------
+    # One per crew, in their own room. They are deliberately not as big as Big Starch: he is
+    # the end of the chapter and these are the four people the chapter is actually about.
+    enemy("tally", "Tally", "pigeons", "tally", AR_BOSS,
+          max_hp=150, move_speed=92.0, run_speed=168.0, weight=1.2, defense=2.0,
+          armor_threshold=8, preferred_distance=30.0, aggression=0.72, reaction_delay=0.26,
+          attack_cooldown=0.95, circle_chance=0.5, can_be_grabbed=False,
+          moves=["boss_jab", "enemy_rush", "boss_kick"], heavy_move="enemy_heavy",
+          xp=90, money_min=0, money_max=0, scale=1.02, show_health_bar=False,
+          taunts=["Forty-one. That's how many of us you've put down.",
+                  "I keep count. Somebody has to."],
+          defeat_lines=["Forty-two, then."]),
+    enemy("vell", "Auntie Vell", "sweaters", "vell", AR_BOSS,
+          max_hp=175, move_speed=64.0, run_speed=98.0, weight=1.8, defense=4.0,
+          armor_threshold=12, preferred_distance=26.0, aggression=0.55, reaction_delay=0.4,
+          attack_cooldown=1.5, circle_chance=0.2, can_be_grabbed=False,
+          moves=["boss_jab", "boss_combo"], heavy_move="enemy_slam",
+          xp=110, money_min=0, money_max=0, scale=1.06, show_health_bar=False,
+          taunts=["Stand up straight.", "You will regret that posture at forty."],
+          defeat_lines=["...well. That is that."]),
+    enemy("crank", "Crank", "grease", "crank", AR_BOSS,
+          max_hp=200, move_speed=72.0, run_speed=124.0, weight=2.1, defense=4.0,
+          armor_threshold=13, preferred_distance=34.0, aggression=0.62, reaction_delay=0.34,
+          attack_cooldown=1.3, circle_chance=0.25, can_be_grabbed=False,
+          picks_up_weapons=True,
+          moves=["boss_jab", "enemy_weapon_swing", "boss_kick"], heavy_move="boss_slam",
+          xp=130, money_min=0, money_max=0, scale=1.1, show_health_bar=False,
+          taunts=["Everything in here I fixed twice.", "Hold still, this is delicate work."],
+          defeat_lines=["Right. Right. Fair enough."]),
+    enemy("skip", "Skip", "rust_rats", "skip", AR_BOSS,
+          max_hp=240, move_speed=58.0, run_speed=92.0, weight=2.5, defense=5.0,
+          armor_threshold=15, preferred_distance=28.0, aggression=0.58, reaction_delay=0.44,
+          attack_cooldown=1.7, circle_chance=0.12, can_be_grabbed=False,
+          moves=["boss_combo", "boss_kick"], heavy_move="boss_slam",
+          xp=160, money_min=0, money_max=0, scale=1.14, show_health_bar=False,
+          taunts=["This whole yard is going in a skip. Including you.",
+                  "Nothing here is worth anything. That is the appeal."],
+          defeat_lines=["...you can have the yard. It is not mine either."]),
     # ---- The Closure Crew (Line 4) --------------------------------------
     # They are not a gang. They are contractors with a work order, which is why they hit
     # harder than the Commuters and taunt less: nobody here is defending a street.
@@ -783,6 +821,13 @@ QUESTS = [
           OB_FLAG, "found_tuesday_locker", giver="dez", turn_in_npc="dez", optional=False,
           reward_money=220, reward_xp=160, reward_flag="knows_tuesday_route",
           hint="Search the metro platform. Try the lockers."),
+    quest("q_leaders", "Four Reasons", "Four crews took the same deal. Dez reckons none of "
+          "them took it for the same reason, and that the reasons are the story. Find all "
+          "four and ask.",
+          OB_FLAG, "knows_why", giver="dez", turn_in_npc="dez",
+          reward_money=300, reward_xp=400, reward_flag="q_leaders_done",
+          hint="Every crew has somebody who answers for it. Look for the room behind the "
+               "street."),
     quest("q_thursday", "Thursday", "Nothing came on Tuesday, and now there are men in hi-vis "
           "vests on a platform that has been shut for eleven years. Find out what they are for.",
           OB_AREA, "line_four", giver="dez", turn_in_npc="", optional=False,
@@ -826,7 +871,10 @@ DIALOGUES = {
     L("Dez", "That's the thing. They stopped. Last month they all just... agreed. Split the map. No arguing.", "dez"),
     L("Kip", "Gangs don't agree.", "kip"),
     L("Dez", "Gangs don't agree for free.", "dez", set_flag="knows_premise", start_quest="q_pigeons"),
-    L("Dez", "Start with the Pigeons. They're the loudest and the softest. Then come find me.", "dez", end=True),
+    L("Dez", "Start with the Pigeons. They're the loudest and the softest. Then come find me.", "dez"),
+    L("Dez", "And Kip -- every crew has somebody who answers for it. There is a room behind "
+             "every street in this city. If you find them, ask them why they took it.", "dez",
+      start_quest="q_leaders", end=True),
 ]),
 "dez_hub": dict(lines=[
     L("Dez", "Still standing. Good sign.", "dez"),
@@ -867,6 +915,25 @@ DIALOGUES = {
     L("Big Starch", "Someone who never gets off the train.", "big_starch"),
     L("Kip", "That's not an answer.", "kip"),
     L("Big Starch", "It is the answer I was paid for. Go home, kid. Riverbend is bigger than four blocks.", "big_starch",
+      set_flag="chapter_1_done", end=True),
+]),
+# What he says instead, to somebody who has already been round all four and heard why.
+"starch_defeat_knowing": dict(lines=[
+    L("Big Starch", "...everything I own is white.", "big_starch"),
+    L("Kip", "A timetable. A hospital fare. A lease. Some letters that stopped.", "kip"),
+    L("Big Starch", "You went and asked them.", "big_starch"),
+    L("Kip", "I went and asked them.", "kip"),
+    L("Big Starch", "Then you know it was not a threat. I never threatened anybody. I "
+                    "found out what each of them was short of and I was not short of it.", "big_starch"),
+    L("Kip", "That's worse.", "kip"),
+    L("Big Starch", "That is *cheaper*. A threat has to be repeated. This only has to "
+                    "arrive.", "big_starch"),
+    L("Kip", "Who tells you what they're short of?", "kip"),
+    L("Big Starch", "Nobody tells me anything. I was given a route. Money comes in on "
+                    "Tuesdays, in a bag, from the metro side.", "big_starch"),
+    L("Kip", "Who brings it?", "kip"),
+    L("Big Starch", "Someone who never gets off the train. Go on. You are closer than I "
+                    "ever got.", "big_starch",
       set_flag="chapter_1_done", end=True),
 ]),
 # ---------------- Shops / NPCs ----------------
@@ -1056,6 +1123,110 @@ DIALOGUES = {
     L("", "A service poster, laminated and immaculate, on a wall nobody reads."),
     L("", "TUESDAYS: NO STOPPING SERVICE. THIS IS NORMAL AND CORRECT."),
     L("Kip", "Somebody laminated that.", "kip", end=True),
+]),
+# ---------------- The four gang leaders ----------------
+"tally_meet": dict(lines=[
+    L("", "A ticket office nobody has bought a ticket in for years. The counter is covered "
+          "in notebooks."),
+    L("Tally", "Forty-one.", "tally"),
+    L("Kip", "What?", "kip"),
+    L("Tally", "Forty-one of mine you have put on the pavement. I keep count. Somebody has "
+               "to keep count.", "tally"),
+    L("Kip", "You're the one running the Pigeons?", "kip"),
+    L("Tally", "I am the one who writes it down. That is most of running anything.", "tally", end=True),
+]),
+"tally_beaten": dict(lines=[
+    L("Tally", "Forty-two.", "tally"),
+    L("Kip", "Why did you take the money?", "kip"),
+    L("Tally", "Because it comes on Tuesday.", "tally"),
+    L("Kip", "That's it?", "kip"),
+    L("Tally", "Every good thing that has ever happened to anyone I know happened by "
+               "accident and never happened twice. This one comes on Tuesday. You have no "
+               "idea what that is worth.", "tally"),
+    L("Kip", "So you sold the row for a timetable.", "kip"),
+    L("Tally", "I bought a timetable with the row. Say it either way, it is the same "
+               "Tuesday.", "tally", set_flag="knows_tally", end=True),
+]),
+"vell_meet": dict(lines=[
+    L("", "The back of the wool shop. Every surface has yarn on it and every ball is in "
+          "exactly the right place."),
+    L("Auntie Vell", "Shoes.", "vell"),
+    L("Kip", "...sorry?", "kip"),
+    L("Auntie Vell", "You are standing on my floor in them. Sit down, I will put the kettle "
+                     "on, and then we can do whatever this is.", "vell"),
+    L("Kip", "You run the Sweaters.", "kip"),
+    L("Auntie Vell", "I run a shop. They come in for the wool and they stay for the "
+                     "company, and then people started calling it a gang.", "vell", end=True),
+]),
+"vell_beaten": dict(lines=[
+    L("Auntie Vell", "Well. That is that.", "vell"),
+    L("Kip", "Why did you take it?", "kip"),
+    L("Auntie Vell", "Marisol's boy. The one who sits outside the bookshop.", "vell"),
+    L("Kip", "What about him?", "kip"),
+    L("Auntie Vell", "He has an appointment across the river every fortnight, and the "
+                     "crossing costs, and the appointment costs, and neither of those has "
+                     "ever once been cancelled for being inconvenient.", "vell"),
+    L("Kip", "You could have asked people.", "kip"),
+    L("Auntie Vell", "I did ask people. People said yes and then people forgot. The envelope "
+                     "does not forget.", "vell", set_flag="knows_vell", end=True),
+]),
+"crank_meet": dict(lines=[
+    L("", "Two bays, one working lift, and more tools than the rest of Riverbend put "
+          "together."),
+    L("Crank", "Do not touch anything in here.", "crank"),
+    L("Kip", "I wasn't going to.", "kip"),
+    L("Crank", "Everyone says that and then everyone touches something. Every item in this "
+               "room I have fixed twice: once when it broke and once after somebody helped.", "crank"),
+    L("Kip", "I want to talk about the money.", "kip"),
+    L("Crank", "Then you will want to be quicker than you look.", "crank", end=True),
+]),
+"crank_beaten": dict(lines=[
+    L("Crank", "Right. Right. Fair enough.", "crank"),
+    L("Kip", "The money.", "kip"),
+    L("Crank", "The lease. This place went month to month four years ago, and a month is "
+               "not long enough to order a part in.", "crank"),
+    L("Kip", "So the payments cover the rent.", "kip"),
+    L("Crank", "The payments cover the *year*. I signed a year. Do you know what you can do "
+               "with a year? You can order the part.", "crank"),
+    L("Kip", "And the price was leaving everyone else alone.", "kip"),
+    L("Crank", "The price was staying in the alley. I was staying in the alley anyway. It "
+               "felt like being paid for the weather.", "crank", set_flag="knows_crank", end=True),
+]),
+"skip_meet": dict(lines=[
+    L("", "A portakabin on blocks at the top of the heap, with the best view in Riverbend "
+          "and nothing worth looking at."),
+    L("Skip", "You are in a scrapyard, so I will tell you what everything in here is worth.", "skip"),
+    L("Kip", "Go on.", "kip"),
+    L("Skip", "Nothing. That is the appeal. Nobody comes to take nothing off you.", "skip"),
+    L("Kip", "Somebody came to give you something.", "kip"),
+    L("Skip", "Yes. That was new.", "skip", end=True),
+]),
+"skip_beaten": dict(lines=[
+    L("Skip", "...you can have the yard. It is not mine either.", "skip"),
+    L("Kip", "What does that mean?", "kip"),
+    L("Skip", "It means we do not own it, we are on it. Have been eleven years. Every so "
+              "often a letter comes about clearing the site and every so often it stops "
+              "coming.", "skip"),
+    L("Kip", "And when the money started, the letters stopped.", "kip"),
+    L("Skip", "The letters stopped. I did not ask why. You do not ask why the letters "
+              "stopped, you just get on with your life while they are not arriving.", "skip"),
+    L("Kip", "That's the whole reason?", "kip"),
+    L("Skip", "Kid, that is a bigger reason than money. Money you spend. Quiet you get to "
+              "live in.", "skip", set_flag="knows_skip", end=True),
+]),
+"dez_four_reasons": dict(lines=[
+    L("Kip", "I found all four of them.", "kip", if_flag="knows_tally"),
+    L("Dez", "And?", "dez"),
+    L("Kip", "A timetable. A boy's hospital fare. A twelve-month lease. And some letters "
+             "that stopped arriving.", "kip"),
+    L("Dez", "That is it? That is what four gangs went quiet for?", "dez"),
+    L("Kip", "Nobody was bought, Dez. They were all just offered the only thing in their "
+             "lives that showed up when it said it would.", "kip"),
+    L("Dez", "...that is worse than being bought.", "dez"),
+    L("Kip", "I know.", "kip"),
+    L("Dez", "So whoever is paying knows exactly what people are short of.", "dez"),
+    L("Kip", "That is what I want to ask them.", "kip",
+      set_flag="knows_why", end=True),
 ]),
 # ---------------- Chapter two: the Line Office ----------------
 "office_locked": dict(lines=[
@@ -1257,6 +1428,16 @@ HINTS = [
          "grease_alley", if_flag="market_cleared"),
     hint("The Sweaters have Lantern Market boxed in. It is east along the row.",
          "lantern_market", if_flag="market_opened"),
+    hint("You have all four reasons. Come and tell me what they add up to.",
+         "ferry_row", if_flag="knows_skip", if_not_flag="knows_why"),
+    hint("Skip runs the Rust Rats out of the scrap office, up at the top of the heap.",
+         "scrap_office", if_flag="knows_crank", if_not_flag="knows_skip"),
+    hint("Crank is in the workshop off Grease Alley. Ask her why she took it.",
+         "grease_workshop", if_flag="knows_vell", if_not_flag="knows_crank"),
+    hint("Auntie Vell is in the back of the wool shop, in the market.",
+         "wool_back", if_flag="knows_tally", if_not_flag="knows_vell"),
+    hint("Tally keeps the Pigeons' books in the old ticket office on the row. Start there.",
+         "ferry_office", if_flag="knows_premise", if_not_flag="knows_tally"),
     hint("Five Pigeons off the Ferry Row and I will tell you what I know.",
          "ferry_row", if_flag="knows_premise"),
 
@@ -1283,6 +1464,31 @@ def wave(enemy_id, count=1, side="any", delay=0.0, boss=False):
     return {"enemy": enemy_id, "count": count, "side": side, "delay": delay, "boss": boss}
 
 ENCOUNTERS = [
+    # ---- Gang leaders ----
+    encounter("boss_tally", "pigeons", [wave("tally", 1, "right", 0.0, True),
+                                        wave("pigeon_rusher", 2, "any", 6.0)],
+              max_active=3, boss_id="tally", music="boss",
+              intro_dialogue="tally_meet", clear_dialogue="tally_beaten",
+              once_flag="enc_boss_tally", reward_flag="tally_beaten",
+              respawn_on_reenter=False),
+    encounter("boss_vell", "sweaters", [wave("vell", 1, "right", 0.0, True),
+                                        wave("sweater_grunt", 2, "any", 7.0)],
+              max_active=3, boss_id="vell", music="boss",
+              intro_dialogue="vell_meet", clear_dialogue="vell_beaten",
+              once_flag="enc_boss_vell", reward_flag="vell_beaten",
+              respawn_on_reenter=False),
+    encounter("boss_crank", "grease", [wave("crank", 1, "right", 0.0, True),
+                                       wave("grease_weapon", 2, "any", 7.0)],
+              max_active=3, boss_id="crank", music="boss",
+              intro_dialogue="crank_meet", clear_dialogue="crank_beaten",
+              once_flag="enc_boss_crank", reward_flag="crank_beaten",
+              respawn_on_reenter=False),
+    encounter("boss_skip", "rust_rats", [wave("skip", 1, "right", 0.0, True),
+                                         wave("rust_heavy", 1, "any", 8.0)],
+              max_active=2, boss_id="skip", music="boss",
+              intro_dialogue="skip_meet", clear_dialogue="skip_beaten",
+              once_flag="enc_boss_skip", reward_flag="skip_beaten",
+              respawn_on_reenter=False),
     # ---- Chapter three: the Closure Crew ----
     encounter("stair_crew", "crew", [wave("crew_grunt", 2, "right"), wave("crew_weapon", 1, "left", 2.0)],
               max_active=3, intro_dialogue="stair_warning",
@@ -1356,39 +1562,57 @@ ENCOUNTERS = [
 # AREA METADATA
 # ===========================================================================
 AREAS = [
-    dict(id="ferry_row", display_name="Ferry Row", district="Riverbend East", ambience="river", gang="pigeons", map_position=(0.0, 0.0),
-         connections=["lantern_market"],
+    dict(id="ferry_row", display_name="Ferry Row", district="Riverbend East", music="street", ambience="river", gang="pigeons", map_position=(0.0, 0.0),
+         connections=["lantern_market", "ferry_office"],
          description="Where the river meets the city. Fried dough, ferry horns, and a gang named after birds."),
-    dict(id="lantern_market", display_name="Lantern Market", district="Riverbend East", ambience="city", gang="sweaters", map_position=(1.0, 0.0),
-         connections=["ferry_row", "grease_alley", "metro_platform"],
+    dict(id="lantern_market", display_name="Lantern Market", district="Riverbend East", music="market", ambience="city", gang="sweaters", map_position=(1.0, 0.0),
+         connections=["ferry_row", "grease_alley", "metro_platform", "wool_back"],
          description="Two blocks of food stalls, secondhand books and a dojo nobody can find twice."),
-    dict(id="grease_alley", display_name="Grease Alley", district="Backstreets", ambience="alley", gang="grease", map_position=(2.0, 0.5),
-         connections=["lantern_market", "rustpile_yard", "rooftop_route"],
+    dict(id="grease_alley", display_name="Grease Alley", district="Backstreets", music="alley", ambience="alley", gang="grease", map_position=(2.0, 0.5),
+         connections=["lantern_market", "rustpile_yard", "rooftop_route", "grease_workshop"],
          description="Narrow, damp, full of useful objects and people who resent you finding them."),
-    dict(id="rustpile_yard", display_name="Rustpile Yard", district="Industrial", ambience="industrial", gang="rust_rats", map_position=(3.0, 0.5),
-         connections=["grease_alley", "starch_laundromat"],
+    dict(id="rustpile_yard", display_name="Rustpile Yard", district="Industrial", music="industrial", ambience="industrial", gang="rust_rats", map_position=(3.0, 0.5),
+         connections=["grease_alley", "starch_laundromat", "scrap_office"],
          description="A scrapyard nobody is scrapping. The fence is new. That is the strange part."),
     dict(id="starch_laundromat", display_name="Starch & Sons", district="Industrial", music="tension",
          ambience="interior", gang="cleaners", map_position=(4.0, 0.5),
          connections=["rustpile_yard"],
          description="Always open. Always empty. Always immaculate."),
-    dict(id="metro_platform", display_name="Metro Platform", district="Metro Line", ambience="interior", gang="commuters", map_position=(1.0, 1.2),
+    dict(id="metro_platform", display_name="Metro Platform", district="Metro Line", music="metro", ambience="interior", gang="commuters", map_position=(1.0, 1.2),
          connections=["lantern_market", "bellwater_block", "line_office"],
          description="A station that is always open, never busy, and mopped by somebody."),
-    dict(id="rooftop_route", display_name="Rooftop Route", district="Above Riverbend", ambience="city", gang="commuters", map_position=(2.6, -0.8),
+    dict(id="rooftop_route", display_name="Rooftop Route", district="Above Riverbend", music="market", ambience="city", gang="commuters", map_position=(2.6, -0.8),
          connections=["grease_alley", "bellwater_block"],
          description="Aerials, vents and washing lines. Nobody watches up here."),
-    dict(id="bellwater_block", display_name="Bellwater Block", district="Metro Line", ambience="city", gang="commuters", map_position=(2.0, 1.6),
+    dict(id="bellwater_block", display_name="Bellwater Block", district="Metro Line", music="metro", ambience="city", gang="commuters", map_position=(2.0, 1.6),
          connections=["metro_platform", "rooftop_route"],
          description="Forty flats and one shop. The Commuters sit on the wall outside it."),
     dict(id="line_office", display_name="Line Office", district="Metro Line", music="shop",
          ambience="interior", gang="", map_position=(0.6, 1.8),
          connections=["metro_platform", "service_stair"],
          description="A desk, four filing cabinets, and eleven years of Tuesdays."),
-    dict(id="service_stair", display_name="Service Stair", district="Line 4", ambience="interior", gang="crew", map_position=(1.35, 2.35),
+    # The four dens. Each hangs off its own district, so the map grows outward rather than
+    # onward: the city gets deeper in the places you already know instead of longer.
+    dict(id="ferry_office", display_name="Ticket Office", district="Riverbend East",
+         music="battle", ambience="interior", gang="pigeons", map_position=(0.0, -0.9),
+         connections=["ferry_row"],
+         description="The ferry ticket office. Nobody has sold a ticket in it for years."),
+    dict(id="wool_back", display_name="Back of the Wool Shop", district="Riverbend East",
+         music="battle", ambience="interior", gang="sweaters", map_position=(1.0, -0.9),
+         connections=["lantern_market"],
+         description="Behind the market stalls, where the good yarn is kept."),
+    dict(id="grease_workshop", display_name="The Workshop", district="Backstreets",
+         music="battle", ambience="industrial", gang="grease", map_position=(2.0, -0.5),
+         connections=["grease_alley"],
+         description="Two bays, one working lift, and every tool in Riverbend."),
+    dict(id="scrap_office", display_name="Scrap Office", district="Industrial",
+         music="battle", ambience="industrial", gang="rust_rats", map_position=(3.0, -0.5),
+         connections=["rustpile_yard"],
+         description="A portakabin on blocks, at the top of the heap, with the best view."),
+    dict(id="service_stair", display_name="Service Stair", district="Line 4", music="metro", ambience="interior", gang="crew", map_position=(1.35, 2.35),
          connections=["line_office", "line_four"],
          description="Down past the sign that says the line is suspended, not closed."),
-    dict(id="line_four", display_name="Line 4", district="Line 4", ambience="industrial", gang="crew", map_position=(2.25, 2.55),
+    dict(id="line_four", display_name="Line 4", district="Line 4", music="industrial", ambience="industrial", gang="crew", map_position=(2.25, 2.55),
          connections=["service_stair", "substation"],
          description="A platform nobody has stood on in eleven years, being taken apart."),
     dict(id="substation", display_name="Substation", district="Line 4", music="tension",

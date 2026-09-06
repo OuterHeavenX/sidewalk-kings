@@ -458,6 +458,18 @@
  ],
  "doors": [
   {
+   "id": "to_workshop",
+   "to": "grease_workshop",
+   "spawn": "from_street",
+   "x": 1030,
+   "y": 28.0,
+   "label": "The workshop",
+   "required_flag": "knows_premise",
+   "locked": "Roller door, chained from the inside.",
+   "w": 30,
+   "h": 46
+  },
+  {
    "id": "to_market",
    "to": "lantern_market",
    "spawn": "from_alley",
@@ -502,6 +514,11 @@
   }
  ],
  "spawns": [
+  {
+   "id": "from_workshop",
+   "x": 1000,
+   "y": 58
+  },
   {
    "id": "start",
    "x": 80,

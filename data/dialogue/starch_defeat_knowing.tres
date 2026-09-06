@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DialogueData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/DialogueData.gd" id="1_starch_defeat_knowing"]
+
+[resource]
+script = ExtResource("1_starch_defeat_knowing")
+id = "starch_defeat_knowing"
+lines = Array[Dictionary]([{"name": "Big Starch", "text": "...everything I own is white.", "portrait": "big_starch"}, {"name": "Kip", "text": "A timetable. A hospital fare. A lease. Some letters that stopped.", "portrait": "kip"}, {"name": "Big Starch", "text": "You went and asked them.", "portrait": "big_starch"}, {"name": "Kip", "text": "I went and asked them.", "portrait": "kip"}, {"name": "Big Starch", "text": "Then you know it was not a threat. I never threatened anybody. I found out what each of them was short of and I was not short of it.", "portrait": "big_starch"}, {"name": "Kip", "text": "That's worse.", "portrait": "kip"}, {"name": "Big Starch", "text": "That is *cheaper*. A threat has to be repeated. This only has to arrive.", "portrait": "big_starch"}, {"name": "Kip", "text": "Who tells you what they're short of?", "portrait": "kip"}, {"name": "Big Starch", "text": "Nobody tells me anything. I was given a route. Money comes in on Tuesdays, in a bag, from the metro side.", "portrait": "big_starch"}, {"name": "Kip", "text": "Who brings it?", "portrait": "kip"}, {"name": "Big Starch", "text": "Someone who never gets off the train. Go on. You are closer than I ever got.", "portrait": "big_starch", "set_flag": "chapter_1_done", "end": true}])
+pause_game = true
+once_flag = ""

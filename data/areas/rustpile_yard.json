@@ -454,6 +454,18 @@
  ],
  "doors": [
   {
+   "id": "to_scrap",
+   "to": "scrap_office",
+   "spawn": "from_street",
+   "x": 700,
+   "y": 32.0,
+   "label": "Scrap office",
+   "required_flag": "knows_premise",
+   "locked": "Up a ladder that is not there any more.",
+   "w": 30,
+   "h": 46
+  },
+  {
    "id": "to_alley",
    "to": "grease_alley",
    "spawn": "from_yard",
@@ -476,6 +488,11 @@
   }
  ],
  "spawns": [
+  {
+   "id": "from_scrap",
+   "x": 700,
+   "y": 58
+  },
   {
    "id": "start",
    "x": 80,

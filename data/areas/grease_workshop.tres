@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="AreaData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/AreaData.gd" id="1_grease_workshop"]
+
+[resource]
+script = ExtResource("1_grease_workshop")
+id = "grease_workshop"
+display_name = "The Workshop"
+district = "Backstreets"
+music = "battle"
+ambience = "industrial"
+gang = "grease"
+map_position = Vector2(2.0, -0.5)
+connections = Array[String](["grease_alley"])
+description = "Two bays, one working lift, and every tool in Riverbend."

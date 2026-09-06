@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DialogueData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/DialogueData.gd" id="1_dez_four_reasons"]
+
+[resource]
+script = ExtResource("1_dez_four_reasons")
+id = "dez_four_reasons"
+lines = Array[Dictionary]([{"name": "Kip", "text": "I found all four of them.", "portrait": "kip", "if_flag": "knows_tally"}, {"name": "Dez", "text": "And?", "portrait": "dez"}, {"name": "Kip", "text": "A timetable. A boy's hospital fare. A twelve-month lease. And some letters that stopped arriving.", "portrait": "kip"}, {"name": "Dez", "text": "That is it? That is what four gangs went quiet for?", "portrait": "dez"}, {"name": "Kip", "text": "Nobody was bought, Dez. They were all just offered the only thing in their lives that showed up when it said it would.", "portrait": "kip"}, {"name": "Dez", "text": "...that is worse than being bought.", "portrait": "dez"}, {"name": "Kip", "text": "I know.", "portrait": "kip"}, {"name": "Dez", "text": "So whoever is paying knows exactly what people are short of.", "portrait": "dez"}, {"name": "Kip", "text": "That is what I want to ask them.", "portrait": "kip", "set_flag": "knows_why", "end": true}])
+pause_game = true
+once_flag = ""

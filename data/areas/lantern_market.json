@@ -504,6 +504,18 @@
  ],
  "doors": [
   {
+   "id": "to_wool",
+   "to": "wool_back",
+   "spawn": "from_street",
+   "x": 560,
+   "y": 32.0,
+   "label": "Back of the wool shop",
+   "required_flag": "knows_premise",
+   "locked": "Locked, and the sign says back in five minutes.",
+   "w": 30,
+   "h": 46
+  },
+  {
    "id": "to_ferry",
    "to": "ferry_row",
    "spawn": "from_market",
@@ -569,6 +581,11 @@
   }
  ],
  "spawns": [
+  {
+   "id": "from_wool",
+   "x": 560,
+   "y": 58
+  },
   {
    "id": "start",
    "x": 80,

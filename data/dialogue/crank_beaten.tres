@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DialogueData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/DialogueData.gd" id="1_crank_beaten"]
+
+[resource]
+script = ExtResource("1_crank_beaten")
+id = "crank_beaten"
+lines = Array[Dictionary]([{"name": "Crank", "text": "Right. Right. Fair enough.", "portrait": "crank"}, {"name": "Kip", "text": "The money.", "portrait": "kip"}, {"name": "Crank", "text": "The lease. This place went month to month four years ago, and a month is not long enough to order a part in.", "portrait": "crank"}, {"name": "Kip", "text": "So the payments cover the rent.", "portrait": "kip"}, {"name": "Crank", "text": "The payments cover the *year*. I signed a year. Do you know what you can do with a year? You can order the part.", "portrait": "crank"}, {"name": "Kip", "text": "And the price was leaving everyone else alone.", "portrait": "kip"}, {"name": "Crank", "text": "The price was staying in the alley. I was staying in the alley anyway. It felt like being paid for the weather.", "portrait": "crank", "set_flag": "knows_crank", "end": true}])
+pause_game = true
+once_flag = ""

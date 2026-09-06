@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="AreaData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/AreaData.gd" id="1_ferry_office"]
+
+[resource]
+script = ExtResource("1_ferry_office")
+id = "ferry_office"
+display_name = "Ticket Office"
+district = "Riverbend East"
+music = "battle"
+ambience = "interior"
+gang = "pigeons"
+map_position = Vector2(0.0, -0.9)
+connections = Array[String](["ferry_row"])
+description = "The ferry ticket office. Nobody has sold a ticket in it for years."

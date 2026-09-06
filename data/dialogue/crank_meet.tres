@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DialogueData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/DialogueData.gd" id="1_crank_meet"]
+
+[resource]
+script = ExtResource("1_crank_meet")
+id = "crank_meet"
+lines = Array[Dictionary]([{"name": "", "text": "Two bays, one working lift, and more tools than the rest of Riverbend put together."}, {"name": "Crank", "text": "Do not touch anything in here.", "portrait": "crank"}, {"name": "Kip", "text": "I wasn't going to.", "portrait": "kip"}, {"name": "Crank", "text": "Everyone says that and then everyone touches something. Every item in this room I have fixed twice: once when it broke and once after somebody helped.", "portrait": "crank"}, {"name": "Kip", "text": "I want to talk about the money.", "portrait": "kip"}, {"name": "Crank", "text": "Then you will want to be quicker than you look.", "portrait": "crank", "end": true}])
+pause_game = true
+once_flag = ""

@@ -7,6 +7,7 @@ script = ExtResource("1_service_stair")
 id = "service_stair"
 display_name = "Service Stair"
 district = "Line 4"
+music = "metro"
 ambience = "interior"
 gang = "crew"
 map_position = Vector2(1.35, 2.35)

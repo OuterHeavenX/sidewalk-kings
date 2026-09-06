@@ -1,0 +1,43 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://actors/enemies/EnemyData.gd" id="1_skip"]
+[ext_resource type="SpriteFrames" path="res://assets/art/characters/skip_frames.tres" id="2_skip"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/portraits/skip.png" id="3_skip"]
+
+[resource]
+script = ExtResource("1_skip")
+id = "skip"
+display_name = "Skip"
+gang = "rust_rats"
+archetype = 6
+sprite_frames = ExtResource("2_skip")
+portrait = ExtResource("3_skip")
+max_hp = 240
+damage_multiplier = 1.0
+defense = 5.0
+move_speed = 58.0
+run_speed = 92.0
+weight = 2.5
+armor_threshold = 15
+grab_resist = 0.0
+can_be_grabbed = false
+preferred_distance = 28.0
+aggression = 0.58
+reaction_delay = 0.44
+attack_cooldown = 1.7
+circle_chance = 0.12
+picks_up_weapons = false
+ranged_distance = 140.0
+moves = Array[String](["boss_combo", "boss_kick"])
+heavy_move = "boss_slam"
+ranged_move = ""
+xp = 160
+money_min = 0
+money_max = 0
+drop_table = []
+drop_chance = 0.12
+scale = 1.14
+tint = Color(1.0, 1.0, 1.0, 1.0)
+show_health_bar = false
+taunts = Array[String](["This whole yard is going in a skip. Including you.", "Nothing here is worth anything. That is the appeal."])
+defeat_lines = Array[String](["...you can have the yard. It is not mine either."])

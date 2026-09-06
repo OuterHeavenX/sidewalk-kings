@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="QuestData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/QuestData.gd" id="1_q_leaders"]
+
+[resource]
+script = ExtResource("1_q_leaders")
+id = "q_leaders"
+title = "Four Reasons"
+description = "Four crews took the same deal. Dez reckons none of them took it for the same reason, and that the reasons are the story. Find all four and ask."
+giver = "dez"
+objective = 7
+target = "knows_why"
+required_count = 1
+turn_in_npc = "dez"
+reward_money = 300
+reward_xp = 400
+reward_items = []
+reward_move = ""
+reward_flag = "q_leaders_done"
+optional = true
+hint = "Every crew has somebody who answers for it. Look for the room behind the street."

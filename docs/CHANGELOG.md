@@ -348,6 +348,64 @@ An area with no lighting block is untouched. Reloading an area keeps the player 
 
 ---
 
+## v0.8.0 — four reasons
+
+Chapter one's premise is that four crews stopped fighting, and that gangs do not agree for
+free. Until now you never met any of the four. You beat their members and then their
+paymaster, and the gangs themselves stayed an abstraction.
+
+### The four gang leaders
+
+**Tally** keeps the Pigeons' books in a ticket office nobody has bought a ticket in for
+years. **Auntie Vell** runs the Sweaters out of the back of a wool shop, and will ask you to
+take your shoes off. **Crank** has two bays, one working lift and every tool in Riverbend.
+**Skip** sits in a portakabin at the top of the heap with the best view in the city and
+nothing worth looking at.
+
+Four new areas, four boss fights, and one question each.
+
+### The answer is the point
+
+Nobody was bought. Each of them took the same deal for a different, entirely ordinary
+reason:
+
+- a payment that **comes on Tuesday**, which is the only thing in anyone's life that has
+  ever arrived when it said it would
+- a boy's **hospital fare** across the river, every fortnight, which has never once been
+  cancelled for being inconvenient
+- a **twelve-month lease** instead of month-to-month, because a month is not long enough to
+  order a part in
+- some **letters about clearing the site** that stopped coming, and you do not ask why the
+  letters stopped
+
+Dez adds them up: *"That is worse than being bought."* And **Big Starch says something
+different** to a player who went and asked — he did not threaten anybody, he found out what
+each of them was short of and was not short of it himself. A threat has to be repeated;
+this only has to arrive.
+
+The dens are optional and signposted: Dez hands out the quest in the opening conversation
+and the hint system routes you round all four.
+
+### Fixed on the way
+
+**Nine of twelve areas had no music.** A regex added in v0.4.0 to strip encounter music that
+restated its own area's track also matched the *area* definitions, so most of the game had
+been playing in silence. The "every fight changes the music" check passed for every one of
+them, because an area with no music is trivially different from the battle track. There is
+now a check that every area has music at all.
+
+**The map-graph check caught the dens.** Doors existed, connections did not, so four rooms
+would have been unreachable on the map screen while being perfectly walkable in the world.
+
+### Tests
+
+Suite is **415 checks**. The leader ones assert what would otherwise rot silently: that
+every den is reachable, that every leader is a boss fight ending in a conversation, and that
+beating one is what sets the flag carrying their reason — the same failure mode as
+`starch_defeat`, which sat referenced by nothing for the whole project.
+
+---
+
 ## v0.7.0 — ground, facades, and the first shader
 
 ### Ground that does not read as a grid

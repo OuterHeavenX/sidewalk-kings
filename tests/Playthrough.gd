@@ -136,18 +136,31 @@ func chapter_one() -> void:
 	await clear_area("ferry_row")
 	await goto("ferry_row")
 	await talk_to("dez", "hand in the Pigeons")
+	# The dens. Optional content, walked deliberately: a boss nobody ever reaches is the
+	# same as a boss that does not exist, and this is the only thing that would notice.
+	await goto("ferry_office")
+	await clear_area("ferry_office", "tally_beaten")
 	await goto("lantern_market")
 	await clear_area("lantern_market")
+	await goto("wool_back")
+	await clear_area("wool_back", "vell_beaten")
 	# Dez hands out the next job each time, and the game does not say so. Walking back is
 	# the intended loop, and it is also exactly where a player gets lost.
 	await goto("ferry_row")
 	await talk_to("dez", "ask what is next")
 	await goto("grease_alley")
 	await clear_area("grease_alley")
+	await goto("grease_workshop")
+	await clear_area("grease_workshop", "crank_beaten")
 	await goto("ferry_row")
 	await talk_to("dez", "ask what is next")
 	await goto("rustpile_yard")
 	await clear_area("rustpile_yard", "yard_cleared")
+	await goto("scrap_office")
+	await clear_area("scrap_office", "skip_beaten")
+	# All four reasons heard; Dez is the one who adds them up.
+	await goto("ferry_row")
+	await talk_to("dez", "what the four reasons add up to", "knows_why")
 	await goto("starch_laundromat")
 	await clear_area("starch_laundromat", "chapter_1_done")
 

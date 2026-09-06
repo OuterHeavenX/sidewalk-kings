@@ -69,6 +69,7 @@ func run() -> void:
 	await test_lighting()
 	await test_chapter_two()
 	await test_chapter_three()
+	await test_leaders()
 	await test_ground()
 	await test_entry_events()
 	await test_comics()
@@ -270,6 +271,18 @@ func test_audio() -> void:
 				silent_switch.append("%s in %s (%s)" % [enc.id, area_id,
 					"unset" if enc.music == "" else enc.music])
 	check("every fight changes the music", silent_switch.is_empty(), ", ".join(silent_switch))
+
+	# And every area has to have music at all.
+	#
+	# Nine of twelve areas silently lost theirs to a regex that was cleaning restated
+	# encounter music and matched the area definitions too. Most of the game played in
+	# silence, and the check above passed for every one of them: an area with no music is
+	# trivially "different" from the battle track.
+	var mute: Array[String] = []
+	for area_id in ContentDB.areas.keys():
+		if str(ContentDB.areas[area_id].music).strip_edges() == "":
+			mute.append(str(area_id))
+	check("every area has music", mute.is_empty(), ", ".join(mute))
 	check("music loops instead of playing once and stopping", not_looping.is_empty(), ", ".join(not_looping))
 
 	var bad_amb: Array[String] = []
@@ -1915,6 +1928,76 @@ func test_chapter_three() -> void:
 ## order exactly, in another language, with nothing checking -- so adding one tile shifted
 ## every index after it and every ground in the game drew the wrong cell of the sheet. It is
 ## generated now, and these check that the two ends still agree.
+## The four gang leaders.
+##
+## Chapter one's premise is that four crews took the same deal, and until these existed you
+## never met any of the four. The thing that can break quietly here is a den you cannot
+## reach or a reason you cannot hear: the game still finishes, and the content simply never
+## happens, which is exactly how starch_defeat sat unreferenced for the whole project.
+func test_leaders() -> void:
+	print("
+-- The four gang leaders --")
+	var leaders := {"tally": "ferry_office", "vell": "wool_back",
+		"crank": "grease_workshop", "skip": "scrap_office"}
+	for id in leaders.keys():
+		check("leader '%s' exists" % id, ContentDB.enemies.has(id))
+		check("den '%s' exists" % leaders[id], ContentDB.areas.has(str(leaders[id])))
+
+	# Each is a boss fight that records having been heard out.
+	var missing: Array[String] = []
+	for id in leaders.keys():
+		var enc: EncounterData = ContentDB.get_encounter("boss_%s" % id)
+		if enc == null:
+			missing.append("boss_%s" % id)
+			continue
+		if enc.boss_id != str(id) or enc.clear_dialogue == "" or enc.reward_flag == "":
+			missing.append("%s wiring" % id)
+	check("every leader is a boss fight that ends in a conversation", missing.is_empty(),
+		", ".join(missing))
+
+	# The reason is set by the dialogue, and the dialogue has to be reachable from the fight.
+	var reasons := ["knows_tally", "knows_vell", "knows_crank", "knows_skip"]
+	var unset: Array[String] = []
+	for i in range(reasons.size()):
+		var key := str(leaders.keys()[i])
+		var d: DialogueData = ContentDB.get_dialogue("%s_beaten" % key)
+		if d == null:
+			unset.append("%s_beaten missing" % key)
+			continue
+		var found := false
+		for line in d.lines:
+			if str(line.get("set_flag", "")) == reasons[i]:
+				found = true
+		if not found:
+			unset.append(reasons[i])
+	check("beating a leader is how you learn their reason", unset.is_empty(), ", ".join(unset))
+
+	# And every den has to be reachable from its street.
+	var unreachable: Array[String] = []
+	for id in leaders.keys():
+		var den := str(leaders[id])
+		var found := false
+		for area_id in ContentDB.areas.keys():
+			if den in ContentDB.areas[area_id].connections:
+				found = true
+		if not found:
+			unreachable.append(den)
+	check("every den is on the map", unreachable.is_empty(), ", ".join(unreachable))
+
+	# Big Starch says something different to somebody who went and asked.
+	check("Big Starch answers differently if you know why",
+		ContentDB.get_dialogue("starch_defeat_knowing") != null)
+
+	# The fight itself has to work.
+	await SceneManager.change_area("ferry_office", "start")
+	await seconds(0.5)
+	check("a den builds", GameManager.player_data.current_area == "ferry_office")
+	clear_stage()
+	await frames(2)
+	var e := spawn_enemy("tally", 40.0)
+	await frames(6)
+	check("a leader spawns and takes damage", e != null and _hit_once(e))
+
 func test_ground() -> void:
 	print("
 -- Ground and shaders --")

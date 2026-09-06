@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DialogueData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/DialogueData.gd" id="1_skip_beaten"]
+
+[resource]
+script = ExtResource("1_skip_beaten")
+id = "skip_beaten"
+lines = Array[Dictionary]([{"name": "Skip", "text": "...you can have the yard. It is not mine either.", "portrait": "skip"}, {"name": "Kip", "text": "What does that mean?", "portrait": "kip"}, {"name": "Skip", "text": "It means we do not own it, we are on it. Have been eleven years. Every so often a letter comes about clearing the site and every so often it stops coming.", "portrait": "skip"}, {"name": "Kip", "text": "And when the money started, the letters stopped.", "portrait": "kip"}, {"name": "Skip", "text": "The letters stopped. I did not ask why. You do not ask why the letters stopped, you just get on with your life while they are not arriving.", "portrait": "skip"}, {"name": "Kip", "text": "That's the whole reason?", "portrait": "kip"}, {"name": "Skip", "text": "Kid, that is a bigger reason than money. Money you spend. Quiet you get to live in.", "portrait": "skip", "set_flag": "knows_skip", "end": true}])
+pause_game = true
+once_flag = ""

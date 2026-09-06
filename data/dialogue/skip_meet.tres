@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DialogueData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/DialogueData.gd" id="1_skip_meet"]
+
+[resource]
+script = ExtResource("1_skip_meet")
+id = "skip_meet"
+lines = Array[Dictionary]([{"name": "", "text": "A portakabin on blocks at the top of the heap, with the best view in Riverbend and nothing worth looking at."}, {"name": "Skip", "text": "You are in a scrapyard, so I will tell you what everything in here is worth.", "portrait": "skip"}, {"name": "Kip", "text": "Go on.", "portrait": "kip"}, {"name": "Skip", "text": "Nothing. That is the appeal. Nobody comes to take nothing off you.", "portrait": "skip"}, {"name": "Kip", "text": "Somebody came to give you something.", "portrait": "kip"}, {"name": "Skip", "text": "Yes. That was new.", "portrait": "skip", "end": true}])
+pause_game = true
+once_flag = ""

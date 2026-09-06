@@ -349,6 +349,32 @@ CHARACTERS = {
     "big_starch": spec(skin=(236, 196, 170), hair=(228, 226, 232), hair_style="flattop", shirt=(238, 236, 244), shirt_shade=(176, 176, 196), shirt_style="suit", under=(70, 130, 220),
                        pants=(226, 224, 234), pants_shade=(164, 164, 186), shoes=(232, 230, 240), shoe_shade=(150, 150, 172), anims=ENEMY_SET,
                        torso_w=20, limb_w=7, head_r=9, mustache=True, scale=1.0, belt=(60, 50, 40), gloves=(250, 250, 250)),
+    # ---- Gang leaders ----
+    # Each is built off their gang's palette so they read as one of them at a glance, then
+    # given one thing nobody else in that gang has, so they read as the one in charge.
+    "tally": spec(skin=(224, 172, 128), hair=(52, 44, 44), hair_style="beanie",
+                  hat_color=(232, 196, 72), shirt=(96, 108, 128), shirt_shade=(66, 76, 94),
+                  shirt_style="hoodie", under=(232, 228, 216), pants=(46, 46, 58),
+                  pants_shade=(30, 30, 40), shoes=(240, 240, 240), shoe_shade=(170, 170, 190),
+                  anims=ENEMY_SET, torso_w=13, limb_w=4, head_r=7, stripe=(232, 196, 72),
+                  gloves=(60, 60, 72)),
+    "vell": spec(skin=(238, 202, 176), hair=(214, 210, 204), hair_style="bun",
+                 shirt=(120, 66, 108), shirt_shade=(88, 46, 80), shirt_style="sweater",
+                 under=(120, 66, 108), pants=(74, 66, 86), pants_shade=(50, 44, 60),
+                 shoes=(70, 52, 40), shoe_shade=(44, 32, 24), anims=ENEMY_SET,
+                 torso_w=14, limb_w=4, head_r=7, glasses=True, stripe=(236, 216, 150)),
+    "crank": spec(skin=(196, 150, 116), hair=(148, 88, 40), hair_style="bandana",
+                  bandana=(70, 150, 170), shirt=(58, 66, 84), shirt_shade=(38, 44, 60),
+                  shirt_style="overalls", under=(226, 214, 190), pants=(58, 66, 84),
+                  pants_shade=(38, 44, 60), shoes=(84, 56, 36), shoe_shade=(50, 32, 20),
+                  anims=ENEMY_SET, torso_w=17, limb_w=6, head_r=8, gloves=(190, 140, 84),
+                  beard=(148, 88, 40)),
+    "skip": spec(skin=(214, 172, 140), hair=(60, 52, 46), hair_style="helmet",
+                 hat_color=(200, 128, 44), shirt=(138, 92, 60), shirt_shade=(98, 62, 40),
+                 shirt_style="vest", under=(176, 62, 44), pants=(66, 58, 48),
+                 pants_shade=(42, 36, 30), shoes=(48, 38, 28), shoe_shade=(26, 20, 14),
+                 anims=ENEMY_SET, torso_w=18, limb_w=6, head_r=8, mask=(86, 86, 96),
+                 stripe=(232, 196, 120)),
     # ---- The Closure Crew (Line 4) ----
     # Hi-vis and hard hats. Every gang so far has dressed like it chose to be somewhere;
     # this lot dress like they were sent, which is the whole point of them.

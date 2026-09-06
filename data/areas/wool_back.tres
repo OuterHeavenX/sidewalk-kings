@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="AreaData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/AreaData.gd" id="1_wool_back"]
+
+[resource]
+script = ExtResource("1_wool_back")
+id = "wool_back"
+display_name = "Back of the Wool Shop"
+district = "Riverbend East"
+music = "battle"
+ambience = "interior"
+gang = "sweaters"
+map_position = Vector2(1.0, -0.9)
+connections = Array[String](["lantern_market"])
+description = "Behind the market stalls, where the good yarn is kept."
