@@ -278,6 +278,29 @@ A move's impact sound comes from its `damage_kind`, not from a per-move argument
 
 ### The map
 
+Areas are drawn as rooms sized to the real street: widths come from `walk_max_x` in the
+layout, arrangement from `map_position`, joins from `connections`. None of it is authored
+for the map, which is the point — adding an area puts it on the map with no map work, and
+the map cannot disagree with the world.
+
+Three rules the drawing has to keep:
+
+- **Rooms must not overlap.** `map_position` is authored in loose units that read fine as
+  dots and collide as boxes, so it is snapped to a grid and collisions resolved by pushing
+  right. Two areas drawn as one room still looks like a map; it is just the wrong map, and
+  nothing errors.
+- **Joins connect walls, not centres.** A line between two room centres crosses every room
+  in between.
+- **Fog is a rule, not a list.** A room is shown if it is visited, or if somewhere visited
+  opens onto it. Nothing maintains a separate "seen" set that could drift.
+
+The `MetroidvaniaSystem` addon is deliberately not used here: it models rooms as grid cells
+backed by one scene file each, and this game builds every street at runtime from JSON with
+no per-area scenes for it to key off. It also declares `class_name MapView`, which collides
+with this file.
+
+### The map (visit tracking)
+
 `MapView` draws nodes from `AreaData.map_position` and edges from `AreaData.connections`.
 Neither is authored for the map specifically, which is the point: the map is a view of the
 world graph and cannot drift out of agreement with it. Adding an area to `gen_data.py` puts

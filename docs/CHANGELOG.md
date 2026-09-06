@@ -348,6 +348,62 @@ An area with no lighting block is untouched. Reloading an area keeps the player 
 
 ---
 
+## Unreleased — the map is rooms now
+
+Asked for as a metroidvania-style map.
+
+### What changed
+
+The map drew every area as an identical dot. Riverbend is not made of identical dots: the
+Line Office is a 700px room and the Line 4 platform is 1560px of street, and a map that
+draws them the same is throwing away the most useful thing it knows.
+
+Areas are rooms now, **sized to the street they actually are**. Nothing about that is
+authored: box widths come from `walk_max_x` in the area layout, arrangement from
+`map_position`, joins from `connections`. Districts get a colour derived from the district
+name, so a district reads as one place without a table here that would go stale the first
+time somebody adds one.
+
+Joins are drawn as a doorway in each wall with a corridor between. The first attempt drew
+them centre to centre, which put a diagonal straight through the middle of every room the
+line passed over: the map read as scribble laid across boxes rather than as somewhere you
+could walk.
+
+**Fog.** A room you have not been to is drawn as a bare outline if somewhere you *have*
+been opens onto it, and not drawn at all otherwise. Knowing a door leads somewhere without
+knowing where is the whole shape of a map like this.
+
+### About the addon
+
+The `MetroidvaniaSystem` addon was parked out of the project on 4 September along with
+seven others, for the reason recorded in `ParkedGodotAddons/README.md`: several hundred
+import errors on every launch. This screen does not use it, and that is a judgement worth
+stating rather than burying.
+
+MetSys models a world as a grid of cells where **each room is a scene file**, discovered by
+the player entering that scene. Sidewalk Kings has no per-area scenes at all — one
+`Game.tscn` builds every street at runtime from JSON — so the part of MetSys that does the
+work would have had nothing to hook into, and what was left would have been its drawing
+code fed a grid invented to satisfy it. It also ships `class_name MapView`, which the game
+has already used since Phase 2, so enabling it is a hard registration conflict.
+
+Using the game's own geometry got the same look with less machinery. If the addon itself is
+wanted rather than the map style, say so and it can be wired up properly.
+
+### Tests
+
+Suite is **345 checks**. The new ones cover what a box-based map can get wrong that a graph
+of dots could not: that no two rooms overlap (two areas drawn as one room still looks like
+a map, just the wrong one), that every area gets a room, that a longer street is drawn as a
+wider room, and that the fog rule shows what is next door and hides what is not.
+
+**Fixed while writing them:** the fog check asserted the substation was hidden, which was
+only true until an earlier test walked chapter three. It builds and restores its own world
+state now. That is the third time a check in this suite has quietly depended on the order
+the suite runs in.
+
+---
+
 ## v0.3.0 — Chapter three: the line that was never closed
 
 Chapter two ended with a man at a desk explaining that nobody is behind any of it, and

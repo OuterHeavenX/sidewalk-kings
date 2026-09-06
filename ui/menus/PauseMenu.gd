@@ -220,7 +220,7 @@ func _show_page(p: Page) -> void:
 		Page.MAP:
 			page_title.text = "Riverbend"
 			var map := MapView.new()
-			map.custom_minimum_size = Vector2(0, 120)
+			map.custom_minimum_size = Vector2(0, 150)
 			map.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			page_col.add_child(map)
 			await root.get_tree().process_frame

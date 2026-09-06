@@ -2014,6 +2014,60 @@ func test_map_and_saves() -> void:
 		check("it does not offer somewhere you have never been",
 			not names.has("line_office"), ", ".join(names))
 
+		# Rooms are boxes now, and boxes can silently land on top of each other. Two areas
+		# drawn as one room is the failure this design has that a graph of dots did not:
+		# it looks like a map, it is just the wrong map.
+		var overlaps: Array[String] = []
+		var ids: Array[String] = []
+		for k in m._rooms.keys():
+			ids.append(str(k))
+		for i in range(ids.size()):
+			for j in range(i + 1, ids.size()):
+				var ra: Rect2 = m._rooms[ids[i]]
+				var rb: Rect2 = m._rooms[ids[j]]
+				if ra.intersects(rb):
+					overlaps.append("%s/%s" % [ids[i], ids[j]])
+		check("no two rooms overlap on the map", overlaps.is_empty(), ", ".join(overlaps))
+		check("every area gets a room", m._rooms.size() == ContentDB.areas.size(),
+			"%d rooms for %d areas" % [m._rooms.size(), ContentDB.areas.size()])
+
+		# The point of rooms over dots is that a long street looks long. If every room comes
+		# out the same width the map is a graph again, wearing boxes.
+		var widest := ""
+		var narrowest := ""
+		for id in ids:
+			if widest == "" or m._rooms[id].size.x > m._rooms[widest].size.x:
+				widest = id
+			if narrowest == "" or m._rooms[id].size.x < m._rooms[narrowest].size.x:
+				narrowest = id
+		check("a longer street is drawn as a wider room",
+			m._rooms[widest].size.x > m._rooms[narrowest].size.x + 1.0,
+			"%s %.0f vs %s %.0f" % [widest, m._rooms[widest].size.x,
+				narrowest, m._rooms[narrowest].size.x])
+		check("the widest room is the longest street",
+			m._street_length(widest) >= m._street_length(narrowest),
+			"%s %.0fpx vs %s %.0fpx" % [widest, m._street_length(widest),
+				narrowest, m._street_length(narrowest)])
+
+		# Fog: a door you have stood next to shows you there is something beyond it. A place
+		# nothing you have visited opens onto stays off the map entirely.
+		#
+		# This has to build its own world state. Earlier tests walk most of the city, so
+		# asking whether the substation is hidden while line_four is still flagged visited
+		# tests the order the suite happens to run in, not the rule.
+		var saved_visits: Dictionary = {}
+		for id in ContentDB.areas.keys():
+			saved_visits[id] = GameManager.get_flag("visited_" + str(id), false)
+			GameManager.set_flag("visited_" + str(id), false)
+		GameManager.set_flag("visited_lantern_market", true)
+		check("a room next door to somewhere visited is known",
+			m._known("grease_alley"), "next to lantern_market")
+		check("a room nothing you have visited opens onto is not",
+			not m._known("substation"))
+		check("somewhere you have actually been is always known", m._known("lantern_market"))
+		for id in saved_visits.keys():
+			GameManager.set_flag("visited_" + str(id), bool(saved_visits[id]))
+
 	# Fast travel must be refused mid-fight, or it is a free escape from every encounter.
 	check("fast travel is allowed when nothing is happening", pause._can_fast_travel())
 
