@@ -9,6 +9,7 @@ var page_panel: PanelContainer
 var page_col: VBoxContainer
 var page_title: Label
 var footer: Label
+var version_label: Label
 var page: Page = Page.ROOT
 var buttons: Array[Button] = []
 var index: int = 0
@@ -65,9 +66,17 @@ func _build() -> void:
 	page_col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	page_col.add_theme_constant_override("separation", 1)
 	scroll.add_child(page_col)
+	var footer_row := HBoxContainer.new()
+	footer_row.add_theme_constant_override("separation", 8)
+	pc.add_child(footer_row)
 	footer = Label.new()
+	footer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	UITheme.style_label(footer, 8, UITheme.TEXT_DIM)
-	pc.add_child(footer)
+	footer_row.add_child(footer)
+	version_label = Label.new()
+	version_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	UITheme.style_label(version_label, 8, UITheme.TEXT_DIM)
+	footer_row.add_child(version_label)
 
 func open() -> void:
 	visible = true
@@ -75,6 +84,8 @@ func open() -> void:
 	GameManager.set_state(GameManager.State.PAUSED)
 	AudioManager.play_ui("pause")
 	page = Page.ROOT
+	if version_label:
+		version_label.text = GameManager.version_line()
 	_build_menu()
 	_show_page(Page.STATS)
 

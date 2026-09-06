@@ -57,6 +57,15 @@ jobs:
       - name: Add Godot to PATH
         run: echo "$HOME/godot" >> "$GITHUB_PATH"
 
+      - name: Stamp the build
+        run: |
+          set -euo pipefail
+          # Ahead of the import and the tests, so the package the tests run against is the
+          # one that ships. The version string alone cannot tell a fresh deploy from a
+          # cached one; the commit changes every build without anyone remembering to.
+          python3 tools/stamp_build.py
+          cat data/build.json
+
       - name: Import the project
         run: |
           # The first import populates .godot/ and registers global classes.

@@ -4,6 +4,10 @@ extends Node
 enum State { BOOT, TITLE, PLAYING, PAUSED, DIALOGUE, SHOP, CUTSCENE, MENU, GAME_OVER }
 
 var version: String = "0.0.0"
+## Commit and date this build was made from, or "dev" when it was not stamped. The version
+## number only changes when somebody remembers to change it; this changes every build, and
+## is the only way to tell a fresh deploy from one a service worker is still caching.
+var build: String = "dev"
 var state: State = State.BOOT
 var player_data: PlayerState = PlayerState.new()
 var player: Node = null
@@ -21,11 +25,26 @@ var _slowmo_scale: float = 1.0
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	version = str(ProjectSettings.get_setting("application/config/version", "0.0.0"))
+	# JSON because the export preset includes "*.json" and excludes "*.txt". A stamp the
+	# package does not carry is worse than none: the build reports "dev" and looks correct.
+	if FileAccess.file_exists("res://data/build.json"):
+		var f := FileAccess.open("res://data/build.json", FileAccess.READ)
+		var parsed = JSON.parse_string(f.get_as_text())
+		f.close()
+		if parsed is Dictionary and str(parsed.get("commit", "")) != "":
+			build = "%s %s" % [parsed.get("commit", ""), parsed.get("date", "")]
 	# Debug tools only in editor/debug builds, or when exported with the "debug_tools" feature tag.
 	debug_enabled = OS.is_debug_build() or OS.has_feature("debug_tools")
 	EventBus.hit_stop.connect(_on_hit_stop)
 	EventBus.slow_motion.connect(_on_slow_motion)
-	print("[GameManager] Sidewalk Kings v%s ready (debug=%s)" % [version, debug_enabled])
+	print("[GameManager] Sidewalk Kings v%s (%s) ready (debug=%s)" % [version, build, debug_enabled])
+
+## What to show the player. The commit is the useful half when the question is whether an
+## update actually arrived, so it is not hidden behind a debug flag.
+func version_line() -> String:
+	if build == "dev" or build == "":
+		return "v" + version
+	return "v%s  ·  %s" % [version, build.split(" ")[0]]
 
 func _process(delta: float) -> void:
 	var now := Time.get_ticks_msec()

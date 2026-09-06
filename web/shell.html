@@ -218,13 +218,59 @@
 			// Offline support. The game is installed as an app on desktop and on a Steam
 			// Deck, where it may well be launched with no connection at all.
 			if (GODOT_CONFIG.serviceWorker && "serviceWorker" in navigator) {
-				engine.installServiceWorker().catch(function (e) {
+				engine.installServiceWorker().then(watchForUpdates).catch(function (e) {
 					console.warn("service worker registration failed:", e);
 				});
 			}
 		}).catch(function (err) {
 			showError(String(err && err.message ? err.message : err));
 		});
+
+		// An installed app has to be able to update itself.
+		//
+		// Godot's service worker knows how to step aside -- it handles "claim" and "update"
+		// messages -- but nothing ever sends one. So a new worker installs, moves to
+		// WAITING, and sits there forever while the old one keeps serving index.pck out of
+		// cache. index.pck is the entire game, so the app kept launching last week's build.
+		// The only way out was a hard refresh, which is not a thing you can ask of somebody
+		// who installed this as an app on a Steam Deck.
+		//
+		// The rule is never to interrupt play. If the update turns up in the first minute
+		// you are almost certainly still on the title screen, so it applies and reloads. If
+		// it turns up later, the new worker takes over without touching the running page
+		// and the next launch is the new build.
+		var LOADED_AT = Date.now();
+		var SEAMLESS_WINDOW_MS = 60000;
+
+		function applyUpdate(worker) {
+			if (!worker) { return; }
+			var fresh = (Date.now() - LOADED_AT) < SEAMLESS_WINDOW_MS;
+			// "update" reloads every client; "claim" only takes over for the next launch.
+			worker.postMessage(fresh ? "update" : "claim");
+			console.log("service worker update " + (fresh ? "applied now" : "armed for next launch"));
+		}
+
+		function watchForUpdates(reg) {
+			if (!reg) { return; }
+			// Already waiting when we arrived: installed during a previous visit.
+			if (reg.waiting && navigator.serviceWorker.controller) {
+				applyUpdate(reg.waiting);
+			}
+			reg.addEventListener("updatefound", function () {
+				var next = reg.installing;
+				if (!next) { return; }
+				next.addEventListener("statechange", function () {
+					// No controller means this is the first install, not an update, and
+					// reloading the page the user just opened would be for nothing.
+					if (next.state === "installed" && navigator.serviceWorker.controller) {
+						applyUpdate(next);
+					}
+				});
+			});
+			// The browser only checks for a new worker on its own schedule, which can be
+			// up to 24 hours. An app that is launched, played and closed may never hit that.
+			try { reg.update(); } catch (e) { /* offline: nothing to check against */ }
+		}
 
 		// Some browsers block audio until the page is touched; focus the canvas on any input.
 		["pointerdown", "touchstart", "keydown"].forEach(function (evt) {

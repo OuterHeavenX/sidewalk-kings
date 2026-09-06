@@ -47,6 +47,7 @@ func seconds(s: float) -> void:
 
 func run() -> void:
 	await test_content()
+	await test_build_stamp()
 	await test_audio()
 	await test_title_flow()
 	await test_new_game()
@@ -164,6 +165,27 @@ func test_content() -> void:
 ##
 ## A headless run uses the Dummy audio driver, so this asserts wiring and asset state
 ## rather than audible output. tests/AudioCheck.gd covers real playback.
+## The build stamp is how anyone answers "am I running the update?". It shipped first as
+## data/build.txt, which the export preset excludes, so it was written, committed, and then
+## dropped from the package: the game reported "dev" and looked entirely healthy.
+func test_build_stamp() -> void:
+	print("
+-- Build stamp --")
+	check("the version is set", GameManager.version != "" and GameManager.version != "0.0.0",
+		GameManager.version)
+	var stamped := FileAccess.file_exists("res://data/build.json")
+	check("the build stamp file ships as an exportable resource", stamped,
+		"data/build.json missing -- run tools/stamp_build.py")
+	if stamped:
+		check("a stamped build reports its commit rather than 'dev'",
+			GameManager.build != "dev" and GameManager.build != "",
+			"build = '%s'" % GameManager.build)
+	# What the player actually reads, on the title screen and in the pause menu.
+	var line := GameManager.version_line()
+	check("the version line carries the version", line.contains(GameManager.version), line)
+	if stamped:
+		check("the version line carries the build", line.length() > GameManager.version.length() + 1, line)
+
 func test_audio() -> void:
 	log_line("
 -- Audio --")

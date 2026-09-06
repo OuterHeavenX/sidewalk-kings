@@ -348,6 +348,77 @@ An area with no lighting block is untouched. Reloading an area keeps the player 
 
 ---
 
+## v0.2.0 — builds that update, and say which build they are
+
+The release that makes releases work. Asked for as "add the version # in the main screen
+and in the menu", which turned out to be two separate problems wearing one coat.
+
+### The version is on screen and means something
+
+It was already on the title, at size 8 in `TEXT_DIM`, in the corner — a smudge. In the
+pause menu it was a row inside the **Settings** page, three inputs from anywhere and the
+last place you look. Both are readable now, and the pause menu carries it on the footer of
+every page.
+
+More to the point, **every deploy so far reported v0.1.1**, so the number could not answer
+the only question anyone asks it: am I running the update or the old one? Builds now carry
+the commit they were made from, stamped by `tools/stamp_build.py` in CI:
+
+    v0.2.0  ·  a1b2c3d 2026-09-06
+
+A build made from a dirty tree gets a `+`, because a build that is not the commit it claims
+to be will otherwise have you chasing a bug that exists only on one desk.
+
+### The app can update itself
+
+An installed app that cannot update itself is not really installed, it is stranded.
+
+Godot's service worker already knows how to step aside — it handles `claim` and `update`
+messages — but **nothing ever sent one**. A new worker installed, moved to WAITING, and
+stayed there while the old one kept serving `index.pck` from cache. `index.pck` is the
+entire game, so the app went on launching an old build, reporting the same version string,
+looking perfectly healthy. The only escape was a hard refresh, which is not something you
+can ask of somebody who installed this on a Steam Deck.
+
+The shell now watches for a waiting worker, and the rule is never to interrupt play:
+
+- Update found in the first minute → applied immediately and the page reloads. You are
+  almost certainly still on the title screen.
+- Later than that → the new worker takes over without touching the running page, and the
+  next launch is the new build.
+
+It also calls `registration.update()` on load, because browsers check for a new worker on
+their own schedule — up to 24 hours — and an app that is launched, played and closed may
+never reach it.
+
+### Fixed before it shipped
+
+- **The build stamp did not survive the export.** Written first as `data/build.txt`, and
+  the export preset excludes `*.txt` and includes `*.json`. The file was generated,
+  committed, and silently dropped from the package: the exported game reported `dev` and
+  looked entirely correct. It is `data/build.json` now, and a check asserts that a stamped
+  tree produces a build that knows its own commit.
+- The title's version label was clipping off the right edge once the commit was appended.
+
+### Tests
+
+Suite is **302 checks**. The new ones cover the version being set, the stamp file shipping
+as an exportable resource, a stamped build reporting its commit rather than `dev`, and the
+version line the player actually reads containing both halves.
+
+### Known: not verified in a real browser
+
+The update flow is **reasoned and syntax-checked, not observed**. Service workers do not
+register in the preview browser available here, and the Chrome bridge was not connected, so
+nothing has watched a real browser take a second build. The first proof will be the next
+deploy after this one.
+
+**One more hard refresh is needed.** The shell currently installed on your device has no
+update handler, so it cannot fetch its own replacement. Refresh once to pick up this build;
+after that it maintains itself.
+
+---
+
 ## Unreleased — playtest fixes: doors you can see, punches you can feel
 
 The first full playthrough. Everything below came from it, and all of it is the same

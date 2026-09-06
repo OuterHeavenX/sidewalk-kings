@@ -226,6 +226,25 @@ scenes. At a 480×270 design resolution, code-built layout is easier to keep con
 `ShopController` handles every shop type from `ShopData`, so the restaurant, store, dojo,
 bookstore and weapon shop are one scene and one script.
 
+### Builds identify themselves, and update themselves
+
+`GameManager.version` comes from the project settings and only changes when somebody
+remembers to change it. `GameManager.build` comes from `data/build.json`, written by
+`tools/stamp_build.py` in CI, and changes every build. The second is the one that answers
+"is this the update?", so `version_line()` shows both and it is not hidden behind a debug
+flag.
+
+Two rules learned by getting them wrong:
+
+- **The stamp must be a file type the export includes.** The preset includes `*.json` and
+  excludes `*.txt`. As a `.txt` it was generated, committed, and dropped from the package,
+  and the exported game reported `dev` while looking healthy.
+- **A cached app cannot be assumed to be a current app.** Godot's service worker handles
+  `claim` and `update` messages but sends itself nothing; without a handler in the shell a
+  new worker waits forever while the old one serves `index.pck`, which is the whole game.
+  `web/shell.html` applies the update immediately if it arrives within a minute of load,
+  and otherwise hands it to the next launch, so play is never interrupted.
+
 ### Doors have to be visible
 
 A door is a trigger volume with no appearance of its own. Nothing about placing one puts

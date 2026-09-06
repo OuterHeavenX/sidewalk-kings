@@ -95,13 +95,15 @@ func _build() -> void:
 		UITheme.style_label(save_info, 8, UITheme.TEXT_DIM)
 		add_child(save_info)
 
+	# Readable rather than decorative. At size 8 in TEXT_DIM this was a smudge, which is
+	# no use at all when the reason to look is to check whether an update arrived.
 	var version := Label.new()
-	version.text = "v" + GameManager.version
+	version.text = GameManager.version_line()
 	version.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
-	version.position = Vector2(-52, -14)
-	version.size = Vector2(46, 12)
+	version.position = Vector2(-182, -18)
+	version.size = Vector2(170, 14)
 	version.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	UITheme.style_label(version, 8, UITheme.TEXT_DIM)
+	UITheme.style_label(version, 9, UITheme.TEXT)
 	add_child(version)
 
 func _area_name(id: String) -> String:

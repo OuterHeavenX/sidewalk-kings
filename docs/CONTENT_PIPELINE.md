@@ -22,6 +22,7 @@ Only dependency: `pip install pillow`.
 | `gen_areas.py` | Area layouts | `data/areas/*.json` |
 | `gen_cutscenes.py` | Scripted scenes | `data/cutscenes/*.json` |
 | `check_audio.py` | Verifies impacts outweigh swings | exit code |
+| `stamp_build.py` | Records the commit a build came from | `data/build.json` |
 | `gen_scenes.py` | Godot scene files | `*.tscn` throughout the project |
 
 Run them from the project root. Order only matters the first time: characters and world art
