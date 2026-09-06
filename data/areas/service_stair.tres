@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="AreaData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/AreaData.gd" id="1_service_stair"]
+
+[resource]
+script = ExtResource("1_service_stair")
+id = "service_stair"
+display_name = "Service Stair"
+district = "Line 4"
+music = "metro"
+ambience = "interior"
+gang = "crew"
+map_position = Vector2(1.35, 2.35)
+connections = Array[String](["line_office", "line_four"])
+description = "Down past the sign that says the line is suspended, not closed."

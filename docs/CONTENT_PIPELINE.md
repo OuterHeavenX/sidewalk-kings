@@ -133,7 +133,7 @@ rather than opening 39 resource files in the inspector. The generated `.tres` fi
 still normal Godot resources, editable by hand if you prefer.
 
 Current content: 43 moves, 16 enemies, 16 foods, 8 books, 5 items, 11 weapons, 8 shops,
-11 quests, 45 dialogues, 17 encounters, 8 areas.
+13 quests, 59 dialogues, 21 encounters, 12 areas.
 
 ---
 

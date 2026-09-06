@@ -396,6 +396,11 @@
    "y": 36.0,
    "conditional": [
     {
+     "dialogue": "nadia_closing",
+     "if_flag": "took_the_form",
+     "if_not_flag": "chapter_3_done"
+    },
+    {
      "dialogue": "nadia_done",
      "if_quest": [
       "q_commuters",

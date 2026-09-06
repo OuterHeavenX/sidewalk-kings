@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DialogueData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/DialogueData.gd" id="1_stair_warning"]
+
+[resource]
+script = ExtResource("1_stair_warning")
+id = "stair_warning"
+lines = Array[Dictionary]([{"name": "Marshal", "text": "Site is closed. Come back never.", "portrait": "crew_grunt"}, {"name": "Kip", "text": "Closed by who?", "portrait": "kip"}, {"name": "Marshal", "text": "By the order. There is a date on it and everything.", "portrait": "crew_grunt"}, {"name": "Kip", "text": "What date?", "portrait": "kip"}, {"name": "Marshal", "text": "Thursday.", "portrait": "crew_grunt", "start_quest": "q_stand", "end": true}])
+pause_game = true
+once_flag = ""

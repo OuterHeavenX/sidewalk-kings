@@ -1,0 +1,220 @@
+{
+ "parallax": [
+  {
+   "texture": "res://assets/art/backgrounds/tunnel_wall.png",
+   "y": -390.0,
+   "scroll": 0.85,
+   "repeat": 4,
+   "scale": 2.0,
+   "z": -90
+  }
+ ],
+ "ground": [
+  {
+   "color": [
+    0.17,
+    0.17,
+    0.2
+   ],
+   "y": 2.0,
+   "height": 460,
+   "z": -26,
+   "x": -40,
+   "x2": 800
+  },
+  {
+   "tile": "concrete",
+   "y": 2.0,
+   "height": 10,
+   "z": -22,
+   "x": -40,
+   "x2": 800
+  }
+ ],
+ "scenery": [
+  {
+   "texture": "res://assets/art/props/sign.png",
+   "x": 120,
+   "y": -90.0,
+   "z": -28,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/props/barrier.png",
+   "x": 300,
+   "y": -16.0,
+   "z": -20,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/props/barrier.png",
+   "x": 348,
+   "y": -16.0,
+   "z": -20,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/props/work_lamp.png",
+   "x": 210,
+   "y": -36.0,
+   "z": -20,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/props/work_lamp.png",
+   "x": 600,
+   "y": -36.0,
+   "z": -20,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/props/cable_spool.png",
+   "x": 470,
+   "y": -20.0,
+   "z": -20,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/props/pipe_stack.png",
+   "x": 690,
+   "y": -76.0,
+   "z": -28,
+   "scale": 1.0
+  }
+ ],
+ "props": [
+  {
+   "id": "crate",
+   "x": 250,
+   "y": 68.0,
+   "breakable": true,
+   "hp": 8,
+   "money": 14
+  },
+  {
+   "id": "barrel",
+   "x": 540,
+   "y": 30.0,
+   "breakable": true,
+   "hp": 10,
+   "contains": "platform_coffee"
+  },
+  {
+   "id": "trashcan",
+   "x": 700,
+   "y": 76.0,
+   "breakable": true,
+   "hp": 10,
+   "money": 16
+  }
+ ],
+ "weapons": [
+  {
+   "id": "pipe",
+   "x": 400,
+   "y": 66.0
+  }
+ ],
+ "npcs": [],
+ "doors": [
+  {
+   "id": "to_office",
+   "to": "line_office",
+   "spawn": "from_stair",
+   "x": 16,
+   "y": 58.0,
+   "label": "Back up to the office",
+   "auto": true,
+   "w": 22,
+   "h": 46
+  },
+  {
+   "id": "to_line",
+   "to": "line_four",
+   "spawn": "from_stair",
+   "x": 736,
+   "y": 58.0,
+   "label": "Down to the platform",
+   "auto": true,
+   "w": 22,
+   "h": 46
+  }
+ ],
+ "spawns": [
+  {
+   "id": "start",
+   "x": 80,
+   "y": 58
+  },
+  {
+   "id": "from_office",
+   "x": 80,
+   "y": 58
+  },
+  {
+   "id": "from_line",
+   "x": 680,
+   "y": 58
+  }
+ ],
+ "encounters": [
+  {
+   "id": "stair_crew",
+   "x": 330,
+   "width": 60
+  }
+ ],
+ "lane_min": 40.0,
+ "lane_max": 78.0,
+ "lighting": {
+  "ambient": [
+   0.3,
+   0.3,
+   0.36
+  ],
+  "glow": true,
+  "lights": [
+   {
+    "x": 210,
+    "y": 40.0,
+    "color": [
+     1.0,
+     0.96,
+     0.86
+    ],
+    "energy": 1.5,
+    "scale": 1.7,
+    "texture": "wide"
+   },
+   {
+    "x": 600,
+    "y": 40.0,
+    "color": [
+     1.0,
+     0.96,
+     0.86
+    ],
+    "energy": 1.5,
+    "scale": 1.7,
+    "texture": "wide"
+   },
+   {
+    "x": 400,
+    "y": 34.0,
+    "color": [
+     0.72,
+     0.8,
+     1.0
+    ],
+    "energy": 0.4,
+    "scale": 2.4,
+    "texture": "wide"
+   }
+  ]
+ },
+ "ambient": {},
+ "walk_min_x": 20.0,
+ "walk_max_x": 740.0,
+ "ground_y": 2.0,
+ "camera_y": -12.0
+}

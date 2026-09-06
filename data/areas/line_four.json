@@ -1,0 +1,381 @@
+{
+ "parallax": [
+  {
+   "texture": "res://assets/art/backgrounds/tunnel_wall.png",
+   "y": -390.0,
+   "scroll": 0.85,
+   "repeat": 7,
+   "scale": 2.0,
+   "z": -90
+  }
+ ],
+ "ground": [
+  {
+   "color": [
+    0.15,
+    0.15,
+    0.19
+   ],
+   "y": 2.0,
+   "height": 460,
+   "z": -26,
+   "x": -40,
+   "x2": 1600
+  },
+  {
+   "tile": "tile_floor",
+   "y": 2.0,
+   "height": 10,
+   "z": -22,
+   "x": -40,
+   "x2": 1600
+  },
+  {
+   "tile": "metal",
+   "y": -50.0,
+   "height": 1,
+   "z": -23,
+   "x": -40,
+   "x2": 1600
+  }
+ ],
+ "scenery": [
+  {
+   "texture": "res://assets/art/props/work_lamp.png",
+   "x": 180,
+   "y": -36.0,
+   "z": -20,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/props/work_lamp.png",
+   "x": 620,
+   "y": -36.0,
+   "z": -20,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/props/work_lamp.png",
+   "x": 1080,
+   "y": -36.0,
+   "z": -20,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/props/work_lamp.png",
+   "x": 1440,
+   "y": -36.0,
+   "z": -20,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/props/barrier.png",
+   "x": 360,
+   "y": -16.0,
+   "z": -20,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/props/barrier.png",
+   "x": 404,
+   "y": -16.0,
+   "z": -20,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/props/barrier.png",
+   "x": 900,
+   "y": -16.0,
+   "z": -20,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/props/cable_spool.png",
+   "x": 760,
+   "y": -20.0,
+   "z": -20,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/props/cable_spool.png",
+   "x": 1240,
+   "y": -20.0,
+   "z": -20,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/props/pipe_stack.png",
+   "x": 240,
+   "y": -76.0,
+   "z": -28,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/props/pipe_stack.png",
+   "x": 1320,
+   "y": -76.0,
+   "z": -28,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/props/metro_sign.png",
+   "x": 520,
+   "y": -118.0,
+   "z": -28,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/props/bench.png",
+   "x": 980,
+   "y": -66.0,
+   "z": -28,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/props/graffiti_c.png",
+   "x": 1150,
+   "y": -86.0,
+   "z": -27,
+   "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/props/steel_door.png",
+   "x": 1520,
+   "y": -42.0,
+   "z": -20,
+   "scale": 1.0
+  }
+ ],
+ "props": [
+  {
+   "id": "crate",
+   "x": 300,
+   "y": 68.0,
+   "breakable": true,
+   "hp": 8,
+   "money": 16
+  },
+  {
+   "id": "crate",
+   "x": 330,
+   "y": 72.0,
+   "breakable": true,
+   "hp": 8,
+   "contains": "rice_ball"
+  },
+  {
+   "id": "barrel",
+   "x": 700,
+   "y": 30.0,
+   "breakable": true,
+   "hp": 10,
+   "money": 22
+  },
+  {
+   "id": "barrel",
+   "x": 1180,
+   "y": 66.0,
+   "breakable": true,
+   "hp": 10,
+   "contains": "bellwater_stew"
+  },
+  {
+   "id": "trashcan",
+   "x": 1400,
+   "y": 76.0,
+   "breakable": true,
+   "hp": 10,
+   "money": 20
+  },
+  {
+   "id": "bench",
+   "x": 860,
+   "y": 32.0
+  }
+ ],
+ "weapons": [
+  {
+   "id": "pipe",
+   "x": 640,
+   "y": 66.0
+  },
+  {
+   "id": "plank",
+   "x": 1120,
+   "y": 28.0
+  }
+ ],
+ "npcs": [],
+ "doors": [
+  {
+   "id": "to_stair",
+   "to": "service_stair",
+   "spawn": "from_line",
+   "x": 16,
+   "y": 58.0,
+   "label": "Back up the stair",
+   "auto": true,
+   "w": 22,
+   "h": 46
+  },
+  {
+   "id": "to_substation",
+   "to": "substation",
+   "spawn": "from_line",
+   "x": 1534,
+   "y": 32.0,
+   "label": "Substation",
+   "required_flag": "line_four_cleared",
+   "locked": "Steel door. Somebody is working on the other side of it.",
+   "w": 30,
+   "h": 46
+  }
+ ],
+ "spawns": [
+  {
+   "id": "start",
+   "x": 80,
+   "y": 58
+  },
+  {
+   "id": "from_stair",
+   "x": 80,
+   "y": 58
+  },
+  {
+   "id": "from_substation",
+   "x": 1470,
+   "y": 58
+  }
+ ],
+ "encounters": [
+  {
+   "id": "line_four_1",
+   "x": 430,
+   "width": 80
+  },
+  {
+   "id": "line_four_2",
+   "x": 1040,
+   "width": 90
+  }
+ ],
+ "lane_min": 40.0,
+ "lane_max": 80.0,
+ "lighting": {
+  "ambient": [
+   0.26,
+   0.27,
+   0.34
+  ],
+  "glow": true,
+  "lights": [
+   {
+    "x": 180,
+    "y": 40.0,
+    "color": [
+     1.0,
+     0.96,
+     0.86
+    ],
+    "energy": 1.5,
+    "scale": 1.8,
+    "texture": "wide"
+   },
+   {
+    "x": 620,
+    "y": 40.0,
+    "color": [
+     1.0,
+     0.96,
+     0.86
+    ],
+    "energy": 1.5,
+    "scale": 1.8,
+    "texture": "wide"
+   },
+   {
+    "x": 1080,
+    "y": 40.0,
+    "color": [
+     1.0,
+     0.96,
+     0.86
+    ],
+    "energy": 1.5,
+    "scale": 1.8,
+    "texture": "wide"
+   },
+   {
+    "x": 1440,
+    "y": 40.0,
+    "color": [
+     1.0,
+     0.96,
+     0.86
+    ],
+    "energy": 1.5,
+    "scale": 1.8,
+    "texture": "wide"
+   },
+   {
+    "x": 400,
+    "y": 30.0,
+    "color": [
+     0.7,
+     0.8,
+     1.0
+    ],
+    "energy": 0.38,
+    "scale": 2.6,
+    "texture": "wide"
+   },
+   {
+    "x": 900,
+    "y": 30.0,
+    "color": [
+     0.7,
+     0.8,
+     1.0
+    ],
+    "energy": 0.38,
+    "scale": 2.6,
+    "texture": "wide"
+   },
+   {
+    "x": 1300,
+    "y": 30.0,
+    "color": [
+     0.7,
+     0.8,
+     1.0
+    ],
+    "energy": 0.38,
+    "scale": 2.6,
+    "texture": "wide"
+   }
+  ]
+ },
+ "ambient": {
+  "drift": {
+   "count": 5,
+   "speed": 9.0,
+   "colors": [
+    [
+     0.62,
+     0.6,
+     0.55
+    ],
+    [
+     0.5,
+     0.48,
+     0.44
+    ]
+   ]
+  }
+ },
+ "walk_min_x": 20.0,
+ "walk_max_x": 1540.0,
+ "ground_y": 2.0,
+ "camera_y": -12.0
+}

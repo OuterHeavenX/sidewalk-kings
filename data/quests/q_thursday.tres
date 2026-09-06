@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="QuestData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/QuestData.gd" id="1_q_thursday"]
+
+[resource]
+script = ExtResource("1_q_thursday")
+id = "q_thursday"
+title = "Thursday"
+description = "Nothing came on Tuesday, and now there are men in hi-vis vests on a platform that has been shut for eleven years. Find out what they are for."
+giver = "dez"
+objective = 6
+target = "line_four"
+required_count = 1
+turn_in_npc = ""
+reward_money = 0
+reward_xp = 180
+reward_items = []
+reward_move = ""
+reward_flag = "saw_the_crew"
+optional = false
+hint = "The service stair is behind the Line Office."

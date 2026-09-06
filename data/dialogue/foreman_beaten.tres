@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DialogueData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/DialogueData.gd" id="1_foreman_beaten"]
+
+[resource]
+script = ExtResource("1_foreman_beaten")
+id = "foreman_beaten"
+lines = Array[Dictionary]([{"name": "Foreman", "text": "Work stopped. Site unsafe. Crew withdrawn.", "portrait": "site_foreman"}, {"name": "Kip", "text": "That easy?", "portrait": "kip"}, {"name": "Foreman", "text": "It is never easy, it is only written down. An unsafe site gets a new survey, and a new survey takes eleven weeks.", "portrait": "site_foreman"}, {"name": "Kip", "text": "And after eleven weeks?", "portrait": "kip"}, {"name": "Foreman", "text": "Somebody signs something. That is how all of this works, and you have met enough of us by now to know it.", "portrait": "site_foreman"}, {"name": "Kip", "text": "Then I want a name at the top of it. Mine will do.", "portrait": "kip"}, {"name": "Foreman", "text": "...that would actually be a decision.", "portrait": "site_foreman", "set_flag": "chapter_3_done", "end": true}])
+pause_game = true
+once_flag = ""

@@ -349,6 +349,27 @@ CHARACTERS = {
     "big_starch": spec(skin=(236, 196, 170), hair=(228, 226, 232), hair_style="flattop", shirt=(238, 236, 244), shirt_shade=(176, 176, 196), shirt_style="suit", under=(70, 130, 220),
                        pants=(226, 224, 234), pants_shade=(164, 164, 186), shoes=(232, 230, 240), shoe_shade=(150, 150, 172), anims=ENEMY_SET,
                        torso_w=20, limb_w=7, head_r=9, mustache=True, scale=1.0, belt=(60, 50, 40), gloves=(250, 250, 250)),
+    # ---- The Closure Crew (Line 4) ----
+    # Hi-vis and hard hats. Every gang so far has dressed like it chose to be somewhere;
+    # this lot dress like they were sent, which is the whole point of them.
+    "crew_grunt": spec(skin=(222, 178, 140), hair=(60, 48, 40), hair_style="helmet", hat_color=(236, 168, 40),
+                       shirt=(238, 186, 52), shirt_shade=(190, 138, 32), shirt_style="vest", under=(70, 78, 92),
+                       pants=(62, 66, 78), pants_shade=(42, 44, 54), shoes=(52, 44, 38), shoe_shade=(30, 24, 20),
+                       anims=ENEMY_SET, stripe=(246, 246, 250), gloves=(180, 150, 110)),
+    "crew_weapon": spec(skin=(190, 146, 112), hair=(30, 26, 24), hair_style="helmet", hat_color=(226, 108, 44),
+                        shirt=(226, 128, 44), shirt_shade=(176, 92, 30), shirt_style="overalls", under=(232, 226, 212),
+                        pants=(70, 72, 80), pants_shade=(48, 50, 58), shoes=(48, 40, 34), shoe_shade=(26, 22, 18),
+                        anims=ENEMY_SET, stripe=(246, 246, 250), gloves=(90, 90, 100), glasses=True),
+    "crew_heavy": spec(skin=(206, 158, 122), hair=(40, 34, 30), hair_style="helmet", hat_color=(118, 128, 146),
+                       shirt=(226, 196, 60), shirt_shade=(178, 150, 40), shirt_style="vest", under=(56, 62, 74),
+                       pants=(54, 58, 68), pants_shade=(36, 38, 46), shoes=(44, 38, 32), shoe_shade=(24, 20, 16),
+                       anims=ENEMY_SET, stripe=(246, 246, 250), mask=(96, 102, 116), beard=(40, 34, 30)),
+    # The Foreman is the only one in a white hat, and he is the only one holding paper.
+    "site_foreman": spec(skin=(232, 190, 158), hair=(150, 146, 140), hair_style="helmet", hat_color=(244, 244, 248),
+                         shirt=(240, 206, 70), shirt_shade=(190, 158, 44), shirt_style="vest", under=(46, 52, 66),
+                         pants=(46, 50, 60), pants_shade=(30, 32, 40), shoes=(40, 34, 30), shoe_shade=(22, 18, 15),
+                         anims=ENEMY_SET, stripe=(250, 250, 252), mustache=True, gloves=(238, 238, 242),
+                         belt=(60, 52, 44)),
     # ---- NPCs ----
     "dez": spec(skin=(120, 80, 60), skin_shade=(90, 55, 40), hair=(20, 16, 16), hair_style="afro", shirt=(250, 200, 60), shirt_shade=(200, 150, 40), shirt_style="shirt",
                 under=(250, 200, 60), pants=(40, 40, 50), shoes=(240, 100, 60), shoe_shade=(180, 60, 40), anims=NPC_SET),

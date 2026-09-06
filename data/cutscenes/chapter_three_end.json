@@ -1,0 +1,57 @@
+{
+ "id": "chapter_three_end",
+ "steps": [
+  {
+   "do": "flag",
+   "name": "seen_ch3_end",
+   "value": true
+  },
+  {
+   "do": "flag",
+   "name": "chapter_3_done",
+   "value": true
+  },
+  {
+   "do": "music",
+   "id": "victory"
+  },
+  {
+   "do": "camera",
+   "follow": true
+  },
+  {
+   "do": "wait",
+   "time": 0.5
+  },
+  {
+   "do": "camera",
+   "x": 300.0,
+   "y": -12.0,
+   "time": 2.0
+  },
+  {
+   "do": "wait",
+   "time": 0.6
+  },
+  {
+   "do": "say",
+   "dialogue": "dez_ending"
+  },
+  {
+   "do": "wait",
+   "time": 0.4
+  },
+  {
+   "do": "quest",
+   "complete": "q_stand"
+  },
+  {
+   "do": "camera",
+   "follow": true
+  },
+  {
+   "do": "wait",
+   "time": 0.3
+  }
+ ]
+}

@@ -1,0 +1,43 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://actors/enemies/EnemyData.gd" id="1_crew_grunt"]
+[ext_resource type="SpriteFrames" path="res://assets/art/characters/crew_grunt_frames.tres" id="2_crew_grunt"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/portraits/crew_grunt.png" id="3_crew_grunt"]
+
+[resource]
+script = ExtResource("1_crew_grunt")
+id = "crew_grunt"
+display_name = "Marshal"
+gang = "crew"
+archetype = 0
+sprite_frames = ExtResource("2_crew_grunt")
+portrait = ExtResource("3_crew_grunt")
+max_hp = 54
+damage_multiplier = 1.0
+defense = 2.0
+move_speed = 76.0
+run_speed = 138.0
+weight = 1.15
+armor_threshold = 0
+grab_resist = 0.0
+can_be_grabbed = true
+preferred_distance = 28.0
+aggression = 0.62
+reaction_delay = 0.3
+attack_cooldown = 1.0
+circle_chance = 0.45
+picks_up_weapons = false
+ranged_distance = 140.0
+moves = Array[String](["enemy_jab", "enemy_cross", "enemy_kick"])
+heavy_move = ""
+ranged_move = ""
+xp = 26
+money_min = 12
+money_max = 22
+drop_table = Array[String](["rice_ball"])
+drop_chance = 0.16
+scale = 1.0
+tint = Color(1.0, 1.0, 1.0, 1.0)
+show_health_bar = true
+taunts = Array[String](["This area is closed.", "Site access only.", "You are not on the list."])
+defeat_lines = Array[String](["I only work here.", "Not paid enough for this."])

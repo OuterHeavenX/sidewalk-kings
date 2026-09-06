@@ -410,6 +410,15 @@
    "y": 38.0,
    "conditional": [
     {
+     "dialogue": "dez_ending",
+     "if_flag": "chapter_3_done"
+    },
+    {
+     "dialogue": "dez_took_it",
+     "if_flag": "took_the_form",
+     "if_not_flag": "told_dez_ch3"
+    },
+    {
      "dialogue": "dez_chapter_two",
      "if_flag": "chapter_2_done",
      "if_not_flag": "told_dez_ch2"

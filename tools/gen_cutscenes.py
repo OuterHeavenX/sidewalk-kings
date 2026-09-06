@@ -56,6 +56,23 @@ CUTSCENES = {
         camera_follow(),
         wait(0.3),
     ],
+    # The end of the chapter, and of the story so far. It is deliberately quiet: the fight
+    # is already over, the crew have gone, and what is left is Kip working out that the only
+    # way to stop this happening again is to become the name at the top of the form.
+    "chapter_three_end": [
+        flag("seen_ch3_end"),
+        flag("chapter_3_done"),
+        music("victory"),
+        camera_follow(),
+        wait(0.5),
+        camera(300.0, -12.0, 2.0),
+        wait(0.6),
+        say("dez_ending"),
+        wait(0.4),
+        quest(complete="q_stand"),
+        camera_follow(),
+        wait(0.3),
+    ],
 }
 
 

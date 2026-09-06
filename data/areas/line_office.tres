@@ -11,5 +11,5 @@ music = "shop"
 ambience = "interior"
 gang = ""
 map_position = Vector2(0.6, 1.8)
-connections = Array[String](["metro_platform"])
+connections = Array[String](["metro_platform", "service_stair"])
 description = "A desk, four filing cabinets, and eleven years of Tuesdays."

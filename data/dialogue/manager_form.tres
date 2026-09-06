@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DialogueData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/DialogueData.gd" id="1_manager_form"]
+
+[resource]
+script = ExtResource("1_manager_form")
+id = "manager_form"
+lines = Array[Dictionary]([{"name": "Kip", "text": "Give me the form.", "portrait": "kip"}, {"name": "Manager", "text": "I said I would not stop you. I did not say I would hand it over.", "portrait": "line_manager"}, {"name": "Kip", "text": "You want me to take it.", "portrait": "kip"}, {"name": "Manager", "text": "I want to have been unable to prevent it. Those are different, and only one of them has my name on it.", "portrait": "line_manager"}, {"name": "", "text": "He turns to the filing cabinet, and stays turned around for a long moment."}, {"name": "Kip", "text": "...", "portrait": "kip"}, {"name": "Manager", "text": "Tuesday will be interesting.", "portrait": "line_manager", "set_flag": "took_the_form", "end": true}])
+pause_game = true
+once_flag = ""

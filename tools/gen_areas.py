@@ -264,6 +264,8 @@ ferry = {
     "npcs": [
         {"id": "dez", "name": "Dez", "character": "dez", "x": 150, "y": LANE_MIN + 4,
          "conditional": [
+             {"dialogue": "dez_ending", "if_flag": "chapter_3_done"},
+             {"dialogue": "dez_took_it", "if_flag": "took_the_form", "if_not_flag": "told_dez_ch3"},
              {"dialogue": "dez_chapter_two", "if_flag": "chapter_2_done", "if_not_flag": "told_dez_ch2"},
              {"dialogue": "dez_metro", "if_flag": "chapter_1_done", "if_not_flag": "metro_open"},
              {"dialogue": "dez_finale", "if_flag": "hideout_cleared"},
@@ -958,6 +960,7 @@ bellwater = {
     "npcs": [
         {"id": "nadia", "name": "Nadia", "character": "nadia", "x": 470, "y": LANE_MIN + 2,
          "conditional": [
+             {"dialogue": "nadia_closing", "if_flag": "took_the_form", "if_not_flag": "chapter_3_done"},
              {"dialogue": "nadia_done", "if_quest": ["q_commuters", "ready"]},
              {"dialogue": "nadia_shop", "if_flag": "met_nadia"},
          ], "dialogue": "nadia_intro"},
@@ -1018,6 +1021,7 @@ office = {
         scenery(PROP + "sign", 300, ROAD_TOP - 44, z=-28),
         scenery(PROP + "ac_unit", 470, ROAD_TOP - 24, z=-28),
         scenery(PROP + "flyer", 560, ROAD_TOP - 20, z=-27),
+        scenery(PROP + "doorway", 626, DECO_BASE - 52, z=-20),
     ],
     "props": [
         prop("desk", 430, LANE_MIN - 6, solid=True, searchable=True,
@@ -1030,16 +1034,24 @@ office = {
     "npcs": [
         {"id": "line_manager", "name": "Line Manager", "character": "line_manager",
          "x": 470, "y": LANE_MIN + 2,
-         "conditional": [{"dialogue": "manager_after", "if_flag": "chapter_2_done"}],
+         "conditional": [
+             {"dialogue": "manager_form", "if_flag": "chapter_2_done", "if_not_flag": "took_the_form"},
+             {"dialogue": "manager_after", "if_flag": "took_the_form"},
+         ],
          "dialogue": "manager_reveal"},
     ],
     "doors": [
         {"id": "to_metro", "to": "metro_platform", "spawn": "from_office", "x": 16,
          "y": LANE_MAX - 16, "label": "Back to the platform", "auto": True, "w": 22, "h": 46},
+        {"id": "to_stair", "to": "service_stair", "spawn": "from_office", "x": 640,
+         "y": LANE_MIN - 2, "label": "Service stair", "required_flag": "took_the_form",
+         "locked": "A door onto the line itself. No reason to go down there.",
+         "w": 30, "h": 46},
     ],
     "spawns": [
         {"id": "start", "x": 80, "y": 58},
         {"id": "from_metro", "x": 80, "y": 58},
+        {"id": "from_stair", "x": 600, "y": 58},
     ],
     "encounters": [],
     "on_enter": [
@@ -1057,4 +1069,201 @@ office = {
 }
 build("line_office", W9, office)
 
-print("9 area layouts written to data/areas/")
+# ===========================================================================
+# AREA 10 - SERVICE STAIR : the way down. Short, tight, first sight of the crew.
+# ===========================================================================
+W10 = 760
+stair = {
+    "parallax": [
+        {"texture": _tex_path("tunnel_wall"), "y": -390.0, "scroll": 0.85, "repeat": 4,
+         "scale": 2.0, "z": -90},
+    ],
+    "ground": [
+        fill((0.17, 0.17, 0.20), SIDEWALK_TOP - 16.0, 460, -40, W10 + 40),
+        ground("concrete", SIDEWALK_TOP - 16.0, SIDEWALK_ROWS + 1, -40, W10 + 40, z=-22),
+    ],
+    "scenery": [
+        scenery(PROP + "sign", 120, ROAD_TOP - 44, z=-28),
+        scenery(PROP + "barrier", 300, DECO_BASE - 26, z=-20),
+        scenery(PROP + "barrier", 348, DECO_BASE - 26, z=-20),
+        scenery(PROP + "work_lamp", 210, DECO_BASE - 46, z=-20),
+        scenery(PROP + "work_lamp", 600, DECO_BASE - 46, z=-20),
+        scenery(PROP + "cable_spool", 470, DECO_BASE - 30, z=-20),
+        scenery(PROP + "pipe_stack", 690, ROAD_TOP - 30, z=-28),
+    ],
+    "props": [
+        prop("crate", 250, LANE_MAX - 6, breakable=True, hp=8, money=14),
+        prop("barrel", 540, LANE_MIN - 4, breakable=True, hp=10, contains="platform_coffee"),
+        prop("trashcan", 700, breakable=True, hp=10, money=16),
+    ],
+    "weapons": [
+        {"id": "pipe", "x": 400, "y": LANE_MAX - 8},
+    ],
+    "npcs": [],
+    "doors": [
+        {"id": "to_office", "to": "line_office", "spawn": "from_stair", "x": 16,
+         "y": LANE_MAX - 16, "label": "Back up to the office", "auto": True, "w": 22, "h": 46},
+        {"id": "to_line", "to": "line_four", "spawn": "from_stair", "x": W10 - 24,
+         "y": LANE_MAX - 16, "label": "Down to the platform", "auto": True, "w": 22, "h": 46},
+    ],
+    "spawns": [
+        {"id": "start", "x": 80, "y": 58},
+        {"id": "from_office", "x": 80, "y": 58},
+        {"id": "from_line", "x": W10 - 80, "y": 58},
+    ],
+    "encounters": [
+        {"id": "stair_crew", "x": 330, "width": 60},
+    ],
+    "lane_min": 40.0,
+    "lane_max": 78.0,
+    # Almost no ambient: this is underground and the building lights are off. What you can
+    # see, you can see because the crew plugged something in.
+    "lighting": lighting(
+        (0.30, 0.30, 0.36),
+        [light(210, 40.0, (1.0, 0.96, 0.86), 1.5, 1.7, "wide"),
+         light(600, 40.0, (1.0, 0.96, 0.86), 1.5, 1.7, "wide"),
+         light(400, 34.0, (0.72, 0.80, 1.0), 0.4, 2.4, "wide")],
+    ),
+    "ambient": ambient(),
+}
+build("service_stair", W10, stair)
+
+# ===========================================================================
+# AREA 11 - LINE 4 : the platform itself, being taken apart. The long fight.
+# ===========================================================================
+W11 = 1560
+line_four = {
+    "parallax": [
+        {"texture": _tex_path("tunnel_wall"), "y": -390.0, "scroll": 0.85, "repeat": 7,
+         "scale": 2.0, "z": -90},
+    ],
+    "ground": [
+        fill((0.15, 0.15, 0.19), SIDEWALK_TOP - 16.0, 460, -40, W11 + 40),
+        ground("tile_floor", SIDEWALK_TOP - 16.0, SIDEWALK_ROWS + 1, -40, W11 + 40, z=-22),
+        ground("metal", ROAD_TOP - 4.0, 1, -40, W11 + 40, z=-23),
+    ],
+    "scenery": [
+        scenery(PROP + "work_lamp", 180, DECO_BASE - 46, z=-20),
+        scenery(PROP + "work_lamp", 620, DECO_BASE - 46, z=-20),
+        scenery(PROP + "work_lamp", 1080, DECO_BASE - 46, z=-20),
+        scenery(PROP + "work_lamp", 1440, DECO_BASE - 46, z=-20),
+        scenery(PROP + "barrier", 360, DECO_BASE - 26, z=-20),
+        scenery(PROP + "barrier", 404, DECO_BASE - 26, z=-20),
+        scenery(PROP + "barrier", 900, DECO_BASE - 26, z=-20),
+        scenery(PROP + "cable_spool", 760, DECO_BASE - 30, z=-20),
+        scenery(PROP + "cable_spool", 1240, DECO_BASE - 30, z=-20),
+        scenery(PROP + "pipe_stack", 240, ROAD_TOP - 30, z=-28),
+        scenery(PROP + "pipe_stack", 1320, ROAD_TOP - 30, z=-28),
+        scenery(PROP + "metro_sign", 520, ROAD_TOP - 72, z=-28),
+        scenery(PROP + "bench", 980, ROAD_TOP - 20, z=-28),
+        scenery(PROP + "graffiti_c", 1150, ROAD_TOP - 40, z=-27),
+        scenery(PROP + "steel_door", 1520, DECO_BASE - 52, z=-20),
+    ],
+    "props": [
+        prop("crate", 300, LANE_MAX - 6, breakable=True, hp=8, money=16),
+        prop("crate", 330, LANE_MAX - 2, breakable=True, hp=8, contains="rice_ball"),
+        prop("barrel", 700, LANE_MIN - 4, breakable=True, hp=10, money=22),
+        prop("barrel", 1180, LANE_MAX - 8, breakable=True, hp=10, contains="bellwater_stew"),
+        prop("trashcan", 1400, breakable=True, hp=10, money=20),
+        prop("bench", 860, LANE_MIN - 2),
+    ],
+    "weapons": [
+        {"id": "pipe", "x": 640, "y": LANE_MAX - 8},
+        {"id": "plank", "x": 1120, "y": LANE_MIN - 6},
+    ],
+    "npcs": [],
+    "doors": [
+        {"id": "to_stair", "to": "service_stair", "spawn": "from_line", "x": 16,
+         "y": LANE_MAX - 16, "label": "Back up the stair", "auto": True, "w": 22, "h": 46},
+        {"id": "to_substation", "to": "substation", "spawn": "from_line", "x": W11 - 26,
+         "y": LANE_MIN - 2, "label": "Substation", "required_flag": "line_four_cleared",
+         "locked": "Steel door. Somebody is working on the other side of it.",
+         "w": 30, "h": 46},
+    ],
+    "spawns": [
+        {"id": "start", "x": 80, "y": 58},
+        {"id": "from_stair", "x": 80, "y": 58},
+        {"id": "from_substation", "x": W11 - 90, "y": 58},
+    ],
+    "encounters": [
+        {"id": "line_four_1", "x": 430, "width": 80},
+        {"id": "line_four_2", "x": 1040, "width": 90},
+    ],
+    "lane_min": 40.0,
+    "lane_max": 80.0,
+    "lighting": lighting(
+        (0.26, 0.27, 0.34),
+        [light(x, 40.0, (1.0, 0.96, 0.86), 1.5, 1.8, "wide")
+         for x in (180, 620, 1080, 1440)]
+        # The two strip lights still alive on the whole platform, cold and nearly useless.
+        + [light(x, 30.0, (0.70, 0.80, 1.0), 0.38, 2.6, "wide") for x in (400, 900, 1300)],
+    ),
+    "ambient": ambient(litter(5, 9.0, [[0.62, 0.60, 0.55], [0.50, 0.48, 0.44]])),
+}
+build("line_four", W11, line_four)
+
+# ===========================================================================
+# AREA 12 - SUBSTATION : where the line gets switched off. The Foreman.
+# ===========================================================================
+W12 = 820
+substation = {
+    "parallax": [
+        {"texture": _tex_path("substation_wall"), "y": -370.0, "scroll": 0.9, "repeat": 4,
+         "scale": 2.0, "z": -90},
+    ],
+    "ground": [
+        fill((0.19, 0.18, 0.20), SIDEWALK_TOP - 16.0, 460, -40, W12 + 40),
+        # Concrete, not metal. The metal tile is vertically grooved and reads as corrugated
+        # siding: laid across the floor it looked like a wall the player was standing on.
+        ground("concrete", SIDEWALK_TOP - 16.0, SIDEWALK_ROWS + 1, -40, W12 + 40, z=-22),
+        ground("metal", ROAD_TOP - 4.0, 1, -40, W12 + 40, z=-23),
+    ],
+    "scenery": [
+        scenery(PROP + "switchgear", 120, ROAD_TOP - 62, z=-28),
+        scenery(PROP + "switchgear", 168, ROAD_TOP - 62, z=-28),
+        scenery(PROP + "switchgear", 216, ROAD_TOP - 62, z=-28),
+        scenery(PROP + "switchgear", 640, ROAD_TOP - 62, z=-28),
+        scenery(PROP + "switchgear", 688, ROAD_TOP - 62, z=-28),
+        scenery(PROP + "work_lamp", 400, DECO_BASE - 46, z=-20),
+        scenery(PROP + "cable_spool", 560, DECO_BASE - 30, z=-20),
+        scenery(PROP + "ac_unit", 340, ROAD_TOP - 30, z=-28),
+    ],
+    "props": [
+        prop("crate", 260, LANE_MAX - 6, breakable=True, hp=8, contains="hot_soup"),
+        prop("barrel", 760, LANE_MIN - 4, breakable=True, hp=10, money=30),
+    ],
+    "weapons": [
+        {"id": "pipe", "x": 300, "y": LANE_MAX - 8},
+    ],
+    "npcs": [],
+    "doors": [
+        {"id": "to_line", "to": "line_four", "spawn": "from_substation", "x": 16,
+         "y": LANE_MAX - 16, "label": "Back to the platform", "auto": True, "w": 22, "h": 46},
+    ],
+    "spawns": [
+        {"id": "start", "x": 90, "y": 58},
+        {"id": "from_line", "x": 90, "y": 58},
+    ],
+    "encounters": [
+        {"id": "boss_foreman", "x": 430, "width": 70},
+    ],
+    "on_enter": [
+        {"cutscene": "chapter_three_end", "if_flag": "foreman_beaten",
+         "if_not_flag": "seen_ch3_end"},
+    ],
+    "lane_min": 40.0,
+    "lane_max": 78.0,
+    # One work lamp and the indicator glow off the switchgear. A boss room lit by a man
+    # who brought exactly enough light to read by.
+    "lighting": lighting(
+        (0.32, 0.30, 0.34),
+        [light(400, 40.0, (1.0, 0.96, 0.86), 1.7, 2.0, "wide"),
+         light(170, 30.0, (0.5, 1.0, 0.7), 0.42, 1.2, "tight"),
+         light(664, 30.0, (0.5, 1.0, 0.7), 0.42, 1.2, "tight")],
+    ),
+    "ambient": ambient(),
+}
+build("substation", W12, substation)
+
+
+print("12 area layouts written to data/areas/")

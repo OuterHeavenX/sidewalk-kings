@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DialogueData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/DialogueData.gd" id="1_dez_ending"]
+
+[resource]
+script = ExtResource("1_dez_ending")
+id = "dez_ending"
+lines = Array[Dictionary]([{"name": "Dez", "text": "Eleven weeks.", "portrait": "dez"}, {"name": "Kip", "text": "Eleven weeks.", "portrait": "kip"}, {"name": "Dez", "text": "And then what?", "portrait": "dez"}, {"name": "Kip", "text": "Then there is a form with my name on it, and somebody has to come and argue with me instead of with a filing cabinet.", "portrait": "kip"}, {"name": "Dez", "text": "That is the worst job in Riverbend.", "portrait": "dez"}, {"name": "Kip", "text": "It is the only one that was ever open.", "portrait": "kip"}, {"name": "Dez", "text": "...I will get the noodles.", "portrait": "dez", "end": true}])
+pause_game = true
+once_flag = ""

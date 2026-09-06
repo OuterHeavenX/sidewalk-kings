@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="AreaData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/AreaData.gd" id="1_substation"]
+
+[resource]
+script = ExtResource("1_substation")
+id = "substation"
+display_name = "Substation"
+district = "Line 4"
+music = "boss"
+ambience = "industrial"
+gang = "crew"
+map_position = Vector2(3.1, 2.2)
+connections = Array[String](["line_four"])
+description = "Where the power to the whole line gets switched off. Once."

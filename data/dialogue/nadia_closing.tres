@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DialogueData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/DialogueData.gd" id="1_nadia_closing"]
+
+[resource]
+script = ExtResource("1_nadia_closing")
+id = "nadia_closing"
+lines = Array[Dictionary]([{"name": "Nadia", "text": "They put a notice on the shutter.", "portrait": "nadia"}, {"name": "Kip", "text": "What does it say?", "portrait": "kip"}, {"name": "Nadia", "text": "That the station is being decommissioned and the block will be served by the bus. There is no bus. There has not been a bus since I was small.", "portrait": "nadia"}, {"name": "Kip", "text": "I did this.", "portrait": "kip"}, {"name": "Nadia", "text": "You stopped somebody paying four gangs to leave us alone. That is not the same as doing this.", "portrait": "nadia"}, {"name": "Kip", "text": "It rhymes.", "portrait": "kip"}, {"name": "Nadia", "text": "Then go and un-rhyme it.", "portrait": "nadia", "end": true}])
+pause_game = true
+once_flag = ""

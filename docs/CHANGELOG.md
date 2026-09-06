@@ -348,6 +348,67 @@ An area with no lighting block is untouched. Reloading an area keeps the player 
 
 ---
 
+## v0.3.0 — Chapter three: the line that was never closed
+
+Chapter two ended with a man at a desk explaining that nobody is behind any of it, and
+offering Kip the form. Chapter three is what taking it costs.
+
+### The answer, one size larger again
+
+Kip expected the gangs to turn on each other over the missing Tuesday money. What actually
+happens is the other half of what the manager said, which nobody heard at the time: *a
+reduced budget is somebody noticing*. An unspent line gets audited. An audited line gets
+closed properly. Closing it takes the station, and the station is Bellwater's only way in
+or out.
+
+So the antagonists are a decommissioning crew with a work order that has a date on it.
+They are not cruel and they are not paid by anybody interesting. They will take a
+neighbourhood apart because the paperwork says Thursday.
+
+And it hands the five gangs the one thing eleven years of liaison money had been buying to
+prevent: a reason to be in the same place, loudly, on the same side.
+
+### Added
+
+- **Three areas**, and the first in the game with no daylight in them: the **Service
+  Stair**, **Line 4** itself, and the **Substation**. Underground, the only light is light
+  the crew plugged in, so tripod work lamps do nearly all of it and the two surviving strip
+  lights are cold and useless.
+- **The Closure Crew**: Marshal, Cutter, Roller, and **the Foreman**, who is the only one
+  in a white hard hat and the only one holding paper. They hit harder than the Commuters
+  and taunt less, because nobody here is defending a street.
+- Two quests, a closing cutscene, and reactions from Dez, Nadia and the manager that track
+  which side of the decision you are on.
+- New art: a tunnel wall with exposed cable runs and dead strip lighting, a substation
+  wall, and worksite props — tripod lamp, hazard barrier, cable spool, switchgear.
+- **A doorway sprite.** The game had none: every interior door until now was either painted
+  onto a shopfront or invisible.
+
+### Fixed by the tests
+
+- **Two of the new doors were invisible**, and the check written last release caught them
+  the moment they existed rather than after somebody played twenty minutes to reach one.
+  That check has now paid for itself on content that did not exist when it was written.
+- **A drop that could never drop.** The Cutter was set to drop a pipe, which is a weapon;
+  `ContentDB.get_item` resolves items, foods and books only, so the pickup would have
+  silently fallen back to a burger icon.
+- **The substation floor was a wall.** The `metal` tile is vertically grooved and reads as
+  corrugated siding; laid across the ground it looked like the player was standing on the
+  side of a shed. Only visible by looking at it.
+- **A test that broke the next test.** The ending-cutscene check aborts mid-line, which
+  leaves the dialogue box on screen, and the boss test after it then failed for reasons
+  that had nothing to do with bosses. It cleans up behind itself now.
+
+### Tests
+
+Suite is **338 checks**. The chapter-three ones assert the shape of a story that can strand
+a player: that taking the form is the only key to the stair, that the substation is behind
+the platform fight, that every underground area carries its own lights, that the crew are
+three different fighters rather than one repeated, and that skipping the ending still ends
+the chapter.
+
+---
+
 ## v0.2.0 — builds that update, and say which build they are
 
 The release that makes releases work. Asked for as "add the version # in the main screen

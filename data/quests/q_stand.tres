@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="QuestData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/QuestData.gd" id="1_q_stand"]
+
+[resource]
+script = ExtResource("1_q_stand")
+id = "q_stand"
+title = "Nobody's Postcode"
+description = "The crew have a work order with a date on it. Everyone who was ever paid to stay out of everyone else's street is on the platform. Make Thursday somebody else's problem."
+giver = "dez"
+objective = 2
+target = "site_foreman"
+required_count = 1
+turn_in_npc = "dez"
+reward_money = 400
+reward_xp = 520
+reward_items = []
+reward_move = ""
+reward_flag = "q_stand_done"
+optional = false
+hint = "Down the line, past the platform, in the substation."

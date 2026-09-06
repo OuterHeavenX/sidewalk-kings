@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="EncounterData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/EncounterData.gd" id="1_line_four_2"]
+
+[resource]
+script = ExtResource("1_line_four_2")
+id = "line_four_2"
+gang = "crew"
+waves = Array[Dictionary]([{"enemy": "crew_weapon", "count": 2, "side": "any", "delay": 0.0, "boss": false}, {"enemy": "crew_grunt", "count": 3, "side": "any", "delay": 1.6, "boss": false}, {"enemy": "crew_heavy", "count": 2, "side": "any", "delay": 4.5, "boss": false}])
+max_active = 4
+difficulty_scale_per_level = 0.06
+lock_camera = true
+once_flag = "enc_line_four_2"
+respawn_on_reenter = true
+boss_id = ""
+reward_flag = "line_four_cleared"
+music = "industrial"
+intro_dialogue = "gangs_arrive"
+clear_dialogue = ""

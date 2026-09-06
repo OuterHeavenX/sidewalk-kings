@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DialogueData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/DialogueData.gd" id="1_gangs_arrive"]
+
+[resource]
+script = ExtResource("1_gangs_arrive")
+id = "gangs_arrive"
+lines = Array[Dictionary]([{"name": "", "text": "Boots on the stairs behind him. A lot of boots."}, {"name": "Kip", "text": "I did not call anybody.", "portrait": "kip"}, {"name": "Dez", "text": "No. Nadia did. She has everybody's number, because everybody eventually needs a corner shop.", "portrait": "dez"}, {"name": "Kip", "text": "The Pigeons are here. The Pigeons hate me.", "portrait": "kip"}, {"name": "Dez", "text": "The Pigeons hate you on Ferry Row. This is Line 4.", "portrait": "dez"}, {"name": "", "text": "Somebody in a green sweater hands somebody in a hi-vis vest back their own clipboard, in pieces."}, {"name": "Dez", "text": "Eleven years of being paid to stay in your own postcode. All it cost to get everyone in one room was taking the money away.", "portrait": "dez", "end": true}])
+pause_game = true
+once_flag = ""

@@ -68,6 +68,7 @@ func run() -> void:
 	await test_world_graph()
 	await test_lighting()
 	await test_chapter_two()
+	await test_chapter_three()
 	await test_boss()
 	await test_character_art()
 	await test_map_and_saves()
@@ -1720,6 +1721,132 @@ func test_chapter_two() -> void:
 	var e := spawn_enemy("commuter_grunt", 40.0)
 	await frames(6)
 	check("a Commuter spawns and takes damage", e != null and _hit_once(e))
+
+## Chapter three is the first chapter whose premise is a consequence of a player choice, so
+## the thing that can strand it is not a missing area but a missing flag: taking the form is
+## what opens the stair, clearing the platform is what opens the substation, and beating the
+## Foreman is what ends the story. Any one of those failing to be written leaves a player
+## walking a corridor that will never open, with nothing on screen to say why.
+func test_chapter_three() -> void:
+	print("\n-- Chapter three: the Closure Crew --")
+	for id in ["service_stair", "line_four", "substation"]:
+		check("area '%s' exists" % id, ContentDB.areas.has(id))
+	for id in ["crew_grunt", "crew_weapon", "crew_heavy", "site_foreman"]:
+		check("enemy '%s' exists" % id, ContentDB.enemies.has(id))
+	for q in ["q_thursday", "q_stand"]:
+		check("quest '%s' exists" % q, ContentDB.get_quest(q) != null)
+
+	# Every crew member has to be a distinct fighter, or the new gang is a palette swap.
+	var hp: Array[int] = []
+	for id in ["crew_grunt", "crew_weapon", "crew_heavy"]:
+		hp.append(ContentDB.enemies[id].max_hp)
+	check("the crew are three different fighters, not one repeated",
+		hp[0] != hp[1] and hp[1] != hp[2], str(hp))
+
+	# The gate onto the line. Taking the form is a choice, and it is the only key.
+	GameManager.set_flag("took_the_form", false)
+	await SceneManager.change_area("line_office", "start")
+	await seconds(0.5)
+	var stair_door := _find_door("to_stair")
+	check("the office has a door onto the line", stair_door != null)
+	if stair_door:
+		check("the service stair is shut until the form is taken",
+			stair_door.required_flag == "took_the_form" and not GameManager.get_flag("took_the_form"))
+
+	GameManager.set_flag("took_the_form", true)
+	await SceneManager.change_area("service_stair", "from_office")
+	await seconds(0.5)
+	check("the service stair builds", GameManager.player_data.current_area == "service_stair")
+	await _check_camera_follows("service_stair")
+
+	await SceneManager.change_area("line_four", "from_stair")
+	await seconds(0.5)
+	check("Line 4 builds off the stair", GameManager.player_data.current_area == "line_four")
+	await _check_camera_follows("line_four")
+
+	# The substation is behind the platform fight, not behind a walk.
+	var sub_door := _find_door("to_substation")
+	check("the platform has a door to the substation", sub_door != null)
+	if sub_door:
+		check("the substation is shut until the platform is cleared",
+			sub_door.required_flag == "line_four_cleared")
+
+	# Underground areas have to be lit by something, because nothing else lights them. An
+	# unlit area here is not dim, it is black, and it looks like a broken build.
+	var lit := 0
+	for id in ["service_stair", "line_four", "substation"]:
+		var layout := _layout(id)
+		var lighting: Dictionary = layout.get("lighting", {})
+		if lighting.get("lights", []).size() > 0:
+			lit += 1
+	check("every underground area carries its own lights", lit == 3, "%d of 3" % lit)
+
+	await SceneManager.change_area("substation", "from_line")
+	await seconds(0.5)
+	check("the substation builds", GameManager.player_data.current_area == "substation")
+	await _check_camera_follows("substation")
+
+	# The Foreman has to be a real fight that ends the chapter.
+	var boss: EncounterData = ContentDB.get_encounter("boss_foreman")
+	check("the Foreman encounter exists", boss != null)
+	if boss:
+		check("the Foreman is flagged as a boss fight", boss.boss_id == "site_foreman", boss.boss_id)
+		check("beating the Foreman is what the story reads", boss.reward_flag == "foreman_beaten",
+			boss.reward_flag)
+
+	clear_stage()
+	await frames(2)
+	var e := spawn_enemy("crew_grunt", 40.0)
+	await frames(6)
+	check("a Marshal spawns and takes damage", e != null and _hit_once(e))
+
+	# The ending must survive being skipped. Chapter two shipped with its final flag inside
+	# dialogue, so skipping the scene left the chapter permanently unfinishable.
+	GameManager.set_flag("chapter_3_done", false)
+	GameManager.set_flag("seen_ch3_end", false)
+	var steps: Array = _cutscene_steps("chapter_three_end")
+	check("the ending cutscene exists", steps.size() > 0, "%d steps" % steps.size())
+	var flag_step := false
+	for st in steps:
+		if str(st.get("do", "")) == "flag" and str(st.get("name", "")) == "chapter_3_done":
+			flag_step = true
+	check("the chapter-three flag is a cutscene step, not a line of dialogue a skip skips",
+		flag_step)
+
+	await CutsceneManager.play("chapter_three_end")
+	await frames(2)
+	CutsceneManager.abort()
+	await frames(4)
+	check("skipping the ending still ends the chapter", GameManager.get_flag("chapter_3_done"))
+	check("skipping the ending gives control back",
+		GameManager.state == GameManager.State.PLAYING,
+		"state = %d" % GameManager.state)
+
+	# Leave nothing running. The scene contains a `say`, and an abort mid-line leaves the
+	# box on screen: the next test to touch dialogue then inherits it and fails for reasons
+	# that have nothing to do with what it is testing. A test that breaks the next test is
+	# worse than a test that fails.
+	var guard := 0
+	while DialogueManager.is_active() and guard < 120:
+		if DialogueManager._box:
+			DialogueManager._box._typing = false
+			DialogueManager._box.line_finished.emit()
+		await frames(2)
+		guard += 1
+	check("the ending closes its dialogue behind it", not DialogueManager.is_active(),
+		"still open after %d frames" % (guard * 2))
+
+## The raw steps of a cutscene, straight off disk.
+func _cutscene_steps(id: String) -> Array:
+	var path := "res://data/cutscenes/%s.json" % id
+	if not FileAccess.file_exists(path):
+		return []
+	var f := FileAccess.open(path, FileAccess.READ)
+	var parsed = JSON.parse_string(f.get_as_text())
+	f.close()
+	if parsed is Dictionary:
+		return parsed.get("steps", [])
+	return []
 
 func _find_door(door_id: String) -> Node:
 	if GameManager.current_area == null:

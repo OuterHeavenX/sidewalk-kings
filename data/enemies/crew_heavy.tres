@@ -1,0 +1,43 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://actors/enemies/EnemyData.gd" id="1_crew_heavy"]
+[ext_resource type="SpriteFrames" path="res://assets/art/characters/crew_heavy_frames.tres" id="2_crew_heavy"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/portraits/crew_heavy.png" id="3_crew_heavy"]
+
+[resource]
+script = ExtResource("1_crew_heavy")
+id = "crew_heavy"
+display_name = "Roller"
+gang = "crew"
+archetype = 4
+sprite_frames = ExtResource("2_crew_heavy")
+portrait = ExtResource("3_crew_heavy")
+max_hp = 124
+damage_multiplier = 1.0
+defense = 5.0
+move_speed = 50.0
+run_speed = 80.0
+weight = 2.4
+armor_threshold = 15
+grab_resist = 0.0
+can_be_grabbed = false
+preferred_distance = 26.0
+aggression = 0.5
+reaction_delay = 0.48
+attack_cooldown = 2.0
+circle_chance = 0.08
+picks_up_weapons = false
+ranged_distance = 140.0
+moves = Array[String](["enemy_cross", "enemy_kick"])
+heavy_move = "enemy_slam"
+ranged_move = ""
+xp = 52
+money_min = 30
+money_max = 54
+drop_table = Array[String](["steel_lunch"])
+drop_chance = 0.3
+scale = 1.15
+tint = Color(1.0, 1.0, 1.0, 1.0)
+show_health_bar = true
+taunts = Array[String](["Stand clear.", "Heavy plant operating."])
+defeat_lines = Array[String](["Clear the area...", "Mind yourself."])

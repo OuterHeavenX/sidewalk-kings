@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DialogueData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://data/DialogueData.gd" id="1_dez_took_it"]
+
+[resource]
+script = ExtResource("1_dez_took_it")
+id = "dez_took_it"
+lines = Array[Dictionary]([{"name": "Dez", "text": "You took it.", "portrait": "dez"}, {"name": "Kip", "text": "I took it.", "portrait": "kip"}, {"name": "Dez", "text": "And nothing came on Tuesday.", "portrait": "dez"}, {"name": "Kip", "text": "Nothing came on Tuesday.", "portrait": "kip"}, {"name": "Dez", "text": "So the Sweaters are not being paid to be polite any more, and the Pigeons are not being paid to stay off the ferry queue.", "portrait": "dez"}, {"name": "Kip", "text": "I know.", "portrait": "kip"}, {"name": "Dez", "text": "I am not saying you were wrong. I am saying I hope there was a second half to the plan.", "portrait": "dez"}, {"name": "Kip", "text": "There are men on the platform in orange vests.", "portrait": "kip"}, {"name": "Dez", "text": "That is not a second half. That is a new first half.", "portrait": "dez", "set_flag": "told_dez_ch3", "start_quest": "q_thursday", "end": true}])
+pause_game = true
+once_flag = ""

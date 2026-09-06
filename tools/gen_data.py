@@ -468,6 +468,42 @@ ENEMIES = [
           xp=160, money_min=0, money_max=0, scale=1.2, show_health_bar=False,
           taunts=["You are getting the floor dirty."],
           defeat_lines=["...everything I own is white."]),
+    # ---- The Closure Crew (Line 4) --------------------------------------
+    # They are not a gang. They are contractors with a work order, which is why they hit
+    # harder than the Commuters and taunt less: nobody here is defending a street.
+    enemy("crew_grunt", "Marshal", "crew", "crew_grunt", AR_GRUNT,
+          max_hp=54, move_speed=76.0, run_speed=138.0, defense=2.0, weight=1.15,
+          preferred_distance=28.0, aggression=0.62, reaction_delay=0.3, attack_cooldown=1.0,
+          circle_chance=0.45, moves=["enemy_jab", "enemy_cross", "enemy_kick"],
+          xp=26, money_min=12, money_max=22, drop_table=["rice_ball"], drop_chance=0.16,
+          taunts=["This area is closed.", "Site access only.", "You are not on the list."],
+          defeat_lines=["I only work here.", "Not paid enough for this."]),
+    enemy("crew_weapon", "Cutter", "crew", "crew_weapon", AR_WEAPON,
+          max_hp=62, move_speed=68.0, run_speed=124.0, defense=2.5, weight=1.3,
+          preferred_distance=34.0, aggression=0.7, reaction_delay=0.34, attack_cooldown=1.25,
+          circle_chance=0.25, picks_up_weapons=True,
+          moves=["enemy_jab", "enemy_weapon_swing"], heavy_move="enemy_heavy",
+          xp=32, money_min=16, money_max=28, drop_table=["platform_coffee"], drop_chance=0.3,
+          taunts=["Mind the sparks.", "Cutting through here."],
+          defeat_lines=["Tool's bent.", "Down tools, then."]),
+    enemy("crew_heavy", "Roller", "crew", "crew_heavy", AR_HEAVY,
+          max_hp=124, move_speed=50.0, run_speed=80.0, weight=2.4, defense=5.0,
+          armor_threshold=15, preferred_distance=26.0, aggression=0.5, reaction_delay=0.48,
+          attack_cooldown=2.0, circle_chance=0.08, can_be_grabbed=False,
+          moves=["enemy_cross", "enemy_kick"], heavy_move="enemy_slam",
+          xp=52, money_min=30, money_max=54, drop_table=["steel_lunch"], drop_chance=0.3,
+          scale=1.15, taunts=["Stand clear.", "Heavy plant operating."],
+          defeat_lines=["Clear the area...", "Mind yourself."]),
+    # The Foreman fights like a man finishing a shift: patient, and entirely unbothered.
+    enemy("site_foreman", "The Foreman", "crew", "site_foreman", AR_BOSS,
+          max_hp=380, move_speed=72.0, run_speed=136.0, weight=2.6, defense=5.0,
+          armor_threshold=16, preferred_distance=32.0, aggression=0.58, reaction_delay=0.34,
+          attack_cooldown=1.35, circle_chance=0.28, can_be_grabbed=False,
+          moves=["boss_jab", "boss_combo", "boss_kick"], heavy_move="boss_slam",
+          xp=220, money_min=0, money_max=0, scale=1.18, show_health_bar=False,
+          taunts=["The order is signed.", "I have a date on this.",
+                  "You are standing in a work area."],
+          defeat_lines=["...then somebody else comes Tuesday."]),
 ]
 
 # ===========================================================================
@@ -746,6 +782,17 @@ QUESTS = [
           OB_FLAG, "found_tuesday_locker", giver="dez", turn_in_npc="dez", optional=False,
           reward_money=220, reward_xp=160, reward_flag="knows_tuesday_route",
           hint="Search the metro platform. Try the lockers."),
+    quest("q_thursday", "Thursday", "Nothing came on Tuesday, and now there are men in hi-vis "
+          "vests on a platform that has been shut for eleven years. Find out what they are for.",
+          OB_AREA, "line_four", giver="dez", turn_in_npc="", optional=False,
+          reward_xp=180, reward_flag="saw_the_crew",
+          hint="The service stair is behind the Line Office."),
+    quest("q_stand", "Nobody's Postcode", "The crew have a work order with a date on it. "
+          "Everyone who was ever paid to stay out of everyone else's street is on the platform. "
+          "Make Thursday somebody else's problem.",
+          OB_BOSS, "site_foreman", giver="dez", turn_in_npc="dez", optional=False,
+          reward_money=400, reward_xp=520, reward_flag="q_stand_done",
+          hint="Down the line, past the platform, in the substation."),
     quest("q_roof", "The Long Way Round", "The kid on the roof says you can cross Bellwater without touching the street. Prove it.",
           OB_AREA, "bellwater_block", giver="roof_kid", turn_in_npc="roof_kid",
           reward_money=90, reward_xp=70, reward_items=["lost_sandwich"],
@@ -1060,6 +1107,96 @@ DIALOGUES = {
     L("Manager", "You could take the form. I would not stop you. I would simply be unable to "
                  "tell anyone where it went.", "line_manager", end=True),
 ]),
+# ---------------- Chapter three: the crew, and the line ----------------
+"manager_form": dict(lines=[
+    L("Kip", "Give me the form.", "kip"),
+    L("Manager", "I said I would not stop you. I did not say I would hand it over.", "line_manager"),
+    L("Kip", "You want me to take it.", "kip"),
+    L("Manager", "I want to have been unable to prevent it. Those are different, and only "
+                 "one of them has my name on it.", "line_manager"),
+    L("", "He turns to the filing cabinet, and stays turned around for a long moment."),
+    L("Kip", "...", "kip"),
+    L("Manager", "Tuesday will be interesting.", "line_manager",
+      set_flag="took_the_form", end=True),
+]),
+"dez_took_it": dict(lines=[
+    L("Dez", "You took it.", "dez"),
+    L("Kip", "I took it.", "kip"),
+    L("Dez", "And nothing came on Tuesday.", "dez"),
+    L("Kip", "Nothing came on Tuesday.", "kip"),
+    L("Dez", "So the Sweaters are not being paid to be polite any more, and the Pigeons are "
+             "not being paid to stay off the ferry queue.", "dez"),
+    L("Kip", "I know.", "kip"),
+    L("Dez", "I am not saying you were wrong. I am saying I hope there was a second half to "
+             "the plan.", "dez"),
+    L("Kip", "There are men on the platform in orange vests.", "kip"),
+    L("Dez", "That is not a second half. That is a new first half.", "dez",
+      set_flag="told_dez_ch3", start_quest="q_thursday", end=True),
+]),
+"stair_warning": dict(lines=[
+    L("Marshal", "Site is closed. Come back never.", "crew_grunt"),
+    L("Kip", "Closed by who?", "kip"),
+    L("Marshal", "By the order. There is a date on it and everything.", "crew_grunt"),
+    L("Kip", "What date?", "kip"),
+    L("Marshal", "Thursday.", "crew_grunt", start_quest="q_stand", end=True),
+]),
+"nadia_closing": dict(lines=[
+    L("Nadia", "They put a notice on the shutter.", "nadia"),
+    L("Kip", "What does it say?", "kip"),
+    L("Nadia", "That the station is being decommissioned and the block will be served by the "
+               "bus. There is no bus. There has not been a bus since I was small.", "nadia"),
+    L("Kip", "I did this.", "kip"),
+    L("Nadia", "You stopped somebody paying four gangs to leave us alone. That is not the "
+               "same as doing this.", "nadia"),
+    L("Kip", "It rhymes.", "kip"),
+    L("Nadia", "Then go and un-rhyme it.", "nadia", end=True),
+]),
+"gangs_arrive": dict(lines=[
+    L("", "Boots on the stairs behind him. A lot of boots."),
+    L("Kip", "I did not call anybody.", "kip"),
+    L("Dez", "No. Nadia did. She has everybody's number, because everybody eventually needs "
+             "a corner shop.", "dez"),
+    L("Kip", "The Pigeons are here. The Pigeons hate me.", "kip"),
+    L("Dez", "The Pigeons hate you on Ferry Row. This is Line 4.", "dez"),
+    L("", "Somebody in a green sweater hands somebody in a hi-vis vest back their own "
+          "clipboard, in pieces."),
+    L("Dez", "Eleven years of being paid to stay in your own postcode. All it cost to get "
+             "everyone in one room was taking the money away.", "dez", end=True),
+]),
+"foreman_meet": dict(lines=[
+    L("Foreman", "You are standing in a work area.", "site_foreman"),
+    L("Kip", "There are forty flats up there with no other way out.", "kip"),
+    L("Foreman", "I know. It is in the impact section.", "site_foreman"),
+    L("Kip", "You read it?", "kip"),
+    L("Foreman", "I wrote it.", "site_foreman"),
+    L("Kip", "Then stop.", "kip"),
+    L("Foreman", "I cannot stop. I can be stopped. It is a distinction that matters "
+                 "enormously to my insurance.", "site_foreman"),
+    L("Kip", "...that is an invitation.", "kip"),
+    L("Foreman", "That is a man who would like to go home and cannot say so.", "site_foreman", end=True),
+]),
+"foreman_beaten": dict(lines=[
+    L("Foreman", "Work stopped. Site unsafe. Crew withdrawn.", "site_foreman"),
+    L("Kip", "That easy?", "kip"),
+    L("Foreman", "It is never easy, it is only written down. An unsafe site gets a new "
+                 "survey, and a new survey takes eleven weeks.", "site_foreman"),
+    L("Kip", "And after eleven weeks?", "kip"),
+    L("Foreman", "Somebody signs something. That is how all of this works, and you have met "
+                 "enough of us by now to know it.", "site_foreman"),
+    L("Kip", "Then I want a name at the top of it. Mine will do.", "kip"),
+    L("Foreman", "...that would actually be a decision.", "site_foreman",
+      set_flag="chapter_3_done", end=True),
+]),
+"dez_ending": dict(lines=[
+    L("Dez", "Eleven weeks.", "dez"),
+    L("Kip", "Eleven weeks.", "kip"),
+    L("Dez", "And then what?", "dez"),
+    L("Kip", "Then there is a form with my name on it, and somebody has to come and argue "
+             "with me instead of with a filing cabinet.", "kip"),
+    L("Dez", "That is the worst job in Riverbend.", "dez"),
+    L("Kip", "It is the only one that was ever open.", "kip"),
+    L("Dez", "...I will get the noodles.", "dez", end=True),
+]),
 "dez_chapter_two": dict(lines=[
     L("Kip", "It is a form.", "kip"),
     L("Dez", "A form.", "dez"),
@@ -1086,6 +1223,23 @@ def wave(enemy_id, count=1, side="any", delay=0.0, boss=False):
     return {"enemy": enemy_id, "count": count, "side": side, "delay": delay, "boss": boss}
 
 ENCOUNTERS = [
+    # ---- Chapter three: the Closure Crew ----
+    encounter("stair_crew", "crew", [wave("crew_grunt", 2, "right"), wave("crew_weapon", 1, "left", 2.0)],
+              max_active=3, music="metro", intro_dialogue="stair_warning",
+              once_flag="enc_stair_crew"),
+    encounter("line_four_1", "crew", [wave("crew_grunt", 2, "any"), wave("crew_weapon", 2, "any", 2.2),
+                                      wave("crew_heavy", 1, "right", 5.0)],
+              max_active=4, music="industrial", once_flag="enc_line_four_1"),
+    # The platform fight the gangs turn up for. Bigger, and it is the last one before the door.
+    encounter("line_four_2", "crew", [wave("crew_weapon", 2, "any"), wave("crew_grunt", 3, "any", 1.6),
+                                      wave("crew_heavy", 2, "any", 4.5)],
+              max_active=4, music="industrial", intro_dialogue="gangs_arrive",
+              once_flag="enc_line_four_2", reward_flag="line_four_cleared"),
+    encounter("boss_foreman", "crew", [wave("site_foreman", 1, "right", 0.0, True)],
+              max_active=1, music="boss", boss_id="site_foreman",
+              intro_dialogue="foreman_meet", clear_dialogue="foreman_beaten",
+              once_flag="enc_boss_foreman", reward_flag="foreman_beaten",
+              respawn_on_reenter=False),
     encounter("ferry_tutorial", "pigeons", [wave("pigeon_grunt", 1, "right")],
               max_active=1, once_flag="enc_ferry_tutorial"),
     encounter("ferry_pair", "pigeons", [wave("pigeon_grunt", 2, "any"), wave("pigeon_rusher", 1, "right", 0.5)],
@@ -1168,8 +1322,20 @@ AREAS = [
          description="Forty flats and one shop. The Commuters sit on the wall outside it."),
     dict(id="line_office", display_name="Line Office", district="Metro Line", music="shop",
          ambience="interior", gang="", map_position=(0.6, 1.8),
-         connections=["metro_platform"],
+         connections=["metro_platform", "service_stair"],
          description="A desk, four filing cabinets, and eleven years of Tuesdays."),
+    dict(id="service_stair", display_name="Service Stair", district="Line 4", music="metro",
+         ambience="interior", gang="crew", map_position=(1.35, 2.35),
+         connections=["line_office", "line_four"],
+         description="Down past the sign that says the line is suspended, not closed."),
+    dict(id="line_four", display_name="Line 4", district="Line 4", music="industrial",
+         ambience="industrial", gang="crew", map_position=(2.25, 2.55),
+         connections=["service_stair", "substation"],
+         description="A platform nobody has stood on in eleven years, being taken apart."),
+    dict(id="substation", display_name="Substation", district="Line 4", music="boss",
+         ambience="industrial", gang="crew", map_position=(3.1, 2.2),
+         connections=["line_four"],
+         description="Where the power to the whole line gets switched off. Once."),
 ]
 
 # ===========================================================================

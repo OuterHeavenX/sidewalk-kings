@@ -80,6 +80,13 @@
    "y": -66.0,
    "z": -27,
    "scale": 1.0
+  },
+  {
+   "texture": "res://assets/art/props/doorway.png",
+   "x": 626,
+   "y": -42.0,
+   "z": -20,
+   "scale": 1.0
   }
  ],
  "props": [
@@ -124,8 +131,13 @@
    "y": 36.0,
    "conditional": [
     {
+     "dialogue": "manager_form",
+     "if_flag": "chapter_2_done",
+     "if_not_flag": "took_the_form"
+    },
+    {
      "dialogue": "manager_after",
-     "if_flag": "chapter_2_done"
+     "if_flag": "took_the_form"
     }
    ],
    "dialogue": "manager_reveal"
@@ -142,6 +154,18 @@
    "auto": true,
    "w": 22,
    "h": 46
+  },
+  {
+   "id": "to_stair",
+   "to": "service_stair",
+   "spawn": "from_office",
+   "x": 640,
+   "y": 32.0,
+   "label": "Service stair",
+   "required_flag": "took_the_form",
+   "locked": "A door onto the line itself. No reason to go down there.",
+   "w": 30,
+   "h": 46
   }
  ],
  "spawns": [
@@ -153,6 +177,11 @@
   {
    "id": "from_metro",
    "x": 80,
+   "y": 58
+  },
+  {
+   "id": "from_stair",
+   "x": 600,
    "y": 58
   }
  ],

@@ -226,6 +226,105 @@ def prop_door_marker():
     d.polygon([(2, 1), (8, 1), (5, 5)], fill=(255, 248, 220))
     return outline_alpha(im)
 
+def prop_work_lamp():
+    """A tripod work light. The crew brought their own lighting, which is the tell that
+    nothing down here has had power in eleven years."""
+    W, H = 22, 46
+    im = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    d = ImageDraw.Draw(im)
+    metal = (96, 100, 112)
+    d.line([(11, 22), (3, 45)], fill=metal, width=2)
+    d.line([(11, 22), (19, 45)], fill=metal, width=2)
+    d.line([(11, 22), (11, 44)], fill=shade(metal, 0.8), width=2)
+    d.rectangle([4, 8, 18, 22], fill=shade(metal, 1.15))
+    d.rectangle([4, 8, 18, 10], fill=shade(metal, 1.4))
+    d.rectangle([6, 11, 16, 20], fill=(255, 246, 206))
+    d.rectangle([8, 13, 14, 18], fill=(255, 255, 244))
+    return outline_alpha(im)
+
+
+def prop_barrier():
+    """Hazard barrier. Orange and white, and it means the same thing everywhere."""
+    W, H = 44, 26
+    im = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    d = ImageDraw.Draw(im)
+    leg = (90, 92, 100)
+    d.rectangle([4, 14, 7, 25], fill=leg)
+    d.rectangle([36, 14, 39, 25], fill=leg)
+    for i, y in enumerate((4, 12)):
+        d.rectangle([2, y, 41, y + 6], fill=(236, 236, 232))
+        for x in range(2, 42, 8):
+            d.polygon([(x, y + 6), (x + 4, y), (x + 8, y), (x + 4, y + 6)],
+                      fill=(226, 118, 40))
+        d.rectangle([2, y, 41, y], fill=(250, 250, 246))
+    return outline_alpha(im)
+
+
+def prop_cable_spool():
+    W, H = 34, 30
+    im = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    d = ImageDraw.Draw(im)
+    wood = (128, 96, 62)
+    d.ellipse([0, 0, 12, 29], fill=wood)
+    d.ellipse([21, 0, 33, 29], fill=shade(wood, 0.82))
+    d.rectangle([6, 6, 27, 23], fill=(38, 38, 44))
+    for y in range(7, 23, 3):
+        d.line([(6, y), (27, y)], fill=(58, 58, 66))
+    d.ellipse([2, 2, 10, 27], fill=shade(wood, 1.15))
+    return outline_alpha(im)
+
+
+def prop_switchgear():
+    """A substation cabinet. Dials, a warning flash, and a big handle."""
+    W, H = 40, 62
+    im = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    d = ImageDraw.Draw(im)
+    body = (108, 114, 124)
+    d.rectangle([2, 2, 37, 61], fill=body)
+    d.rectangle([2, 2, 37, 5], fill=shade(body, 1.25))
+    d.rectangle([2, 2, 4, 61], fill=shade(body, 1.15))
+    d.rectangle([6, 10, 33, 30], fill=(46, 50, 58))
+    for i in range(3):
+        cx = 11 + i * 9
+        d.ellipse([cx - 3, 16, cx + 3, 22], fill=(196, 204, 214))
+        d.line([(cx, 19), (cx + 2, 17)], fill=(40, 40, 48))
+    d.polygon([(20, 34), (16, 44), (19, 44), (17, 52), (24, 41), (21, 41), (24, 34)],
+              fill=(244, 208, 60))
+    d.rectangle([28, 44, 34, 47], fill=(200, 70, 50))
+    return outline_alpha(im)
+
+
+def prop_doorway(steel=False):
+    """A recessed door in a wall: frame, panel, handle, and a step.
+
+    Two variants because the places that need one are an office corridor and the side of a
+    substation, and a painted timber door on a substation would read as a mistake.
+    """
+    W, H = 30, 52
+    im = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    d = ImageDraw.Draw(im)
+    frame = (96, 96, 106) if steel else (108, 86, 66)
+    panel = (74, 78, 88) if steel else (92, 66, 48)
+    d.rectangle([0, 0, 29, 51], fill=shade(frame, 0.8))
+    d.rectangle([2, 2, 27, 51], fill=frame)
+    d.rectangle([4, 4, 25, 50], fill=panel)
+    d.rectangle([4, 4, 25, 5], fill=shade(panel, 1.25))
+    d.rectangle([4, 4, 5, 50], fill=shade(panel, 1.15))
+    if steel:
+        # Riveted plate with a kick strip, and a hazard tag where a notice would go.
+        for ry in range(9, 48, 8):
+            for rx in (7, 22):
+                d.point((rx, ry), fill=shade(panel, 1.5))
+        d.rectangle([5, 40, 24, 46], fill=shade(panel, 0.78))
+        d.rectangle([9, 12, 20, 20], fill=(214, 178, 52))
+        d.rectangle([11, 14, 18, 18], fill=(60, 56, 48))
+    else:
+        d.rectangle([7, 9, 22, 24], fill=shade(panel, 0.84))
+        d.rectangle([7, 28, 22, 43], fill=shade(panel, 0.84))
+    d.ellipse([20, 26, 23, 30], fill=(212, 196, 140) if not steel else (198, 202, 210))
+    return outline_alpha(im)
+
+
 def prop_fence(w=64):
     im = Image.new("RGBA", (w, 40), (0, 0, 0, 0))
     d = ImageDraw.Draw(im)
@@ -590,6 +689,9 @@ PROPS = {
     "satellite_dish": prop_satellite_dish, "planter": prop_planter,
     "desk": prop_desk, "filing_cabinet": prop_filing_cabinet,
     "fire_escape": prop_fire_escape, "door_marker": prop_door_marker,
+    "doorway": lambda: prop_doorway(False), "steel_door": lambda: prop_doorway(True),
+    "work_lamp": prop_work_lamp, "barrier": prop_barrier,
+    "cable_spool": prop_cable_spool, "switchgear": prop_switchgear,
     "laundry_line": lambda: prop_laundry_line(56),
     "fence": lambda: prop_fence(64),
     "graffiti_a": lambda: prop_graffiti(1), "graffiti_b": lambda: prop_graffiti(5), "graffiti_c": lambda: prop_graffiti(9),
@@ -1207,6 +1309,51 @@ def build_backgrounds():
         d.ellipse([x + 12, 138, x + 44, 172], fill=(90, 100, 116))
         d.ellipse([x + 16, 142, x + 40, 168], fill=(140, 170, 200))
     noise(im, 4, 6).save(os.path.join(out, "laundromat_wall.png"))
+    # Line 4: a tunnel nobody has maintained. Same tiling as the platform above, but the
+    # tiles are filthy, half the strip lights are dead, and the cable runs are exposed.
+    im = Image.new("RGBA", (480, 220), (0, 0, 0, 0))
+    d = ImageDraw.Draw(im)
+    d.rectangle([0, 0, 479, 219], fill=(38, 40, 50))
+    for y in range(0, 220, 14):
+        for x in range(0, 480, 22):
+            off = 11 if (y // 14) % 2 else 0
+            base = (96, 100, 104) if ((x + y) // 14) % 7 else (72, 82, 88)
+            c = shade(base, 0.86 + ((x * 7 + y * 3) % 11) * 0.02)
+            d.rectangle([x + off, y, x + off + 20, y + 12], fill=c)
+            d.line([(x + off, y), (x + off + 20, y)], fill=shade(c, 1.1))
+    # Cable runs bracketed along the wall, the most honest thing in the picture.
+    for cy in (150, 158, 166):
+        d.line([(0, cy), (479, cy)], fill=(30, 30, 36), width=2)
+    for bx in range(14, 480, 60):
+        d.rectangle([bx, 146, bx + 4, 170], fill=(58, 58, 66))
+    # Strip lighting: one in three still works.
+    d.rectangle([0, 0, 479, 9], fill=(26, 28, 36))
+    for i, x in enumerate(range(16, 480, 88)):
+        on = (i % 3 == 0)
+        d.rectangle([x, 2, x + 46, 6], fill=(236, 232, 198) if on else (58, 58, 64))
+    d.ellipse([300, 52, 470, 220], fill=(20, 22, 30))
+    d.ellipse([312, 64, 458, 220], fill=(10, 11, 16))
+    noise(im, 6, 91).save(os.path.join(out, "tunnel_wall.png"))
+
+    # Substation: bare block, cable trays, and a great deal of warning paint.
+    im = Image.new("RGBA", (480, 200), (0, 0, 0, 0))
+    d = ImageDraw.Draw(im)
+    d.rectangle([0, 0, 479, 199], fill=(78, 76, 82))
+    for y in range(0, 200, 20):
+        for x in range(0, 480, 40):
+            off = 20 if (y // 20) % 2 else 0
+            c = (92, 90, 96) if ((x + y) // 20) % 4 else (84, 82, 88)
+            d.rectangle([x + off, y, x + off + 38, y + 18], fill=c)
+    d.rectangle([0, 0, 479, 7], fill=(52, 50, 56))
+    for tx in range(0, 480, 6):
+        d.rectangle([tx, 40, tx + 3, 46], fill=(64, 62, 68))
+    d.rectangle([0, 38, 479, 40], fill=(96, 94, 100))
+    # Hazard stripes at knee height, because everything down here bites.
+    for x in range(0, 480, 16):
+        d.polygon([(x, 186), (x + 8, 174), (x + 16, 174), (x + 8, 186)], fill=(232, 196, 56))
+    d.rectangle([0, 172, 479, 174], fill=(40, 38, 44))
+    noise(im, 5, 33).save(os.path.join(out, "substation_wall.png"))
+
     return True
 
 # =====================================================================
